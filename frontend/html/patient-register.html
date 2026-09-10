@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>MediQueue — Patient Registration</title>
+
+  <link
+    rel="icon"
+    href="../assets/images/logo-icon.png"
+    type="image/png"
+  />
+
+  <link
+    rel="stylesheet"
+    href="../css/styles.css"
+  />
+</head>
+
+<body>
+
+  <div class="patient-register-page">
+
+    <a
+      href="patient-login.html"
+      class="patient-register-back"
+      aria-label="Back to patient login"
+    >
+      ←
+    </a>
+
+    <div class="patient-register-wrapper">
+
+      <div class="patient-register-heading">
+
+        <h1 class="font-display">
+          Patient Registration
+        </h1>
+
+        <p>
+          Create your patient account
+        </p>
+
+      </div>
+
+      <div class="patient-register-card">
+
+        <form id="patientRegisterForm">
+
+          <!-- Row 1 -->
+          <div class="patient-register-grid">
+
+            <div class="field">
+              <label for="fullName">
+                Full Name
+              </label>
+
+              <input
+                class="input"
+                type="text"
+                id="fullName"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="patientId">
+                Patient ID
+              </label>
+
+              <input
+                class="input"
+                type="text"
+                id="patientId"
+                placeholder="Enter patient ID"
+                required
+              />
+            </div>
+
+          </div>
+
+
+          <!-- Row 2 -->
+          <div class="patient-register-grid">
+
+            <div class="field">
+              <label for="phoneNumber">
+                Phone Number
+              </label>
+
+              <input
+                class="input"
+                type="tel"
+                id="phoneNumber"
+                placeholder="Enter phone number"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="dateOfBirth">
+                Date Of Birth
+              </label>
+
+              <input
+                class="input"
+                type="date"
+                id="dateOfBirth"
+                required
+              />
+            </div>
+
+          </div>
+
+
+          <!-- Row 3 -->
+          <div class="patient-register-grid">
+
+            <div class="field">
+              <label for="gender">
+                Gender
+              </label>
+
+              <select
+                class="input"
+                id="gender"
+                required
+              >
+                <option value="" selected disabled>
+                  Select gender
+                </option>
+
+                <option value="Female">
+                  Female
+                </option>
+
+                <option value="Male">
+                  Male
+                </option>
+
+                <option value="Other">
+                  Other
+                </option>
+
+                <option value="Prefer not to say">
+                  Prefer not to say
+                </option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="address">
+                Address
+              </label>
+
+              <input
+                class="input"
+                type="text"
+                id="address"
+                placeholder="Enter your address"
+                required
+              />
+            </div>
+
+          </div>
+
+
+          <!-- Row 4 -->
+          <div class="patient-register-grid">
+
+            <div class="field">
+              <label for="allergies">
+                Allergies
+              </label>
+
+              <input
+                class="input"
+                type="text"
+                id="allergies"
+                placeholder="Enter allergies, if any"
+              />
+            </div>
+
+            <div class="field">
+              <label for="emailAddress">
+                Email Address
+              </label>
+
+              <input
+                class="input"
+                type="email"
+                id="emailAddress"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+
+          </div>
+
+
+          <!-- Row 5 -->
+          <div class="patient-register-grid">
+
+            <div class="field">
+
+              <label for="registerPassword">
+                Password
+              </label>
+
+              <div class="input-wrap">
+
+                <input
+                  class="input"
+                  type="password"
+                  id="registerPassword"
+                  placeholder="Create a password"
+                  required
+                />
+
+                <button
+                  type="button"
+                  class="input-icon-btn"
+                  id="toggleRegisterPassword"
+                  aria-label="Show password"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+
+              </div>
+
+            </div>
+
+            <div class="field">
+
+              <label for="confirmPassword">
+                Confirm Password
+              </label>
+
+              <div class="input-wrap">
+
+                <input
+                  class="input"
+                  type="password"
+                  id="confirmPassword"
+                  placeholder="Confirm your password"
+                  required
+                />
+
+                <button
+                  type="button"
+                  class="input-icon-btn"
+                  id="toggleConfirmPassword"
+                  aria-label="Show password"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="registrationError"
+            class="patient-register-error"
+          ></div>
+
+
+          <button
+            type="submit"
+            class="btn btn-primary btn-block patient-register-submit"
+          >
+            Create Account
+          </button>
+
+
+          <div class="patient-register-login">
+
+            Already have an account?
+
+            <a
+              href="patient-login.html"
+              class="patient-text-link"
+            >
+              Login
+            </a>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script src="../js/pages/patient-register.js"></script>
+
+</body>
+</html>
