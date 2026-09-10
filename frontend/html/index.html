@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>MediQueue — Log in</title>
+  <title>MediQueue — Welcome</title>
 
   <link
     rel="icon"
@@ -12,477 +12,241 @@
     type="image/png"
   />
 
-  <link rel="stylesheet" href="../css/styles.css" />
+  <link
+    rel="stylesheet"
+    href="../css/styles.css"
+  />
 </head>
 
 <body>
 
-<div class="login-wrap">
+  <main class="landing-page">
 
-  <div class="login-hero">
+    <!-- Decorative medical symbols -->
+    <div class="landing-decoration landing-decoration-left">
+      +
+    </div>
 
-    <div>
+    <div class="landing-decoration landing-decoration-right">
+      +
+    </div>
 
-      <div class="login-brand">
+
+    <section class="landing-container">
+
+      <!-- ================= BRAND ================= -->
+
+      <div class="landing-brand">
+
         <img
           src="../assets/images/logo-icon.png"
           alt="MediQueue logo"
         />
 
-        <div class="login-brand-name font-display">
+        <div>
+
+          <h2 class="font-display">
+            MediQueue
+          </h2>
+
+          <p>
+            Smart Healthcare Queue Management
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= WELCOME ================= -->
+
+      <div class="landing-intro">
+
+        <span class="landing-welcome">
+          Welcome to
+        </span>
+
+        <h1 class="font-display">
           MediQueue
-        </div>
+        </h1>
+
+        <p>
+          Simple, faster and more connected healthcare access.
+        </p>
+
+        <div class="landing-divider"></div>
+
+        <h3>
+          Select how you would like to continue
+        </h3>
+
       </div>
 
-      <div class="login-eyebrow">
-        Clinic Queue &amp; Patient Care
-      </div>
 
-      <h1 class="login-headline font-display">
-        Smart queue.<br />
-        Better care.
-      </h1>
+      <!-- ================= ROLE SELECTION ================= -->
 
-      <p class="login-sub">
-        One system for registration, queueing, consultations and
-        prescriptions — built for clinics that never stop moving.
-      </p>
-
-    </div>
-
-    <div class="login-stats">
-
-      <div>
-        <div class="login-stat-num font-display">
-          45
-        </div>
-
-        <div class="login-stat-label">
-          patients today
-        </div>
-      </div>
-
-      <div>
-        <div class="login-stat-num font-display">
-          30
-        </div>
-
-        <div class="login-stat-label">
-          appointments
-        </div>
-      </div>
-
-      <div>
-        <div class="login-stat-num font-display">
-          4
-        </div>
-
-        <div class="login-stat-label">
-          departments live
-        </div>
-      </div>
-
-    </div>
-
-  </div>
+      <div class="landing-role-grid">
 
 
-  <!-- RIGHT SIDE -->
-  <div class="login-form-panel">
+        <!-- ================= STAFF ================= -->
 
-    <div class="login-form-icon">
+        <a
+          href="staff-login.html"
+          class="landing-role-card"
+        >
 
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <circle cx="12" cy="8" r="4" />
-        <path d="M4 21v-2a6 6 0 0 1 12 0v2" />
-      </svg>
-
-    </div>
-
-
-    <h2 class="login-form-title font-display">
-      Log in to your account
-    </h2>
-
-    <div class="login-form-sub">
-
-    </div>
-
-
-    <!-- LOGIN FORM -->
-    <form id="loginForm">
-
-      <div class="field">
-
-        <label for="roleSelect">
-          User role
-        </label>
-
-        <div class="input-wrap">
-
-          <select
-            class="input"
-            id="roleSelect"
-            required
-            style="appearance:none;padding-right:38px;"
-          >
-
-            <option
-              value=""
-              selected
-              disabled
-            >
-              Select your role
-            </option>
-
-            <option value="ADMIN">
-              Administrator
-            </option>
-
-            <option value="RECEPTIONIST">
-              Receptionist
-            </option>
-
-            <option value="DOCTOR">
-              Doctor
-            </option>
-
-            <option value="NURSE">
-              Nurse
-            </option>
-
-            <option value="PHARMACIST">
-              Pharmacist
-            </option>
-
-          </select>
-
-          <span
-            class="input-icon-btn"
-            style="pointer-events:none;"
-          >
+          <div class="landing-role-icon">
 
             <svg
-              width="16"
-              height="16"
+              width="58"
+              height="58"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
-              <path d="m6 9 6 6 6-6" />
+
+              <!-- Staff -->
+              <circle cx="9" cy="7" r="4"></circle>
+
+              <path
+                d="M2 21v-2a7 7 0 0 1 14 0v2"
+              ></path>
+
+              <!-- Medical plus -->
+              <circle cx="18" cy="12" r="3"></circle>
+
+              <path d="M18 9v6"></path>
+
+              <path d="M15 12h6"></path>
+
             </svg>
+
+          </div>
+
+
+          <h2 class="font-display">
+            Staff
+          </h2>
+
+
+          <p>
+            Access the staff portal to manage clinic operations,
+            patients, appointments and queues.
+          </p>
+
+
+          <span class="landing-role-button">
+
+            Continue as Staff
+
+            <span class="landing-arrow">
+              →
+            </span>
 
           </span>
 
-        </div>
-
-      </div>
-
-      <div class="field">
-
-        <label for="username">
-          Username
-        </label>
-
-        <input
-          class="input"
-          id="username"
-          name="username"
-          type="text"
-          placeholder="Enter your username"
-          autocomplete="username"
-          required
-        />
-
-      </div>
+        </a>
 
 
-      <div class="field">
+        <!-- ================= PATIENT ================= -->
 
-        <label for="password">
-          Password
-        </label>
+        <a
+          href="patient-login.html"
+          class="landing-role-card"
+        >
 
-        <div class="input-wrap">
-
-          <input
-            class="input"
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Enter your password"
-            autocomplete="current-password"
-            style="padding-right:40px"
-            required
-          />
-
-          <button
-            type="button"
-            class="input-icon-btn"
-            id="togglePwBtn"
-            aria-label="Show or hide password"
-          >
+          <div class="landing-role-icon">
 
             <svg
-              width="16"
-              height="16"
+              width="58"
+              height="58"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
-              <path
-                d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"
-              />
 
-              <circle
-                cx="12"
-                cy="12"
-                r="3"
-              />
+              <!-- Patient -->
+              <circle cx="12" cy="7" r="4"></circle>
+
+              <path
+                d="M5 21v-2a7 7 0 0 1 14 0v2"
+              ></path>
+
+              <!-- Heart -->
+              <path
+                d="M9.5 14.5
+                   C10.5 13.3 11.5 13.4 12 14.2
+                   C12.5 13.4 13.5 13.3 14.5 14.5
+                   C15.7 16 14.3 17.4 12 19
+                   C9.7 17.4 8.3 16 9.5 14.5Z"
+              ></path>
 
             </svg>
 
-          </button>
+          </div>
 
-        </div>
+
+          <h2 class="font-display">
+            Patient
+          </h2>
+
+
+          <p>
+            Book appointments, monitor your queue,
+            view your medical record and receive notifications.
+          </p>
+
+
+          <span class="landing-role-button">
+
+            Continue as Patient
+
+            <span class="landing-arrow">
+              →
+            </span>
+
+          </span>
+
+        </a>
 
       </div>
 
 
-      <div
-        id="loginError"
-        role="alert"
-        style="
-          display:none;
-          margin-bottom:16px;
-          font-size:13px;
-          color:#dc2626;
-        "
-      ></div>
+      <!-- ================= FOOTER ================= -->
 
-      <div
-        style="
-          display:flex;
-          justify-content:flex-end;
-          margin-bottom:20px;
-        "
-      >
+      <div class="landing-footer">
 
-        <span
-          class="link"
-          style="font-size:12.5px;"
-        >
-          Forgot password?
+        <span>
+          Better Care
+        </span>
+
+        <span class="landing-footer-dot">
+          •
+        </span>
+
+        <span>
+          Shorter Waits
+        </span>
+
+        <span class="landing-footer-dot">
+          •
+        </span>
+
+        <span>
+          Healthier Communities
         </span>
 
       </div>
 
+    </section>
 
-      
-      <button
-        type="submit"
-        class="btn btn-primary btn-block"
-        id="loginButton"
-        style="
-          padding:12px 16px;
-          font-size:14px;
-        "
-      >
-        Log in
-      </button>
-
-    </form>
-
-
-    <!-- FOOTER -->
-    <div class="login-footer">
-      Don't have an account?
-      <span class="link">
-        Contact your administrator
-      </span>
-    </div>
-
-  </div>
-
-</div>
-
-
-
-<script src="../js/data.js"></script>
-
-
-<script>
-
- 
-  const ROLE_HOME = {
-
-    ADMIN: "admin-dashboard.html",
-
-    RECEPTIONIST: "receptionist-dashboard.html",
-
-    DOCTOR: "doctor-dashboard.html",
-
-    NURSE: "nurse-dashboard.html",
-
-    PHARMACIST: "pharmacist-dashboard.html"
-
-  };
-
-
-  const loginForm =
-    document.getElementById("loginForm");
-
-  const usernameInput =
-    document.getElementById("username");
-
-  const passwordInput =
-    document.getElementById("password");
-
-  const roleSelect =
-    document.getElementById("roleSelect");
-
-  const loginError =
-    document.getElementById("loginError");
-
-  const loginButton =
-    document.getElementById("loginButton");
-
-  const togglePwBtn =
-    document.getElementById("togglePwBtn");
-
-
-
-  togglePwBtn.addEventListener("click", () => {
-
-    if (passwordInput.type === "password") {
-
-      passwordInput.type = "text";
-
-    } else {
-
-      passwordInput.type = "password";
-
-    }
-
-  });
-
-  loginForm.addEventListener("submit", (event) => {
-
-    event.preventDefault();
-
-
-    const username =
-      usernameInput.value.trim();
-
-    const password =
-      passwordInput.value.trim();
-
-    const role =
-      roleSelect.value;
-
-
-    loginError.style.display = "none";
-    loginError.textContent = "";
-
-
-    if (!username) {
-
-      showLoginError(
-        "Please enter your username."
-      );
-
-      usernameInput.focus();
-
-      return;
-    }
-
-
-  
-    if (!password) {
-
-      showLoginError(
-        "Please enter your password."
-      );
-
-      passwordInput.focus();
-
-      return;
-    }
-
-
- 
-    if (!role) {
-
-      showLoginError(
-        "Please select your user role."
-      );
-
-      roleSelect.focus();
-
-      return;
-    }
-
-
-   
-    if (!ROLE_HOME[role]) {
-
-      showLoginError(
-        "Invalid user role selected."
-      );
-
-      return;
-    }
-
-
-   
-    localStorage.setItem(
-      "mq_username",
-      username
-    );
-
-    localStorage.setItem(
-      "mq_role",
-      role
-    );
-
-    localStorage.setItem(
-      "mq_logged_in",
-      "true"
-    );
-
-
-  
-    loginButton.disabled = true;
-
-    loginButton.textContent =
-      "Logging in...";
-
-
-   
-    window.location.href =
-      ROLE_HOME[role];
-
-  });
-
-
-  function showLoginError(message) {
-
-    loginError.textContent = message;
-
-    loginError.style.display = "block";
-
-  }
-
-</script>
+  </main>
 
 </body>
 </html>
