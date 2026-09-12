@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>MediQueue — Nurse Dashboard</title>
+
+  <link
+    rel="icon"
+    href="../assets/images/logo-icon.png"
+    type="image/png"
+  />
+
+  <link
+    rel="stylesheet"
+    href="../css/styles.css"
+  />
+</head>
+
+<body>
+
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <div class="sidebar-brand">
+
+        <img
+          src="../assets/images/logo-icon.png"
+          alt="MediQueue"
+        />
+
+        <div class="sidebar-brand-name font-display">
+          MediQueue
+        </div>
+
+      </div>
+
+
+      <div class="nav">
+
+        <!-- DASHBOARD -->
+        <a
+          class="nav-item active"
+          href="nurse-dashboard.html"
+        >
+
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="9" rx="1"/>
+            <rect x="14" y="3" width="7" height="5" rx="1"/>
+            <rect x="14" y="12" width="7" height="9" rx="1"/>
+            <rect x="3" y="16" width="7" height="5" rx="1"/>
+          </svg>
+
+          Dashboard
+        </a>
+
+
+        <!-- PATIENT QUEUE -->
+        <a
+          class="nav-item"
+          href="nurse-queue.html"
+        >
+
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M3 21v-2a6 6 0 0 1 12 0v2"/>
+            <path d="M18 8v6"/>
+            <path d="M15 11h6"/>
+          </svg>
+
+          Patient Queue
+        </a>
+
+
+        <!-- VISITS / VITALS -->
+        <a
+          class="nav-item"
+          href="nurse-visits.html"
+        >
+
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M9 3h6"/>
+            <path d="M10 8h4"/>
+            <rect x="5" y="5" width="14" height="16" rx="2"/>
+            <path d="M9 13h6"/>
+            <path d="M12 10v6"/>
+          </svg>
+
+          Visits / Vitals
+        </a>
+
+      </div>
+
+
+      <!-- LOGOUT -->
+      <a
+        class="nav-logout"
+        href="staff-login.html"
+        id="logoutLink"
+      >
+
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <path d="M16 17l5-5-5-5M21 12H9"/>
+        </svg>
+
+        Logout
+      </a>
+
+    </div>
+
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- TOPBAR -->
+      <div class="topbar">
+
+        <span class="role-badge">
+          Nurse dashboard
+        </span>
+
+
+        <div class="topbar-right">
+
+          <!-- NOTIFICATIONS -->
+          <div class="bell-wrap">
+
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+
+            <div class="bell-dot"></div>
+
+          </div>
+
+
+          <!-- USER -->
+          <div class="user-block">
+
+            <div class="avatar">
+
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 21v-2a6 6 0 0 1 12 0v2"/>
+              </svg>
+
+            </div>
+
+
+            <div>
+
+              <div class="user-name">
+              </div>
+
+              <div class="user-role">
+                Nurse
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- CONTENT -->
+      <div class="content">
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+
+          <div>
+
+            <h1
+              class="page-title font-display"
+              id="welcomeMsg"
+            >
+              Welcome
+            </h1>
+
+            <div class="page-sub">
+              Here is your patient care overview for today
+            </div>
+
+          </div>
+
+
+          <div
+            class="badge badge-teal"
+            id="dateLabel"
+            style="font-size:13px; padding:8px 14px;"
+          >
+          </div>
+
+        </div>
+
+
+        <!-- SUMMARY CARDS -->
+        <div
+          class="cards-row"
+          id="nurseStatCards"
+        >
+
+          <!-- PATIENTS WAITING -->
+          <div class="card">
+
+            <div class="card-label">
+              Patients Waiting
+            </div>
+
+            <div
+              class="card-value"
+              id="patientsWaitingCount"
+            >
+              0
+            </div>
+
+            <div class="card-sub">
+              Currently in queue
+            </div>
+
+          </div>
+
+
+          <!-- PATIENTS SEEN TODAY -->
+          <div class="card">
+
+            <div class="card-label">
+              Patients Seen Today
+            </div>
+
+            <div
+              class="card-value"
+              id="patientsSeenCount"
+            >
+              0
+            </div>
+
+            <div class="card-sub">
+              Completed assessments
+            </div>
+
+          </div>
+
+
+          <!-- PENDING VITALS -->
+          <div class="card">
+
+            <div class="card-label">
+              Pending Vital Signs
+            </div>
+
+            <div
+              class="card-value"
+              id="pendingVitalsCount"
+            >
+              0
+            </div>
+
+            <div class="card-sub">
+              Require assessment
+            </div>
+
+          </div>
+
+
+          <!-- COMPLETED -->
+          <div class="card">
+
+            <div class="card-label">
+              Completed Assessments
+            </div>
+
+            <div
+              class="card-value"
+              id="completedAssessmentsCount"
+            >
+              0
+            </div>
+
+            <div class="card-sub">
+              Ready for doctor
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- DASHBOARD GRID -->
+        <div
+          class="admin-dashboard-grid"
+          style="margin-top:24px;"
+        >
+
+          <!-- CURRENT QUEUE -->
+          <div class="panel">
+
+            <div class="panel-head">
+
+              <div>
+
+                <div class="panel-title">
+                  Current Patient Queue
+                </div>
+
+                <div class="panel-subtitle">
+                  Patients waiting for nurse assessment
+                </div>
+
+              </div>
+
+
+              <a
+                href="nurse-queue.html"
+                class="link"
+                style="font-size:12px; text-decoration:none;"
+              >
+                View full queue
+              </a>
+
+            </div>
+
+
+            <div
+              id="nurseQueueList"
+              style="padding:0 20px 18px;"
+            >
+
+              <!-- Filled by nurse-dashboard.js -->
+
+            </div>
+
+          </div>
+
+
+          <!-- RIGHT COLUMN -->
+          <div class="admin-side-column">
+
+            <!-- QUICK ACTIONS -->
+            <div class="panel">
+
+              <div class="panel-head">
+
+                <div>
+
+                  <div class="panel-title">
+                    Quick Actions
+                  </div>
+
+                  <div class="panel-subtitle">
+                    Common nurse tasks
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="quick-actions-box">
+
+                <!-- RECORD VITALS -->
+                <a
+                  href="nurse-queue.html"
+                  class="admin-action-btn admin-action-teal"
+                >
+
+                  <span class="action-icon">
+                    +
+                  </span>
+
+                  <div>
+
+                    <div class="action-title">
+                      Record Vital Signs
+                    </div>
+
+                    <div class="action-description">
+                      Open a patient and capture vitals
+                    </div>
+
+                  </div>
+
+                </a>
+
+
+                <!-- VIEW VISITS -->
+                <a
+                  href="nurse-visits.html"
+                  class="admin-action-btn admin-action-gold"
+                >
+
+                  <span class="action-icon">
+
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M9 3h6"/>
+                      <path d="M10 8h4"/>
+                      <rect x="5" y="5" width="14" height="16" rx="2"/>
+                    </svg>
+
+                  </span>
+
+                  <div>
+
+                    <div class="action-title">
+                      View Visits
+                    </div>
+
+                    <div class="action-description">
+                      Review patient visit information
+                    </div>
+
+                  </div>
+
+                </a>
+
+              </div>
+
+            </div>
+
+
+            <!-- NURSE INFORMATION -->
+            <div class="system-info-card">
+
+              <div class="system-info-icon">
+
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <path d="M12 2v20"/>
+                  <path d="M2 12h20"/>
+                </svg>
+
+              </div>
+
+
+              <div>
+
+                <div class="system-info-title">
+                  Nurse Workspace
+                </div>
+
+                <div class="system-info-text">
+                  Review waiting patients, record vital signs,
+                  capture preliminary information and prepare
+                  patients for consultation with the doctor.
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- RECENT ACTIVITY -->
+        <div
+          class="panel"
+          style="margin-top:24px;"
+        >
+
+          <div class="panel-head">
+
+            <div>
+
+              <div class="panel-title">
+                Recent Activity
+              </div>
+
+              <div class="panel-subtitle">
+                Latest nurse assessments and patient updates
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="nurseRecentActivity"
+            class="recent-activity-list"
+          >
+
+            <!-- Filled by nurse-dashboard.js -->
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- JAVASCRIPT -->
+  <script src="../js/data.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/render-helpers.js"></script>
+  <script src="../js/pages/nurse-dashboard.js"></script>
+
+</body>
+</html>
