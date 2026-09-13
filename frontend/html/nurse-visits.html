@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>MediQueue — Nurse Visits & Vitals</title>
+
+  <link
+    rel="icon"
+    href="../assets/images/logo-icon.png"
+    type="image/png"
+  />
+
+  <link
+    rel="stylesheet"
+    href="../css/styles.css"
+  />
+</head>
+
+<body>
+
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <div class="sidebar-brand">
+
+        <img
+          src="../assets/images/logo-icon.png"
+          alt="MediQueue"
+        />
+
+        <div class="sidebar-brand-name font-display">
+          MediQueue
+        </div>
+
+      </div>
+
+
+      <div class="nav">
+
+        <a
+          class="nav-item"
+          href="nurse-dashboard.html"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="9" rx="1"/>
+            <rect x="14" y="3" width="7" height="5" rx="1"/>
+            <rect x="14" y="12" width="7" height="9" rx="1"/>
+            <rect x="3" y="16" width="7" height="5" rx="1"/>
+          </svg>
+
+          Dashboard
+        </a>
+
+
+        <a
+          class="nav-item"
+          href="nurse-queue.html"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M3 21v-2a6 6 0 0 1 12 0v2"/>
+            <path d="M18 8v6"/>
+            <path d="M15 11h6"/>
+          </svg>
+
+          Patient Queue
+        </a>
+
+
+        <a
+          class="nav-item active"
+          href="nurse-visits.html"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M9 3h6"/>
+            <path d="M10 8h4"/>
+            <rect x="5" y="5" width="14" height="16" rx="2"/>
+            <path d="M9 13h6"/>
+            <path d="M12 10v6"/>
+          </svg>
+
+          Visits / Vitals
+        </a>
+
+      </div>
+
+
+      <!-- LOGOUT -->
+      <a
+        class="nav-logout"
+        href="staff-login.html"
+        id="logoutLink"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <path d="M16 17l5-5-5-5M21 12H9"/>
+        </svg>
+
+        Logout
+      </a>
+
+    </div>
+
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- TOPBAR -->
+      <div class="topbar">
+
+        <span class="role-badge">
+          Nurse dashboard
+        </span>
+
+
+        <div class="topbar-right">
+
+          <div class="bell-wrap">
+
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+
+            <div class="bell-dot"></div>
+
+          </div>
+
+
+          <div class="user-block">
+
+            <div class="avatar">
+
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 21v-2a6 6 0 0 1 12 0v2"/>
+              </svg>
+
+            </div>
+
+
+            <div>
+
+              <div class="user-name">
+              </div>
+
+              <div class="user-role">
+                Nurse
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- CONTENT -->
+      <div class="content">
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+
+          <div>
+
+            <h1 class="page-title font-display">
+              Visits &amp; Vitals
+            </h1>
+
+            <div class="page-sub">
+              Review completed nurse assessments and patient vital signs
+            </div>
+
+          </div>
+
+
+          <div
+            class="badge badge-teal"
+            id="assessmentCountBadge"
+            style="
+              font-size:13px;
+              padding:8px 14px;
+            "
+          >
+            0 Assessments
+          </div>
+
+        </div>
+
+
+        <!-- BREADCRUMB -->
+        <div
+          style="
+            margin-top:-12px;
+            margin-bottom:22px;
+            font-size:12px;
+            color:var(--slate);
+          "
+        >
+
+          <a
+            href="nurse-dashboard.html"
+            class="breadcrumb-link"
+          >
+            Dashboard
+          </a>
+
+          <span style="margin:0 7px;">
+            &gt;
+          </span>
+
+          <span>
+            Visits / Vitals
+          </span>
+
+        </div>
+
+
+        <!-- SUMMARY CARDS -->
+        <div
+          class="cards-row"
+          style="margin-bottom:24px;"
+        >
+
+          <div class="card">
+
+            <div class="card-label">
+              Completed Assessments
+            </div>
+
+            <div
+              class="card-value"
+              id="completedAssessmentCount"
+            >
+              0
+            </div>
+
+            <div class="card-sub">
+              Nurse assessments recorded
+            </div>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="card-label">
+              Ready for Doctor
+            </div>
+
+            <div
+              class="card-value"
+              id="readyForDoctorCount"
+            >
+              0
+            </div>
+
+            <div class="card-sub">
+              Patients waiting for consultation
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ASSESSMENTS PANEL -->
+        <div class="panel">
+
+          <div class="panel-head">
+
+            <div>
+
+              <div class="panel-title">
+                Patient Assessments
+              </div>
+
+              <div class="panel-subtitle">
+                Vital signs captured during nurse assessment
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- TABLE -->
+          <div style="overflow-x:auto;">
+
+            <table>
+
+              <thead>
+
+                <tr>
+                  <th>Patient</th>
+                  <th>Patient ID</th>
+                  <th>Department</th>
+                  <th>Blood Pressure</th>
+                  <th>Temperature</th>
+                  <th>Pulse</th>
+                  <th>Weight</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+
+              </thead>
+
+
+              <tbody id="nurseVisitsBody">
+
+                <!-- Filled by nurse-visits.js -->
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+
+          <!-- EMPTY STATE -->
+          <div
+            id="visitsEmptyState"
+            style="
+              display:none;
+              padding:40px 20px;
+              text-align:center;
+              color:var(--slate);
+              font-size:13px;
+            "
+          >
+            No nurse assessments have been recorded yet.
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ASSESSMENT DETAILS MODAL -->
+  <div
+    id="assessmentModal"
+    style="
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.45);
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:1000;
+    "
+  >
+
+    <div
+      class="panel"
+      style="
+        width:100%;
+        max-width:650px;
+        max-height:90vh;
+        overflow-y:auto;
+        background:var(--white);
+      "
+    >
+
+      <div
+        class="panel-head"
+        style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+        "
+      >
+
+        <div>
+
+          <div class="panel-title">
+            Assessment Details
+          </div>
+
+          <div class="panel-subtitle">
+            Recorded vital signs and nurse observations
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          id="closeAssessmentModal"
+          aria-label="Close assessment details"
+          style="
+            border:none;
+            background:transparent;
+            cursor:pointer;
+            font-size:24px;
+            color:var(--slate);
+          "
+        >
+          &times;
+        </button>
+
+      </div>
+
+
+      <div style="padding:20px;">
+
+        <!-- PATIENT -->
+        <div
+          style="
+            display:grid;
+            grid-template-columns:repeat(2, 1fr);
+            gap:18px;
+            margin-bottom:24px;
+          "
+        >
+
+          <div>
+            <div class="card-label">
+              Patient
+            </div>
+
+            <div
+              id="modalPatientName"
+              style="
+                margin-top:5px;
+                font-weight:700;
+                color:var(--ink);
+              "
+            >
+              -
+            </div>
+          </div>
+
+
+          <div>
+            <div class="card-label">
+              Patient ID
+            </div>
+
+            <div
+              id="modalPatientId"
+              style="
+                margin-top:5px;
+                font-weight:700;
+                color:var(--ink);
+              "
+            >
+              -
+            </div>
+          </div>
+
+
+          <div>
+            <div class="card-label">
+              Queue Number
+            </div>
+
+            <div
+              id="modalQueueNumber"
+              style="
+                margin-top:5px;
+                font-weight:700;
+                color:var(--ink);
+              "
+            >
+              -
+            </div>
+          </div>
+
+
+          <div>
+            <div class="card-label">
+              Department
+            </div>
+
+            <div
+              id="modalDepartment"
+              style="
+                margin-top:5px;
+                font-weight:700;
+                color:var(--ink);
+              "
+            >
+              -
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- VITAL SIGNS -->
+        <div
+          style="
+            padding-top:20px;
+            border-top:1px solid var(--line);
+          "
+        >
+
+          <div
+            class="panel-title"
+            style="margin-bottom:16px;"
+          >
+            Vital Signs
+          </div>
+
+
+          <div
+            style="
+              display:grid;
+              grid-template-columns:repeat(2, 1fr);
+              gap:18px;
+            "
+          >
+
+            <div>
+              <div class="card-label">
+                Blood Pressure
+              </div>
+
+              <div
+                id="modalBloodPressure"
+                style="margin-top:5px; font-weight:700;"
+              >
+                -
+              </div>
+            </div>
+
+
+            <div>
+              <div class="card-label">
+                Temperature
+              </div>
+
+              <div
+                id="modalTemperature"
+                style="margin-top:5px; font-weight:700;"
+              >
+                -
+              </div>
+            </div>
+
+
+            <div>
+              <div class="card-label">
+                Heart Rate
+              </div>
+
+              <div
+                id="modalHeartRate"
+                style="margin-top:5px; font-weight:700;"
+              >
+                -
+              </div>
+            </div>
+
+
+            <div>
+              <div class="card-label">
+                Weight
+              </div>
+
+              <div
+                id="modalWeight"
+                style="margin-top:5px; font-weight:700;"
+              >
+                -
+              </div>
+            </div>
+
+
+            <div>
+              <div class="card-label">
+                Oxygen Saturation
+              </div>
+
+              <div
+                id="modalOxygen"
+                style="margin-top:5px; font-weight:700;"
+              >
+                -
+              </div>
+            </div>
+
+
+            <div>
+              <div class="card-label">
+                Respiratory Rate
+              </div>
+
+              <div
+                id="modalRespiratoryRate"
+                style="margin-top:5px; font-weight:700;"
+              >
+                -
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- SYMPTOMS -->
+        <div
+          style="
+            margin-top:24px;
+            padding-top:20px;
+            border-top:1px solid var(--line);
+          "
+        >
+
+          <div class="card-label">
+            Symptoms / Reason for Visit
+          </div>
+
+          <div
+            id="modalSymptoms"
+            style="
+              margin-top:7px;
+              line-height:1.6;
+              color:var(--ink);
+            "
+          >
+            -
+          </div>
+
+        </div>
+
+
+        <!-- NURSE NOTES -->
+        <div style="margin-top:20px;">
+
+          <div class="card-label">
+            Nurse Notes
+          </div>
+
+          <div
+            id="modalNurseNotes"
+            style="
+              margin-top:7px;
+              line-height:1.6;
+              color:var(--ink);
+            "
+          >
+            -
+          </div>
+
+        </div>
+
+
+        <!-- ASSESSED BY -->
+        <div
+          style="
+            margin-top:24px;
+            padding-top:20px;
+            border-top:1px solid var(--line);
+          "
+        >
+
+          <div
+            style="
+              display:flex;
+              justify-content:space-between;
+              gap:20px;
+            "
+          >
+
+            <div>
+
+              <div class="card-label">
+                Assessed By
+              </div>
+
+              <div
+                id="modalAssessedBy"
+                style="
+                  margin-top:5px;
+                  font-weight:700;
+                "
+              >
+                -
+              </div>
+
+            </div>
+
+
+            <div>
+
+              <div class="card-label">
+                Date &amp; Time
+              </div>
+
+              <div
+                id="modalAssessedAt"
+                style="
+                  margin-top:5px;
+                  font-weight:700;
+                "
+              >
+                -
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- CLOSE -->
+        <div
+          style="
+            display:flex;
+            justify-content:flex-end;
+            margin-top:24px;
+          "
+        >
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            id="modalCloseButton"
+          >
+            Close
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- JAVASCRIPT -->
+  <script src="../js/data.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/render-helpers.js"></script>
+  <script src="../js/pages/nurse-visits.js"></script>
+
+</body>
+</html>
