@@ -20,11 +20,87 @@
 
 <body>
 
+<!-- ================= MOBILE PATIENT HEADER ================= -->
+
+<header class="patient-mobile-header">
+
+  <div class="patient-mobile-brand">
+
+    <img
+      src="../assets/images/logo-icon.png"
+      alt="MediQueue logo"
+    />
+
+    <div>
+
+      <div class="patient-mobile-brand-name font-display">
+        MediQueue
+      </div>
+
+      <div class="patient-mobile-brand-label">
+        Patient Portal
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <button
+    class="patient-menu-button"
+    id="patientMenuButton"
+    type="button"
+    aria-label="Open navigation menu"
+    aria-expanded="false"
+  >
+
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+    >
+      <line x1="4" y1="6" x2="20" y2="6"></line>
+      <line x1="4" y1="12" x2="20" y2="12"></line>
+      <line x1="4" y1="18" x2="20" y2="18"></line>
+    </svg>
+
+  </button>
+
+</header>
+
+
+<!-- Mobile menu overlay -->
+
+<div
+  class="patient-menu-overlay"
+  id="patientMenuOverlay"
+></div>
+
+
 <div class="app-shell">
 
   <!-- ================= SIDEBAR ================= -->
 
-  <aside class="sidebar">
+  <aside
+    class="sidebar patient-sidebar"
+    id="patientSidebar"
+  >
+
+    <!-- Mobile close button -->
+
+    <button
+      class="patient-menu-close"
+      id="patientMenuClose"
+      type="button"
+      aria-label="Close navigation menu"
+    >
+      ×
+    </button>
+
 
     <div class="sidebar-brand">
 
@@ -34,6 +110,7 @@
       />
 
       <div>
+
         <div class="sidebar-brand-name font-display">
           MediQueue
         </div>
@@ -41,6 +118,7 @@
         <div class="patient-sidebar-label">
           Patient Portal
         </div>
+
       </div>
 
     </div>
@@ -48,10 +126,13 @@
 
     <nav class="nav">
 
+      <!-- Dashboard -->
+
       <a
         href="patient-dashboard.html"
         class="nav-item"
       >
+
         <svg
           width="18"
           height="18"
@@ -67,13 +148,17 @@
         </svg>
 
         Dashboard
+
       </a>
 
+
+      <!-- Book Appointment -->
 
       <a
         href="book-appointment.html"
         class="nav-item active"
       >
+
         <svg
           width="18"
           height="18"
@@ -98,13 +183,17 @@
         </svg>
 
         Book Appointment
+
       </a>
 
+
+      <!-- Medical Record -->
 
       <a
         href="patient-medical-record.html"
         class="nav-item"
       >
+
         <svg
           width="18"
           height="18"
@@ -113,20 +202,27 @@
           stroke="currentColor"
           stroke-width="2"
         >
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <path
+            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+          ></path>
+
           <path d="M14 2v6h6"></path>
           <path d="M9 13h6"></path>
           <path d="M9 17h6"></path>
         </svg>
 
         Medical Record
+
       </a>
 
+
+      <!-- Notifications -->
 
       <a
         href="patient-notifications.html"
         class="nav-item"
       >
+
         <svg
           width="18"
           height="18"
@@ -135,21 +231,28 @@
           stroke="currentColor"
           stroke-width="2"
         >
-          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+          <path
+            d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"
+          ></path>
+
           <path d="M10 21h4"></path>
         </svg>
 
         Notifications
+
       </a>
 
     </nav>
 
+
+    <!-- Logout -->
 
     <a
       href="patient-login.html"
       class="nav-logout"
       id="patientLogout"
     >
+
       <svg
         width="18"
         height="18"
@@ -158,12 +261,16 @@
         stroke="currentColor"
         stroke-width="2"
       >
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <path
+          d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+        ></path>
+
         <polyline points="16 17 21 12 16 7"></polyline>
         <line x1="21" y1="12" x2="9" y2="12"></line>
       </svg>
 
       Logout
+
     </a>
 
   </aside>
@@ -173,7 +280,7 @@
 
   <main class="main">
 
-    <!-- TOPBAR -->
+    <!-- ================= TOPBAR ================= -->
 
     <header class="topbar">
 
@@ -197,6 +304,7 @@
       <div class="topbar-right">
 
         <div class="avatar">
+
           <svg
             width="17"
             height="17"
@@ -208,11 +316,14 @@
             <circle cx="12" cy="8" r="4"></circle>
             <path d="M4 21v-2a8 8 0 0 1 16 0v2"></path>
           </svg>
+
         </div>
+
 
         <div class="user-block">
 
           <div>
+
             <div
               class="user-name"
               id="patientTopbarName"
@@ -223,6 +334,7 @@
             <div class="user-role">
               Patient
             </div>
+
           </div>
 
         </div>
@@ -235,6 +347,8 @@
     <!-- ================= CONTENT ================= -->
 
     <section class="content book-appointment-content">
+
+      <!-- Page Header -->
 
       <div class="page-header">
 
@@ -273,7 +387,7 @@
       </div>
 
 
-      <!-- FORM -->
+      <!-- ================= APPOINTMENT FORM ================= -->
 
       <section class="book-appointment-panel">
 
@@ -282,6 +396,7 @@
           <div class="book-appointment-grid">
 
             <!-- Patient ID -->
+
             <div class="field">
 
               <label for="appointmentPatientId">
@@ -300,6 +415,7 @@
 
 
             <!-- Clinic -->
+
             <div class="field">
 
               <label for="appointmentClinic">
@@ -311,6 +427,7 @@
                 id="appointmentClinic"
                 required
               >
+
                 <option value="" selected disabled>
                   Select clinic
                 </option>
@@ -330,12 +447,14 @@
                 <option value="Mitchells Plain Clinic">
                   Mitchells Plain Clinic
                 </option>
+
               </select>
 
             </div>
 
 
             <!-- Department -->
+
             <div class="field">
 
               <label for="appointmentDepartment">
@@ -347,6 +466,7 @@
                 id="appointmentDepartment"
                 required
               >
+
                 <option value="" selected disabled>
                   Select department
                 </option>
@@ -370,12 +490,14 @@
                 <option value="Dental">
                   Dental
                 </option>
+
               </select>
 
             </div>
 
 
             <!-- Date -->
+
             <div class="field">
 
               <label for="appointmentDate">
@@ -393,6 +515,7 @@
 
 
             <!-- Time Slot -->
+
             <div class="field">
 
               <label for="appointmentTime">
@@ -404,6 +527,7 @@
                 id="appointmentTime"
                 required
               >
+
                 <option value="" selected disabled>
                   Select time slot
                 </option>
@@ -439,6 +563,7 @@
                 <option value="03:00 PM">
                   03:00 PM
                 </option>
+
               </select>
 
             </div>
@@ -447,6 +572,7 @@
 
 
           <!-- Symptoms -->
+
           <div class="field book-appointment-reason">
 
             <label for="appointmentReason">
@@ -463,6 +589,8 @@
           </div>
 
 
+          <!-- Error Message -->
+
           <div
             id="appointmentError"
             class="book-appointment-error"
@@ -470,6 +598,7 @@
 
 
           <!-- Actions -->
+
           <div class="book-appointment-actions">
 
             <a
