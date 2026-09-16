@@ -20,11 +20,73 @@
 
 <body>
 
+  <!-- ================= MOBILE PATIENT HEADER ================= -->
+
+<header class="patient-mobile-header">
+
+  <div class="patient-mobile-brand">
+    <img
+      src="../assets/images/logo-icon.png"
+      alt="MediQueue logo"
+    />
+
+    <div>
+      <div class="patient-mobile-brand-name font-display">
+        MediQueue
+      </div>
+
+      <div class="patient-mobile-brand-label">
+        Patient Portal
+      </div>
+    </div>
+  </div>
+
+
+  <button
+    class="patient-menu-button"
+    id="patientMenuButton"
+    type="button"
+    aria-label="Open navigation menu"
+    aria-expanded="false"
+  >
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+    >
+      <line x1="4" y1="6" x2="20" y2="6"></line>
+      <line x1="4" y1="12" x2="20" y2="12"></line>
+      <line x1="4" y1="18" x2="20" y2="18"></line>
+    </svg>
+  </button>
+
+</header>
+
+
+<!-- Dark background behind mobile menu -->
+<div
+  class="patient-menu-overlay"
+  id="patientMenuOverlay"
+></div>
+
 <div class="app-shell">
 
   <!-- ================= SIDEBAR ================= -->
 
-  <aside class="sidebar">
+  <aside class="sidebar patient-sidebar" id="patientSidebar">
+    <button
+      class="patient-menu-close"
+      id="patientMenuClose"
+      type="button"
+      aria-label="Close navigation menu"
+    >
+    ×
+    </button>
+  
 
     <div class="sidebar-brand">
 
