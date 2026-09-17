@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>MediQueue — Departments</title>
+  <title>MediQueue — Clinics</title>
 
   <link
     rel="icon"
@@ -48,7 +48,7 @@
           Dashboard
         </a>
 
-        <a class="nav-item" href="clinics.html">
+        <a class="nav-item active" href="clinics.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="4" y="2" width="16" height="20" rx="1"/>
             <path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01"/>
@@ -56,7 +56,7 @@
           Clinics
         </a>
 
-        <a class="nav-item active" href="departments.html">
+        <a class="nav-item" href="departments.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="4" y="2" width="16" height="20" rx="1"/>
             <path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/>
@@ -92,7 +92,6 @@
       </a>
 
     </div>
-
 
     <!-- MAIN -->
     <div class="main">
@@ -134,7 +133,6 @@
 
       </div>
 
-
       <!-- CONTENT -->
       <div class="content">
 
@@ -143,42 +141,33 @@
           <div>
 
             <h1 class="page-title font-display">
-              Departments
+              Clinics
             </h1>
 
-            <!-- CLICKABLE BREADCRUMB -->
             <div class="page-sub">
-
-              <a
-                href="admin-dashboard.html"
-                class="breadcrumb-link"
-              >
+              <a href="admin-dashboard.html" class="breadcrumb-link">
                 Dashboard
               </a>
 
               <span> &gt; </span>
 
               <span>
-                Departments
+                Clinics
               </span>
-
             </div>
 
           </div>
 
-
-          <!-- SEPARATE ADD DEPARTMENT PAGE -->
           <a
-            href="add-department.html"
+            href="add-clinic.html"
             class="btn btn-gold"
           >
-            + Add New Department
+            + Add New Clinic
           </a>
 
         </div>
 
-
-        <!-- DEPARTMENTS TABLE -->
+        <!-- CLINICS TABLE -->
         <div class="panel">
 
           <div class="table-scroll">
@@ -187,23 +176,22 @@
 
               <thead>
                 <tr>
-                  <th>Department Name</th>
-                  <th>Department ID</th>
-                  <th>Description</th>
+                  <th>Clinic Name</th>
+                  <th>Location</th>
+                  <th>Contact Number</th>
                   <th>Date Created</th>
                   <th>Actions</th>
                 </tr>
               </thead>
 
-              <tbody id="departmentsBody"></tbody>
+              <tbody id="clinicsBody"></tbody>
 
             </table>
 
           </div>
 
-
           <div
-            id="departmentsCount"
+            id="clinicsCount"
             style="
               text-align:center;
               padding:14px;
@@ -222,10 +210,10 @@
   </div>
 
 
-  <!-- EDIT DEPARTMENT MODAL -->
+  <!-- EDIT CLINIC MODAL -->
   <div
     class="modal-overlay"
-    id="editDeptModal"
+    id="editClinicModal"
     style="display:none;"
   >
 
@@ -234,74 +222,64 @@
       <div class="modal-head">
 
         <h2 class="modal-title">
-          Edit Department
+          Edit Clinic
         </h2>
 
         <button
           class="modal-close"
           type="button"
-          onclick="closeModal('editDeptModal')"
+          onclick="closeModal('editClinicModal')"
         >
           ✕
         </button>
 
       </div>
 
-
-      <form id="editDeptForm">
+      <form id="editClinicForm">
 
         <input
           type="hidden"
-          id="edIndex"
+          id="ecIndex"
         />
 
-
         <div class="field">
-
-          <label for="edId">
-            Department ID
+          <label for="ecName">
+            Clinic Name
           </label>
 
           <input
             class="input"
-            id="edId"
+            id="ecName"
             type="text"
             required
           />
-
         </div>
 
-
         <div class="field">
-
-          <label for="edName">
-            Department Name
+          <label for="ecLocation">
+            Location
           </label>
 
           <input
             class="input"
-            id="edName"
+            id="ecLocation"
             type="text"
             required
           />
-
         </div>
-
 
         <div class="field">
-
-          <label for="edDescription">
-            Description
+          <label for="ecContact">
+            Contact Number
           </label>
 
-          <textarea
+          <input
             class="input"
-            id="edDescription"
-            rows="3"
-          ></textarea>
-
+            id="ecContact"
+            type="text"
+            required
+          />
         </div>
-
 
         <div
           style="
@@ -315,7 +293,7 @@
           <button
             type="button"
             class="btn btn-ghost"
-            onclick="closeModal('editDeptModal')"
+            onclick="closeModal('editClinicModal')"
           >
             Cancel
           </button>
@@ -340,7 +318,7 @@
   <script src="../js/guard.js"></script>
   <script src="../js/render-helpers.js"></script>
   <script src="../js/modal.js"></script>
-  <script src="../js/pages/departments.js"></script>
+  <script src="../js/pages/clinics.js"></script>
 
 </body>
 </html>

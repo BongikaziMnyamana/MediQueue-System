@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>MediQueue — Departments</title>
+  <title>MediQueue — Add New Department</title>
 
   <link
     rel="icon"
@@ -93,7 +93,6 @@
 
     </div>
 
-
     <!-- MAIN -->
     <div class="main">
 
@@ -134,7 +133,6 @@
 
       </div>
 
-
       <!-- CONTENT -->
       <div class="content">
 
@@ -143,75 +141,132 @@
           <div>
 
             <h1 class="page-title font-display">
-              Departments
+              Add New Department
             </h1>
 
-            <!-- CLICKABLE BREADCRUMB -->
             <div class="page-sub">
 
-              <a
-                href="admin-dashboard.html"
-                class="breadcrumb-link"
-              >
+              <a href="admin-dashboard.html" class="breadcrumb-link">
                 Dashboard
               </a>
 
               <span> &gt; </span>
 
-              <span>
+              <a href="departments.html" class="breadcrumb-link">
                 Departments
+              </a>
+
+              <span> &gt; </span>
+
+              <span>
+                Add New Department
               </span>
 
             </div>
 
           </div>
 
-
-          <!-- SEPARATE ADD DEPARTMENT PAGE -->
-          <a
-            href="add-department.html"
-            class="btn btn-gold"
-          >
-            + Add New Department
-          </a>
-
         </div>
 
+        <!-- FORM PANEL -->
+        <div class="panel add-department-panel">
 
-        <!-- DEPARTMENTS TABLE -->
-        <div class="panel">
+          <div class="add-department-heading">
 
-          <div class="table-scroll">
+            <div class="add-department-icon">
+              <svg
+                width="34"
+                height="34"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <rect x="4" y="3" width="16" height="18" rx="1"/>
+                <path d="M9 21v-4h6v4"/>
+                <path d="M8 7h8"/>
+                <path d="M12 5v4"/>
+              </svg>
+            </div>
 
-            <table>
+            <h2 class="font-display">
+              Create a New Department
+            </h2>
 
-              <thead>
-                <tr>
-                  <th>Department Name</th>
-                  <th>Department ID</th>
-                  <th>Description</th>
-                  <th>Date Created</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody id="departmentsBody"></tbody>
-
-            </table>
+            <p>
+              Enter the department details below
+            </p>
 
           </div>
 
+          <form id="addDepartmentForm" class="add-department-form">
 
-          <div
-            id="departmentsCount"
-            style="
-              text-align:center;
-              padding:14px;
-              font-size:12.5px;
-              font-weight:600;
-              color:var(--slate);
-            "
-          ></div>
+            <div class="department-form-row">
+
+              <label for="departmentId">
+                Department ID
+              </label>
+
+              <input
+                class="input"
+                type="text"
+                id="departmentId"
+                placeholder="e.g. DEP-001"
+                required
+              />
+
+            </div>
+
+            <div class="department-form-row">
+
+              <label for="departmentName">
+                Department Name
+              </label>
+
+              <input
+                class="input"
+                type="text"
+                id="departmentName"
+                placeholder="Enter department name"
+                required
+              />
+
+            </div>
+
+            <div class="department-form-row">
+
+              <label for="departmentDescription">
+                Description
+              </label>
+
+              <textarea
+                class="input"
+                id="departmentDescription"
+                rows="4"
+                placeholder="Enter department description"
+              ></textarea>
+
+            </div>
+
+            <div class="add-department-actions">
+
+              <a
+                href="departments.html"
+                class="btn btn-ghost"
+              >
+                Cancel
+              </a>
+
+              <button
+                type="submit"
+                class="btn btn-gold"
+              >
+                Add Department
+              </button>
+
+            </div>
+
+          </form>
 
         </div>
 
@@ -220,127 +275,11 @@
     </div>
 
   </div>
-
-
-  <!-- EDIT DEPARTMENT MODAL -->
-  <div
-    class="modal-overlay"
-    id="editDeptModal"
-    style="display:none;"
-  >
-
-    <div class="modal-box">
-
-      <div class="modal-head">
-
-        <h2 class="modal-title">
-          Edit Department
-        </h2>
-
-        <button
-          class="modal-close"
-          type="button"
-          onclick="closeModal('editDeptModal')"
-        >
-          ✕
-        </button>
-
-      </div>
-
-
-      <form id="editDeptForm">
-
-        <input
-          type="hidden"
-          id="edIndex"
-        />
-
-
-        <div class="field">
-
-          <label for="edId">
-            Department ID
-          </label>
-
-          <input
-            class="input"
-            id="edId"
-            type="text"
-            required
-          />
-
-        </div>
-
-
-        <div class="field">
-
-          <label for="edName">
-            Department Name
-          </label>
-
-          <input
-            class="input"
-            id="edName"
-            type="text"
-            required
-          />
-
-        </div>
-
-
-        <div class="field">
-
-          <label for="edDescription">
-            Description
-          </label>
-
-          <textarea
-            class="input"
-            id="edDescription"
-            rows="3"
-          ></textarea>
-
-        </div>
-
-
-        <div
-          style="
-            display:flex;
-            justify-content:flex-end;
-            gap:10px;
-            margin-top:20px;
-          "
-        >
-
-          <button
-            type="button"
-            class="btn btn-ghost"
-            onclick="closeModal('editDeptModal')"
-          >
-            Cancel
-          </button>
-
-          <button
-            type="submit"
-            class="btn btn-primary"
-          >
-            Save Changes
-          </button>
-
-        </div>
-
-      </form>
-
-    </div>
-
-  </div>
-
 
   <script src="../js/data.js"></script>
   <script src="../js/guard.js"></script>
   <script src="../js/render-helpers.js"></script>
-  <script src="../js/modal.js"></script>
-  <script src="../js/pages/departments.js"></script>
+  <script src="../js/pages/add-department.js"></script>
 
 </body>
 </html>

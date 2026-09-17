@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>MediQueue — Departments</title>
+  <title>MediQueue — Add New Clinic</title>
 
   <link
     rel="icon"
@@ -48,7 +48,7 @@
           Dashboard
         </a>
 
-        <a class="nav-item" href="clinics.html">
+        <a class="nav-item active" href="clinics.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="4" y="2" width="16" height="20" rx="1"/>
             <path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01"/>
@@ -56,7 +56,7 @@
           Clinics
         </a>
 
-        <a class="nav-item active" href="departments.html">
+        <a class="nav-item" href="departments.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="4" y="2" width="16" height="20" rx="1"/>
             <path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/>
@@ -92,7 +92,6 @@
       </a>
 
     </div>
-
 
     <!-- MAIN -->
     <div class="main">
@@ -134,84 +133,142 @@
 
       </div>
 
-
       <!-- CONTENT -->
       <div class="content">
 
+        <!-- PAGE HEADER -->
         <div class="page-header">
 
           <div>
 
             <h1 class="page-title font-display">
-              Departments
+              Add New Clinic
             </h1>
 
-            <!-- CLICKABLE BREADCRUMB -->
             <div class="page-sub">
 
-              <a
-                href="admin-dashboard.html"
-                class="breadcrumb-link"
-              >
+              <a href="admin-dashboard.html" class="breadcrumb-link">
                 Dashboard
               </a>
 
               <span> &gt; </span>
 
+              <a href="clinics.html" class="breadcrumb-link">
+                Clinics
+              </a>
+
+              <span> &gt; </span>
+
               <span>
-                Departments
+                Add New Clinic
               </span>
 
             </div>
 
           </div>
 
-
-          <!-- SEPARATE ADD DEPARTMENT PAGE -->
-          <a
-            href="add-department.html"
-            class="btn btn-gold"
-          >
-            + Add New Department
-          </a>
-
         </div>
 
+        <!-- ADD CLINIC FORM -->
+        <div class="panel add-clinic-panel">
 
-        <!-- DEPARTMENTS TABLE -->
-        <div class="panel">
+          <div class="add-clinic-heading">
 
-          <div class="table-scroll">
+            <div class="add-clinic-icon">
+              <svg
+                width="34"
+                height="34"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path d="M3 21h18"/>
+                <path d="M5 21V7l7-4 7 4v14"/>
+                <path d="M9 10h6"/>
+                <path d="M12 7v6"/>
+              </svg>
+            </div>
 
-            <table>
+            <h2 class="font-display">
+              Create a New Clinic
+            </h2>
 
-              <thead>
-                <tr>
-                  <th>Department Name</th>
-                  <th>Department ID</th>
-                  <th>Description</th>
-                  <th>Date Created</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody id="departmentsBody"></tbody>
-
-            </table>
+            <p>
+              Enter the details of the clinic
+            </p>
 
           </div>
 
+          <form id="addClinicPageForm" class="add-clinic-form">
 
-          <div
-            id="departmentsCount"
-            style="
-              text-align:center;
-              padding:14px;
-              font-size:12.5px;
-              font-weight:600;
-              color:var(--slate);
-            "
-          ></div>
+            <div class="clinic-form-row">
+
+              <label for="clinicName">
+                Clinic Name
+              </label>
+
+              <input
+                class="input"
+                type="text"
+                id="clinicName"
+                placeholder="Enter clinic name"
+                required
+              />
+
+            </div>
+
+            <div class="clinic-form-row">
+
+              <label for="clinicLocation">
+                Location
+              </label>
+
+              <input
+                class="input"
+                type="text"
+                id="clinicLocation"
+                placeholder="Enter clinic location"
+                required
+              />
+
+            </div>
+
+            <div class="clinic-form-row">
+
+              <label for="clinicContact">
+                Contact Number
+              </label>
+
+              <input
+                class="input"
+                type="text"
+                id="clinicContact"
+                placeholder="Enter contact number"
+                required
+              />
+
+            </div>
+
+            <div class="add-clinic-actions">
+
+              <a
+                href="clinics.html"
+                class="btn btn-ghost"
+              >
+                Cancel
+              </a>
+
+              <button
+                type="submit"
+                class="btn btn-gold"
+              >
+                Save Clinic
+              </button>
+
+            </div>
+
+          </form>
 
         </div>
 
@@ -220,127 +277,11 @@
     </div>
 
   </div>
-
-
-  <!-- EDIT DEPARTMENT MODAL -->
-  <div
-    class="modal-overlay"
-    id="editDeptModal"
-    style="display:none;"
-  >
-
-    <div class="modal-box">
-
-      <div class="modal-head">
-
-        <h2 class="modal-title">
-          Edit Department
-        </h2>
-
-        <button
-          class="modal-close"
-          type="button"
-          onclick="closeModal('editDeptModal')"
-        >
-          ✕
-        </button>
-
-      </div>
-
-
-      <form id="editDeptForm">
-
-        <input
-          type="hidden"
-          id="edIndex"
-        />
-
-
-        <div class="field">
-
-          <label for="edId">
-            Department ID
-          </label>
-
-          <input
-            class="input"
-            id="edId"
-            type="text"
-            required
-          />
-
-        </div>
-
-
-        <div class="field">
-
-          <label for="edName">
-            Department Name
-          </label>
-
-          <input
-            class="input"
-            id="edName"
-            type="text"
-            required
-          />
-
-        </div>
-
-
-        <div class="field">
-
-          <label for="edDescription">
-            Description
-          </label>
-
-          <textarea
-            class="input"
-            id="edDescription"
-            rows="3"
-          ></textarea>
-
-        </div>
-
-
-        <div
-          style="
-            display:flex;
-            justify-content:flex-end;
-            gap:10px;
-            margin-top:20px;
-          "
-        >
-
-          <button
-            type="button"
-            class="btn btn-ghost"
-            onclick="closeModal('editDeptModal')"
-          >
-            Cancel
-          </button>
-
-          <button
-            type="submit"
-            class="btn btn-primary"
-          >
-            Save Changes
-          </button>
-
-        </div>
-
-      </form>
-
-    </div>
-
-  </div>
-
 
   <script src="../js/data.js"></script>
   <script src="../js/guard.js"></script>
   <script src="../js/render-helpers.js"></script>
-  <script src="../js/modal.js"></script>
-  <script src="../js/pages/departments.js"></script>
+  <script src="../js/pages/add-clinic.js"></script>
 
 </body>
 </html>

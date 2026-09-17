@@ -4,26 +4,132 @@ function renderAdminDashboard() {
   const data = getData();
   const profile = data.profiles.ADMIN;
 
-  document.getElementById("welcomeMsg").textContent = `Welcome, ${profile.name}`;
-  document.querySelector(".user-name").textContent = profile.name;
-  document.getElementById("dateLabel").textContent = new Date().toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  document.getElementById("welcomeMsg").textContent =
+    `Welcome, ${profile.name}`;
 
+  document.querySelector(".user-name").textContent =
+    profile.name;
+
+  document.getElementById("dateLabel").textContent =
+    new Date().toLocaleDateString("en-ZA", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+
+  // Summary cards
   document.getElementById("statCards").innerHTML = `
-    <div class="card"><div class="card-label">Total clinics</div><div class="card-value font-display">${data.clinics.length}</div></div>
-    <div class="card"><div class="card-label">Departments</div><div class="card-value font-display">${DEPARTMENTS.length}</div></div>
-    <div class="card"><div class="card-label">Active users</div><div class="card-value font-display">${data.users.filter(u => u.status === "Active").length}</div></div>
-    <div class="card"><div class="card-label">System status</div><div class="card-value font-display" style="color:var(--teal);font-size:20px;">Operational</div></div>
+    <div class="admin-stat-card">
+
+      <div class="admin-stat-icon">
+        🏥
+      </div>
+
+      <div>
+        <div class="admin-stat-label">
+          Total Clinics
+        </div>
+
+        <div class="admin-stat-value">
+          ${data.clinics.length}
+        </div>
+
+        <div class="admin-stat-sub">
+          Active clinic(s)
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="admin-stat-card">
+
+      <div class="admin-stat-icon">
+        👥
+      </div>
+
+      <div>
+        <div class="admin-stat-label">
+          Total Departments
+        </div>
+
+        <div class="admin-stat-value">
+          ${data.departments.length}
+        </div>
+
+        <div class="admin-stat-sub">
+          Active department(s)
+        </div>
+      </div>
+
+    </div>
   `;
 
-  document.getElementById("usersPreview").innerHTML = data.users.slice(0, 4).map(u => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);">
-      <div><div style="font-weight:600;font-size:13.5px;">${esc(u.name)}</div><div style="font-size:12px;color:var(--slate);">${u.role}</div></div>
-      ${badge(u.status)}
-    </div>`).join("");
 
-  document.getElementById("announcements").innerHTML = data.announcements.map(a => `
-    <div style="margin-bottom:14px;"><div style="font-weight:700;font-size:13.5px;margin-bottom:2px;">${esc(a.title)}</div><div style="font-size:12.5px;color:var(--slate);">${esc(a.body)}</div></div>
-  `).join("");
+  // Recent activity
+  const activities = [
+    {
+      title: "Clinic created",
+      description: "Khayelitsha clinic was created successfully",
+      date: "27 May 2025"
+    },
+    {
+      title: "Department added",
+      description: "General department was added",
+      date: "27 May 2025"
+    },
+    {
+      title: "Department added",
+      description: "Pediatrics department was added",
+      date: "27 May 2025"
+    },
+    {
+      title: "Department added",
+      description: "Chronic Disease department was added",
+      date: "27 May 2025"
+    },
+    {
+      title: "Department added",
+      description: "Dental department was added",
+      date: "27 May 2025"
+    },
+    {
+      title: "Department added",
+      description: "Maternity department was added",
+      date: "27 May 2025"
+    }
+  ];
+
+  document.getElementById("recentActivity").innerHTML =
+    activities.map(activity => `
+
+      <div class="activity-item">
+
+        <div class="activity-dot"></div>
+
+        <div class="activity-content">
+
+          <div class="activity-title">
+            ${activity.title}
+          </div>
+
+          <div class="activity-description">
+            ${activity.description}
+          </div>
+
+        </div>
+
+        <div class="activity-date">
+          ${activity.date}
+        </div>
+
+      </div>
+
+    `).join("");
 }
 
-document.addEventListener("DOMContentLoaded", renderAdminDashboard);
+document.addEventListener(
+  "DOMContentLoaded",
+  renderAdminDashboard
+);

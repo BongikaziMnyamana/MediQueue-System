@@ -1,103 +1,465 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MediQueue — Administrator Dashboard</title>
-<link rel="icon" href="../assets/images/logo-icon.png" type="image/png" />
-<link rel="stylesheet" href="../css/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>MediQueue — Administrator Dashboard</title>
+
+  <link
+    rel="icon"
+    href="../assets/images/logo-icon.png"
+    type="image/png"
+  />
+
+  <link
+    rel="stylesheet"
+    href="../css/styles.css"
+  />
 </head>
+
 <body>
+
   <div class="app-shell">
+
+    <!-- SIDEBAR -->
     <div class="sidebar">
+
       <div class="sidebar-brand">
-        <img src="../assets/images/logo-icon.png" alt="MediQueue" />
-        <div class="sidebar-brand-name font-display">MediQueue</div>
+        <img
+          src="../assets/images/logo-icon.png"
+          alt="MediQueue"
+        />
+
+        <div class="sidebar-brand-name font-display">
+          MediQueue
+        </div>
       </div>
+
       <div class="nav">
-        <a class="nav-item active" href="admin-dashboard.html">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+
+        <a
+          class="nav-item active"
+          href="admin-dashboard.html"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="9" rx="1"/>
+            <rect x="14" y="3" width="7" height="5" rx="1"/>
+            <rect x="14" y="12" width="7" height="9" rx="1"/>
+            <rect x="3" y="16" width="7" height="5" rx="1"/>
+          </svg>
+
           Dashboard
         </a>
-        <a class="nav-item" href="clinics.html">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01"/></svg>
+
+
+        <a
+          class="nav-item"
+          href="clinics.html"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="4" y="2" width="16" height="20" rx="1"/>
+            <path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01"/>
+          </svg>
+
           Clinics
         </a>
-        <a class="nav-item" href="departments.html">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg>
+
+
+        <a
+          class="nav-item"
+          href="departments.html"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="4" y="2" width="16" height="20" rx="1"/>
+            <path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/>
+          </svg>
+
           Departments
         </a>
-        <a class="nav-item" href="users.html">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h3"/><circle cx="18" cy="17" r="3"/></svg>
+
+
+        <a
+          class="nav-item"
+          href="users.html"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M2 21v-2a4 4 0 0 1 4-4h3"/>
+            <circle cx="18" cy="17" r="3"/>
+          </svg>
+
           Users
         </a>
-        <a class="nav-item" href="reports.html">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>
+
+
+        <a
+          class="nav-item"
+          href="reports.html"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M3 3v18h18"/>
+            <path d="M18 17V9M13 17V5M8 17v-4"/>
+          </svg>
+
           Reports
         </a>
+
       </div>
-      <a class="nav-logout" href="index.html" id="logoutLink">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+
+
+      <a
+        class="nav-logout"
+        href="index.html"
+        id="logoutLink"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <path d="M16 17l5-5-5-5M21 12H9"/>
+        </svg>
+
         Logout
       </a>
+
     </div>
+
+
+
+    <!-- MAIN AREA -->
     <div class="main">
+
+      <!-- TOP BAR -->
       <div class="topbar">
-        <span class="role-badge">Administrator dashboard</span>
+
+        <span class="role-badge">
+          Administrator dashboard
+        </span>
+
+
         <div class="topbar-right">
+
           <div class="bell-wrap">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+
             <div class="bell-dot"></div>
+
           </div>
+
+
           <div class="user-block">
-            <div class="avatar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 12 0v2"/></svg></div>
-            <div><div class="user-name"></div><div class="user-role">Administrator</div></div>
+
+            <div class="avatar">
+
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 21v-2a6 6 0 0 1 12 0v2"/>
+              </svg>
+
+            </div>
+
+
+            <div>
+
+              <div class="user-name"></div>
+
+              <div class="user-role">
+                Administrator
+              </div>
+
+            </div>
+
           </div>
+
         </div>
+
       </div>
+
+
+
+      <!-- DASHBOARD CONTENT -->
       <div class="content">
+
+        <!-- WELCOME AREA -->
         <div class="page-header">
-          <div><h1 class="page-title font-display" id="welcomeMsg">Welcome</h1><div class="page-sub">Administrator</div></div>
-          <div class="badge badge-teal" id="dateLabel" style="font-size:13px;padding:8px 14px;"></div>
-        </div>
 
-        <div class="cards-row" id="statCards"></div>
+          <div>
 
-        <div class="page-header" style="margin-top:26px;margin-bottom:12px;">
-          <div><h1 class="page-title font-display" style="font-size:16px;">Quick actions</h1></div>
-        </div>
-        <div class="cards-row">
-          <a href="clinics.html" class="card" style="cursor:pointer;text-decoration:none;color:inherit;display:block;">
-            <div class="card-label">Manage clinics</div>
-            <div style="font-size:13px;color:var(--slate);margin-top:6px;">Add or update clinic locations</div>
-          </a>
-          <a href="departments.html" class="card" style="cursor:pointer;text-decoration:none;color:inherit;display:block;">
-            <div class="card-label">Manage departments</div>
-            <div style="font-size:13px;color:var(--slate);margin-top:6px;">Add or update departments</div>
-          </a>
-          <a href="users.html" class="card" style="cursor:pointer;text-decoration:none;color:inherit;display:block;">
-            <div class="card-label">Manage users</div>
-            <div style="font-size:13px;color:var(--slate);margin-top:6px;">Add or update staff accounts</div>
-          </a>
-        </div>
+            <h1
+              class="page-title font-display"
+              id="welcomeMsg"
+            >
+              Welcome
+            </h1>
 
-        <div class="grid-2" style="margin-top:20px;">
-          <div class="panel">
-            <div class="panel-head"><div class="panel-title">Staff accounts</div><a href="users.html" class="link" style="font-size:12.5px;">View all</a></div>
-            <div id="usersPreview"></div>
+            <div class="page-sub">
+              Administrator
+            </div>
+
           </div>
-          <div class="panel">
-            <div class="panel-head"><div class="panel-title">System announcements</div></div>
-            <div id="announcements" style="padding:16px 20px;"></div>
-          </div>
+
+
+          <div
+            class="badge badge-teal"
+            id="dateLabel"
+            style="font-size:13px; padding:8px 14px;"
+          ></div>
+
         </div>
+
+
+
+        <!-- SUMMARY CARDS -->
+        <div
+          class="admin-summary"
+          id="statCards"
+        ></div>
+
+
+
+        <!-- MAIN DASHBOARD GRID -->
+        <div class="admin-dashboard-grid">
+
+
+          <!-- RECENT ACTIVITY -->
+          <div class="panel admin-activity-panel">
+
+            <div class="panel-head">
+
+              <div class="panel-title">
+                Recent Activity
+              </div>
+
+            </div>
+
+
+            <div
+              id="recentActivity"
+              class="recent-activity-list"
+            ></div>
+
+          </div>
+
+
+
+          <!-- RIGHT COLUMN -->
+          <div class="admin-side-column">
+
+
+            <!-- QUICK ACTIONS -->
+            <div class="panel">
+
+              <div class="panel-head">
+
+                <div>
+
+                  <div class="panel-title">
+                    Quick Actions
+                  </div>
+
+                  <div class="panel-subtitle">
+                    Manage clinics and departments
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="quick-actions-box">
+
+
+                <!-- ADD CLINIC -->
+                <a
+                  href="clinics.html"
+                  class="admin-action-btn admin-action-gold"
+                >
+
+                  <span class="action-icon">
+                    +
+                  </span>
+
+
+                  <div>
+
+                    <div class="action-title">
+                      Add Clinic
+                    </div>
+
+                    <div class="action-description">
+                      Create a new clinic
+                    </div>
+
+                  </div>
+
+                </a>
+
+
+
+                <!-- ADD DEPARTMENT -->
+                <a
+                  href="departments.html"
+                  class="admin-action-btn admin-action-teal"
+                >
+
+                  <span class="action-icon">
+                    +
+                  </span>
+
+
+                  <div>
+
+                    <div class="action-title">
+                      Add Department
+                    </div>
+
+                    <div class="action-description">
+                      Create a new department
+                    </div>
+
+                  </div>
+
+                </a>
+
+
+              </div>
+
+            </div>
+
+
+
+            <!-- SYSTEM INFORMATION -->
+            <div class="system-info-card">
+
+              <div class="system-info-icon">
+
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <rect
+                    x="3"
+                    y="4"
+                    width="18"
+                    height="16"
+                    rx="2"
+                  />
+
+                  <circle
+                    cx="9"
+                    cy="10"
+                    r="2"
+                  />
+
+                  <path
+                    d="M6 16c.8-2 2-3 3-3s2.2 1 3 3"
+                  />
+
+                  <path
+                    d="M15 9h3M15 13h3"
+                  />
+
+                </svg>
+
+              </div>
+
+
+              <div>
+
+                <div class="system-info-title">
+                  System Information
+                </div>
+
+                <div class="system-info-text">
+                  You are logged in as a System Administrator.
+                  You have full access to manage clinics and departments.
+                </div>
+
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
       </div>
+
     </div>
+
   </div>
 
+
+
+  <!-- JAVASCRIPT -->
   <script src="../js/data.js"></script>
   <script src="../js/guard.js"></script>
   <script src="../js/render-helpers.js"></script>
   <script src="../js/pages/admin-dashboard.js"></script>
+
 </body>
 </html>

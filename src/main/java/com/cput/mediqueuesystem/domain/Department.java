@@ -3,6 +3,9 @@ package com.cput.mediqueuesystem.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,6 +28,7 @@ public class Department {
 
     // Primary Key
     @Id
+    @JsonProperty("departmentId")
     @Column(name = "department_id")
     private String departmentId;
 
@@ -37,7 +41,8 @@ public class Department {
     private String description;
 
     // One department can have many staff members
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Staff> staffMembers = new ArrayList<>();
 
     // Default constructor required by JPA

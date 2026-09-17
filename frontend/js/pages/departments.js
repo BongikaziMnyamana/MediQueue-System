@@ -1,78 +1,168 @@
 // js/pages/departments.js
 
 function renderDepartments() {
+
   const data = getData();
-  document.getElementById("deptGrid").innerHTML = data.departments.map((d, i) => `
-    <div class="dept-card">
-      <div class="dept-card-head">
-        <div style="font-weight:700;font-size:15.5px;">${esc(d.name)}</div>
-        <div class="action-cell">
-          <button class="btn btn-ghost btn-sm" onclick="openEditDept(${i})">Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteDept(${i})">Delete</button>
-        </div>
-      </div>
-      <div class="dept-stats">
-        <div><div class="dept-stat-num">${d.doctors}</div><div class="dept-stat-label">Doctors on duty</div></div>
-        <div><div class="dept-stat-num">${d.today}</div><div class="dept-stat-label">Patients today</div></div>
-        <div><div class="dept-stat-num" style="color:var(--gold)">${d.avgWait}</div><div class="dept-stat-label">Avg. wait</div></div>
-      </div>
-    </div>
-  `).join("");
+
+  const departments = data.departments;
+
+
+  document.getElementById("departmentsCount").textContent =
+    `Showing ${departments.length} of ${departments.length} departments`;
+
+
+  document.getElementById("departmentsBody").innerHTML =
+    departments.map((department, index) => `
+
+      <tr>
+
+        <td>
+          ${esc(department.name)}
+        </td>
+
+        <td>
+          ${esc(department.id || `DEP-${String(index + 1).padStart(3, "0")}`)}
+        </td>
+
+        <td>
+          ${esc(department.description || "-")}
+        </td>
+
+        <td>
+          ${department.dateCreated || "27 May 2025"}
+        </td>
+
+        <td class="action-cell">
+
+          <button
+            class="btn btn-ghost btn-sm"
+            onclick="openEditDept(${index})"
+          >
+            Edit
+          </button>
+
+          <button
+            class="btn btn-danger btn-sm"
+            onclick="deleteDept(${index})"
+          >
+            Delete
+          </button>
+
+        </td>
+
+      </tr>
+
+    `).join("");
 }
 
+
 function openEditDept(index) {
+
   const data = getData();
-  const d = data.departments[index];
-  if (!d) return;
+
+  const department = data.departments[index];
+
+  if (!department) return;
+
+
   document.getElementById("edIndex").value = index;
-  document.getElementById("edName").value = d.name;
-  document.getElementById("edDoctors").value = d.doctors;
-  document.getElementById("edToday").value = d.today;
-  document.getElementById("edAvgWait").value = d.avgWait;
+
+  document.getElementById("edId").value =
+    department.id ||
+    `DEP-${String(index + 1).padStart(3, "0")}`;
+
+  document.getElementById("edName").value =
+    department.name;
+
+  document.getElementById("edDescription").value =
+    department.description || "";
+
+
   openModal("editDeptModal");
 }
 
+
 function deleteDept(index) {
+
   const data = getData();
-  const d = data.departments[index];
-  if (!d) return;
-  if (!confirm(`Remove ${d.name}? This can't be undone.`)) return;
+
+  const department = data.departments[index];
+
+  if (!department) return;
+
+
+  const confirmed = confirm(
+    `Are you sure you want to delete ${department.name}?`
+  );
+
+
+  if (!confirmed) return;
+
+
   data.departments.splice(index, 1);
+
   setData(data);
+
   renderDepartments();
 }
 
+
 document.addEventListener("DOMContentLoaded", () => {
+
   renderDepartments();
 
-  document.getElementById("addDeptForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const data = getData();
-    data.departments.push({
-      name: document.getElementById("adName").value.trim(),
-      doctors: Number(document.getElementById("adDoctors").value) || 0,
-      today: Number(document.getElementById("adToday").value) || 0,
-      avgWait: document.getElementById("adAvgWait").value.trim(),
-    });
-    setData(data);
-    document.getElementById("addDeptForm").reset();
-    closeModal("addDeptModal");
-    renderDepartments();
-  });
 
-  document.getElementById("editDeptForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const data = getData();
-    const index = Number(document.getElementById("edIndex").value);
-    if (!data.departments[index]) return;
-    data.departments[index] = {
-      name: document.getElementById("edName").value.trim(),
-      doctors: Number(document.getElementById("edDoctors").value) || 0,
-      today: Number(document.getElementById("edToday").value) || 0,
-      avgWait: document.getElementById("edAvgWait").value.trim(),
-    };
-    setData(data);
-    closeModal("editDeptModal");
-    renderDepartments();
-  });
+  document
+    .getElementById("editDeptForm")
+    .addEventListener("submit", (event) => {
+
+      event.preventDefault();
+
+
+      const data = getData();
+
+      const index =
+        Number(
+          document
+            .getElementById("edIndex")
+            .value
+        );
+
+
+      if (!data.departments[index]) return;
+
+
+      data.departments[index] = {
+
+        ...data.departments[index],
+
+        id:
+          document
+            .getElementById("edId")
+            .value
+            .trim(),
+
+        name:
+          document
+            .getElementById("edName")
+            .value
+            .trim(),
+
+        description:
+          document
+            .getElementById("edDescription")
+            .value
+            .trim()
+
+      };
+
+
+      setData(data);
+
+      closeModal("editDeptModal");
+
+      renderDepartments();
+
+    });
+
 });

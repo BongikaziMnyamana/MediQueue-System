@@ -1,7 +1,18 @@
 package com.cput.mediqueuesystem.domain;
 
-import jakarta.persistence.*;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "roles")
@@ -18,31 +29,43 @@ public class Role {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "role")
-    private Set<User> users;
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<User> users = new ArrayList<>();
 
-    public Role() {}
-
-    public Role(String roleName, String description) {
-        this.roleName = roleName;
-        this.description = description;
+    public Role() {
     }
 
-    // Private constructor for Builder
     private Role(Builder builder) {
         this.roleId = builder.roleId;
         this.roleName = builder.roleName;
         this.description = builder.description;
+        this.users = builder.users;
     }
 
-    public Long getRoleId() { return roleId; }
-    public void setRoleId(Long roleId) { this.roleId = roleId; }
-    public String getRoleName() { return roleName; }
-    public void setRoleName(String roleName) { this.roleName = roleName; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public Set<User> getUsers() { return users; }
-    public void setUsers(Set<User> users) { this.users = users; }
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @Override
     public String toString() {
@@ -53,11 +76,12 @@ public class Role {
                 '}';
     }
 
-    // ===== BUILDER PATTERN =====
     public static class Builder {
+
         private Long roleId;
         private String roleName;
         private String description;
+        private List<User> users = new ArrayList<>();
 
         public Builder setRoleId(Long roleId) {
             this.roleId = roleId;
@@ -71,6 +95,19 @@ public class Role {
 
         public Builder setDescription(String description) {
             this.description = description;
+            return this;
+        }
+
+        public Builder setUsers(List<User> users) {
+            this.users = users;
+            return this;
+        }
+
+        public Builder copy(Role role) {
+            this.roleId = role.roleId;
+            this.roleName = role.roleName;
+            this.description = role.description;
+            this.users = role.users;
             return this;
         }
 
