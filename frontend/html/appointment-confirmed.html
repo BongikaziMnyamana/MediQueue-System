@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>MediQueue — Appointment Confirmed</title>
+
+  <link
+    rel="icon"
+    href="../assets/images/logo-icon.png"
+    type="image/png"
+  />
+
+  <link
+    rel="stylesheet"
+    href="../css/styles.css"
+  />
+</head>
+
+<body>
+
+  <main class="appointment-confirmed-page">
+
+    <div class="appointment-confirmed-wrapper">
+
+      <!-- Success icon -->
+      <div class="appointment-confirmed-icon">
+
+        <svg
+          width="58"
+          height="58"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="m8 12 2.5 2.5L16 9"></path>
+        </svg>
+
+      </div>
+
+
+      <!-- Success title -->
+      <h1 class="appointment-confirmed-title font-display">
+        Appointment Confirmed!
+      </h1>
+
+
+      <!-- Main appointment card -->
+      <section class="appointment-confirmed-card">
+
+        <!-- Header -->
+        <div class="appointment-confirmed-header">
+
+          <div>
+
+            <div class="appointment-confirmed-brand">
+
+              <img
+                src="../assets/images/logo-icon.png"
+                alt="MediQueue logo"
+              />
+
+              <div>
+
+                <div class="appointment-confirmed-brand-name font-display">
+                  MediQueue
+                </div>
+
+                <div
+                  class="appointment-confirmed-clinic"
+                  id="confirmedClinic"
+                >
+                  District Six Clinic
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="appointment-booking-number">
+
+            <span>
+              Booking ID
+            </span>
+
+            <strong id="confirmedBookingId">
+              APT-2026-0458
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- Important reminders -->
+        <div class="appointment-reminder-box">
+
+          <div class="appointment-reminder-title">
+            Important Reminders
+          </div>
+
+          <ul>
+            <li>
+              Please arrive at least 15 minutes before your appointment.
+            </li>
+
+            <li>
+              Bring your identification and any relevant medical documents.
+            </li>
+
+            <li>
+              Keep your queue number available when arriving at the clinic.
+            </li>
+          </ul>
+
+        </div>
+
+
+        <!-- Queue number -->
+        <div class="appointment-queue-card">
+
+          <div>
+
+            <div class="appointment-queue-label">
+              Queue Number
+            </div>
+
+            <div
+              class="appointment-queue-number"
+              id="confirmedQueueNumber"
+            >
+              A-023
+            </div>
+
+          </div>
+
+
+          <div class="appointment-queue-icon">
+
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M12 7v5l3 2"></path>
+            </svg>
+
+          </div>
+
+        </div>
+
+
+        <!-- Appointment details -->
+        <div class="appointment-details-section">
+
+          <h2>
+            Appointment Details
+          </h2>
+
+
+          <div class="appointment-details-grid">
+
+            <!-- Patient Name -->
+            <div class="appointment-detail-item">
+
+              <span class="appointment-detail-label">
+                Patient Name
+              </span>
+
+              <strong id="confirmedPatientName">
+                Charmaine Dlamini
+              </strong>
+
+            </div>
+
+
+            <!-- Patient ID -->
+            <div class="appointment-detail-item">
+
+              <span class="appointment-detail-label">
+                ID Number
+              </span>
+
+              <strong id="confirmedPatientId">
+                Not provided
+              </strong>
+
+            </div>
+
+
+            <!-- Date -->
+            <div class="appointment-detail-item">
+
+              <span class="appointment-detail-label">
+                Date
+              </span>
+
+              <strong id="confirmedDate">
+                May 13, 2026
+              </strong>
+
+            </div>
+
+
+            <!-- Time -->
+            <div class="appointment-detail-item">
+
+              <span class="appointment-detail-label">
+                Time
+              </span>
+
+              <strong id="confirmedTime">
+                10:00 AM
+              </strong>
+
+            </div>
+
+
+            <!-- Location -->
+            <div class="appointment-detail-item">
+
+              <span class="appointment-detail-label">
+                Location
+              </span>
+
+              <strong id="confirmedLocation">
+                District Six Clinic
+              </strong>
+
+            </div>
+
+
+            <!-- Department -->
+            <div class="appointment-detail-item">
+
+              <span class="appointment-detail-label">
+                Department
+              </span>
+
+              <strong id="confirmedDepartment">
+                General Medicine
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <!-- Reason -->
+          <div class="appointment-reason-box">
+
+            <span class="appointment-detail-label">
+              Reason for Visit
+            </span>
+
+            <p id="confirmedReason">
+              General checkup
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- Update/Delete -->
+        <div class="appointment-confirmed-actions">
+
+          <a
+            href="book-appointment.html"
+            class="btn btn-ghost"
+          >
+            Update
+          </a>
+
+          <button
+            type="button"
+            class="btn appointment-delete-btn"
+            id="deleteAppointmentBtn"
+          >
+            Delete
+          </button>
+
+        </div>
+
+
+        <!-- Confirmation timestamp -->
+        <div
+          class="appointment-confirmed-time"
+          id="confirmedTimestamp"
+        >
+          Booking confirmed
+        </div>
+
+      </section>
+
+
+      <!-- Dashboard button -->
+      <a
+        href="patient-dashboard.html"
+        class="btn btn-primary appointment-dashboard-btn"
+      >
+        Go to Dashboard
+      </a>
+
+    </div>
+
+  </main>
+
+
+  <script src="../js/pages/appointment-confirmed.js"></script>
+
+</body>
+</html>

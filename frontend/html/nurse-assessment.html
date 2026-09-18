@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>MediQueue — Nurse Assessment</title>
+
+  <link
+    rel="icon"
+    href="../assets/images/logo-icon.png"
+    type="image/png"
+  />
+
+  <link
+    rel="stylesheet"
+    href="../css/styles.css"
+  />
+</head>
+
+<body>
+
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <div class="sidebar-brand">
+
+        <img
+          src="../assets/images/logo-icon.png"
+          alt="MediQueue"
+        />
+
+        <div class="sidebar-brand-name font-display">
+          MediQueue
+        </div>
+
+      </div>
+
+
+      <div class="nav">
+
+        <a
+          class="nav-item"
+          href="nurse-dashboard.html"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="9" rx="1"/>
+            <rect x="14" y="3" width="7" height="5" rx="1"/>
+            <rect x="14" y="12" width="7" height="9" rx="1"/>
+            <rect x="3" y="16" width="7" height="5" rx="1"/>
+          </svg>
+
+          Dashboard
+        </a>
+
+
+        <a
+          class="nav-item active"
+          href="nurse-queue.html"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M3 21v-2a6 6 0 0 1 12 0v2"/>
+            <path d="M18 8v6"/>
+            <path d="M15 11h6"/>
+          </svg>
+
+          Patient Queue
+        </a>
+
+
+        <a
+          class="nav-item"
+          href="nurse-visits.html"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M9 3h6"/>
+            <path d="M10 8h4"/>
+            <rect x="5" y="5" width="14" height="16" rx="2"/>
+            <path d="M9 13h6"/>
+            <path d="M12 10v6"/>
+          </svg>
+
+          Visits / Vitals
+        </a>
+
+      </div>
+
+
+      <!-- LOGOUT -->
+      <a
+        class="nav-logout"
+        href="staff-login.html"
+        id="logoutLink"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <path d="M16 17l5-5-5-5M21 12H9"/>
+        </svg>
+
+        Logout
+      </a>
+
+    </div>
+
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- TOPBAR -->
+      <div class="topbar">
+
+        <span class="role-badge">
+          Nurse dashboard
+        </span>
+
+
+        <div class="topbar-right">
+
+          <div class="bell-wrap">
+
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+
+            <div class="bell-dot"></div>
+
+          </div>
+
+
+          <div class="user-block">
+
+            <div class="avatar">
+
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 21v-2a6 6 0 0 1 12 0v2"/>
+              </svg>
+
+            </div>
+
+
+            <div>
+
+              <div class="user-name">
+              </div>
+
+              <div class="user-role">
+                Nurse
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- CONTENT -->
+      <div class="content">
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+
+          <div>
+
+            <h1 class="page-title font-display">
+              Nurse Assessment
+            </h1>
+
+            <div class="page-sub">
+              Record vital signs and prepare the patient for consultation
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- BREADCRUMB -->
+        <div
+          style="
+            margin-top:-12px;
+            margin-bottom:22px;
+            font-size:12px;
+            color:var(--slate);
+          "
+        >
+
+          <a
+            href="nurse-dashboard.html"
+            class="breadcrumb-link"
+          >
+            Dashboard
+          </a>
+
+          <span style="margin:0 7px;">
+            &gt;
+          </span>
+
+          <a
+            href="nurse-queue.html"
+            class="breadcrumb-link"
+          >
+            Patient Queue
+          </a>
+
+          <span style="margin:0 7px;">
+            &gt;
+          </span>
+
+          <span>
+            Nurse Assessment
+          </span>
+
+        </div>
+
+
+        <!-- PATIENT INFORMATION -->
+        <div
+          class="panel"
+          style="margin-bottom:24px;"
+        >
+
+          <div class="panel-head">
+
+            <div>
+
+              <div class="panel-title">
+                Patient Information
+              </div>
+
+              <div class="panel-subtitle">
+                Selected patient details
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div
+            style="
+              padding:20px;
+              display:grid;
+              grid-template-columns:repeat(4, 1fr);
+              gap:20px;
+            "
+          >
+
+            <div>
+              <div class="card-label">
+                Patient Name
+              </div>
+
+              <div
+                id="patientName"
+                style="
+                  margin-top:5px;
+                  font-size:14px;
+                  font-weight:700;
+                  color:var(--ink);
+                "
+              >
+                -
+              </div>
+            </div>
+
+
+            <div>
+              <div class="card-label">
+                Patient ID
+              </div>
+
+              <div
+                id="patientId"
+                style="
+                  margin-top:5px;
+                  font-size:14px;
+                  font-weight:700;
+                  color:var(--ink);
+                "
+              >
+                -
+              </div>
+            </div>
+
+
+            <div>
+              <div class="card-label">
+                Department
+              </div>
+
+              <div
+                id="patientDepartment"
+                style="
+                  margin-top:5px;
+                  font-size:14px;
+                  font-weight:700;
+                  color:var(--ink);
+                "
+              >
+                -
+              </div>
+            </div>
+
+
+            <div>
+              <div class="card-label">
+                Queue Number
+              </div>
+
+              <div
+                id="patientQueueNumber"
+                style="
+                  margin-top:5px;
+                  font-size:14px;
+                  font-weight:700;
+                  color:var(--teal);
+                "
+              >
+                -
+              </div>
+            </div>
+
+
+            <div>
+              <div class="card-label">
+                Age
+              </div>
+
+              <div
+                id="patientAge"
+                style="
+                  margin-top:5px;
+                  font-size:14px;
+                  font-weight:700;
+                  color:var(--ink);
+                "
+              >
+                -
+              </div>
+            </div>
+
+
+            <div>
+              <div class="card-label">
+                Gender
+              </div>
+
+              <div
+                id="patientGender"
+                style="
+                  margin-top:5px;
+                  font-size:14px;
+                  font-weight:700;
+                  color:var(--ink);
+                "
+              >
+                -
+              </div>
+            </div>
+
+
+            <div>
+              <div class="card-label">
+                Contact Number
+              </div>
+
+              <div
+                id="patientPhone"
+                style="
+                  margin-top:5px;
+                  font-size:14px;
+                  font-weight:700;
+                  color:var(--ink);
+                "
+              >
+                -
+              </div>
+            </div>
+
+
+            <div>
+              <div class="card-label">
+                Status
+              </div>
+
+              <div style="margin-top:5px;">
+                <span class="badge badge-gold">
+                  Waiting
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ASSESSMENT FORM -->
+        <div class="panel">
+
+          <div class="panel-head">
+
+            <div>
+
+              <div class="panel-title">
+                Vital Signs &amp; Assessment
+              </div>
+
+              <div class="panel-subtitle">
+                Enter the patient's current measurements and notes
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <form
+            id="nurseAssessmentForm"
+            style="padding:20px;"
+          >
+
+            <!-- VITAL SIGNS GRID -->
+            <div
+              style="
+                display:grid;
+                grid-template-columns:repeat(2, 1fr);
+                gap:18px 24px;
+              "
+            >
+
+              <!-- BLOOD PRESSURE -->
+              <div class="field">
+
+                <label for="bloodPressure">
+                  Blood Pressure
+                </label>
+
+                <input
+                  class="input"
+                  type="text"
+                  id="bloodPressure"
+                  name="bloodPressure"
+                  placeholder="e.g. 120/80 mmHg"
+                  required
+                />
+
+              </div>
+
+
+              <!-- TEMPERATURE -->
+              <div class="field">
+
+                <label for="temperature">
+                  Temperature
+                </label>
+
+                <input
+                  class="input"
+                  type="number"
+                  id="temperature"
+                  name="temperature"
+                  placeholder="e.g. 36.8"
+                  step="0.1"
+                  min="30"
+                  max="45"
+                  required
+                />
+
+              </div>
+
+
+              <!-- HEART RATE -->
+              <div class="field">
+
+                <label for="heartRate">
+                  Heart Rate / Pulse
+                </label>
+
+                <input
+                  class="input"
+                  type="number"
+                  id="heartRate"
+                  name="heartRate"
+                  placeholder="e.g. 78 bpm"
+                  min="20"
+                  max="250"
+                  required
+                />
+
+              </div>
+
+
+              <!-- WEIGHT -->
+              <div class="field">
+
+                <label for="weight">
+                  Weight
+                </label>
+
+                <input
+                  class="input"
+                  type="number"
+                  id="weight"
+                  name="weight"
+                  placeholder="e.g. 68.5 kg"
+                  step="0.1"
+                  min="1"
+                  max="400"
+                  required
+                />
+
+              </div>
+
+
+              <!-- OXYGEN SATURATION -->
+              <div class="field">
+
+                <label for="oxygenSaturation">
+                  Oxygen Saturation
+                </label>
+
+                <input
+                  class="input"
+                  type="number"
+                  id="oxygenSaturation"
+                  name="oxygenSaturation"
+                  placeholder="e.g. 98%"
+                  min="50"
+                  max="100"
+                />
+
+              </div>
+
+
+              <!-- RESPIRATORY RATE -->
+              <div class="field">
+
+                <label for="respiratoryRate">
+                  Respiratory Rate
+                </label>
+
+                <input
+                  class="input"
+                  type="number"
+                  id="respiratoryRate"
+                  name="respiratoryRate"
+                  placeholder="e.g. 18 breaths/min"
+                  min="5"
+                  max="80"
+                />
+
+              </div>
+
+            </div>
+
+
+            <!-- SYMPTOMS -->
+            <div
+              class="field"
+              style="margin-top:18px;"
+            >
+
+              <label for="symptoms">
+                Symptoms / Reason for Visit
+              </label>
+
+              <textarea
+                class="input"
+                id="symptoms"
+                name="symptoms"
+                rows="4"
+                placeholder="Describe the patient's symptoms or reason for visit..."
+                style="
+                  resize:vertical;
+                  min-height:100px;
+                "
+                required
+              ></textarea>
+
+            </div>
+
+
+            <!-- NURSE NOTES -->
+            <div
+              class="field"
+              style="margin-top:18px;"
+            >
+
+              <label for="nurseNotes">
+                Nurse Notes
+              </label>
+
+              <textarea
+                class="input"
+                id="nurseNotes"
+                name="nurseNotes"
+                rows="4"
+                placeholder="Add any additional observations or notes..."
+                style="
+                  resize:vertical;
+                  min-height:100px;
+                "
+              ></textarea>
+
+            </div>
+
+
+            <!-- FORM ERROR -->
+            <div
+              id="assessmentError"
+              role="alert"
+              style="
+                display:none;
+                margin-top:16px;
+                padding:10px 12px;
+                border-radius:6px;
+                background:#FDECEC;
+                color:#B42318;
+                font-size:12px;
+              "
+            >
+            </div>
+
+
+            <!-- ACTIONS -->
+            <div
+              style="
+                display:flex;
+                justify-content:flex-end;
+                gap:12px;
+                margin-top:24px;
+                padding-top:20px;
+                border-top:1px solid var(--line);
+              "
+            >
+
+              <a
+                href="nurse-queue.html"
+                class="btn btn-ghost"
+                style="text-decoration:none;"
+              >
+                Cancel
+              </a>
+
+
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="completeAssessmentBtn"
+              >
+                Complete Assessment &amp; Send to Doctor
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- JAVASCRIPT -->
+  <script src="../js/data.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/render-helpers.js"></script>
+  <script src="../js/pages/nurse-assessment.js"></script>
+
+</body>
+</html>

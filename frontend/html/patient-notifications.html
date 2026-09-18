@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>MediQueue — Notifications</title>
+
+  <link
+    rel="icon"
+    href="../assets/images/logo-icon.png"
+    type="image/png"
+  />
+
+  <link
+    rel="stylesheet"
+    href="../css/styles.css"
+  />
+</head>
+
+<body>
+
+<!-- ================= MOBILE PATIENT HEADER ================= -->
+
+<header class="patient-mobile-header">
+
+  <div class="patient-mobile-brand">
+
+    <img
+      src="../assets/images/logo-icon.png"
+      alt="MediQueue logo"
+    />
+
+    <div>
+      <div class="patient-mobile-brand-name font-display">
+        MediQueue
+      </div>
+
+      <div class="patient-mobile-brand-label">
+        Patient Portal
+      </div>
+    </div>
+
+  </div>
+
+
+  <button
+    class="patient-menu-button"
+    id="patientMenuButton"
+    type="button"
+    aria-label="Open navigation menu"
+    aria-expanded="false"
+  >
+
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+    >
+      <line x1="4" y1="6" x2="20" y2="6"></line>
+      <line x1="4" y1="12" x2="20" y2="12"></line>
+      <line x1="4" y1="18" x2="20" y2="18"></line>
+    </svg>
+
+  </button>
+
+</header>
+
+
+<!-- ================= MOBILE OVERLAY ================= -->
+
+<div
+  class="patient-menu-overlay"
+  id="patientMenuOverlay"
+></div>
+
+
+<div class="app-shell">
+
+  <!-- ================= SIDEBAR ================= -->
+
+  <aside
+    class="sidebar patient-sidebar"
+    id="patientSidebar"
+  >
+
+    <!-- Mobile close button -->
+
+    <button
+      class="patient-menu-close"
+      id="patientMenuClose"
+      type="button"
+      aria-label="Close navigation menu"
+    >
+      ×
+    </button>
+
+
+    <div class="sidebar-brand">
+
+      <img
+        src="../assets/images/logo-icon.png"
+        alt="MediQueue logo"
+      />
+
+      <div>
+
+        <div class="sidebar-brand-name font-display">
+          MediQueue
+        </div>
+
+        <div class="patient-sidebar-label">
+          Patient Portal
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <nav class="nav">
+
+      <!-- Dashboard -->
+
+      <a
+        href="patient-dashboard.html"
+        class="nav-item"
+      >
+
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+        </svg>
+
+        Dashboard
+
+      </a>
+
+
+      <!-- Book Appointment -->
+
+      <a
+        href="book-appointment.html"
+        class="nav-item"
+      >
+
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <rect
+            x="3"
+            y="5"
+            width="18"
+            height="16"
+            rx="2"
+          ></rect>
+
+          <path d="M16 3v4"></path>
+          <path d="M8 3v4"></path>
+          <path d="M3 11h18"></path>
+          <path d="M12 14v4"></path>
+          <path d="M10 16h4"></path>
+        </svg>
+
+        Book Appointment
+
+      </a>
+
+
+      <!-- Medical Record -->
+
+      <a
+        href="patient-medical-record.html"
+        class="nav-item"
+      >
+
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+          ></path>
+
+          <path d="M14 2v6h6"></path>
+          <path d="M9 13h6"></path>
+          <path d="M9 17h6"></path>
+        </svg>
+
+        Medical Record
+
+      </a>
+
+
+      <!-- Notifications -->
+
+      <a
+        href="patient-notifications.html"
+        class="nav-item active"
+      >
+
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"
+          ></path>
+
+          <path d="M10 21h4"></path>
+        </svg>
+
+        Notifications
+
+      </a>
+
+    </nav>
+
+
+    <!-- Logout -->
+
+    <a
+      href="patient-login.html"
+      class="nav-logout"
+      id="patientLogout"
+    >
+
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+        ></path>
+
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+      </svg>
+
+      Logout
+
+    </a>
+
+  </aside>
+
+
+  <!-- ================= MAIN ================= -->
+
+  <main class="main">
+
+    <!-- ================= TOPBAR ================= -->
+
+    <header class="topbar">
+
+      <div class="patient-topbar-title">
+
+        <a
+          href="patient-dashboard.html"
+          class="patient-topbar-back-link"
+          aria-label="Back to dashboard"
+        >
+          ←
+        </a>
+
+        <span>
+          Notifications
+        </span>
+
+      </div>
+
+
+      <div class="topbar-right">
+
+        <div class="bell-wrap">
+
+          <svg
+            width="19"
+            height="19"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"
+            ></path>
+
+            <path d="M10 21h4"></path>
+          </svg>
+
+          <span
+            class="bell-dot"
+            id="notificationBellDot"
+          ></span>
+
+        </div>
+
+
+        <div class="avatar">
+
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 21v-2a8 8 0 0 1 16 0v2"></path>
+          </svg>
+
+        </div>
+
+
+        <div class="user-block">
+
+          <div>
+
+            <div
+              class="user-name"
+              id="patientTopbarName"
+            >
+              Charmaine
+            </div>
+
+            <div class="user-role">
+              Patient
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- ================= CONTENT ================= -->
+
+    <section class="content patient-notifications-content">
+
+      <!-- Page heading -->
+
+      <div class="page-header">
+
+        <div>
+
+          <h1 class="page-title font-display">
+            Notifications
+          </h1>
+
+          <div class="page-sub">
+            Stay updated with your appointments and clinic activity
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="btn btn-ghost notification-mark-all-btn"
+          id="markAllReadBtn"
+        >
+          Mark all as read
+        </button>
+
+      </div>
+
+
+      <!-- Breadcrumb -->
+
+      <div class="patient-breadcrumb">
+
+        <a
+          href="patient-dashboard.html"
+          class="breadcrumb-link"
+        >
+          Dashboard
+        </a>
+
+        <span>›</span>
+
+        <span>
+          Notifications
+        </span>
+
+      </div>
+
+
+      <!-- ================= NOTIFICATION SUMMARY ================= -->
+
+      <div class="notification-summary-grid">
+
+        <div class="notification-summary-card">
+
+          <span class="notification-summary-label">
+            All Notifications
+          </span>
+
+          <strong id="totalNotificationCount">
+            5
+          </strong>
+
+        </div>
+
+
+        <div class="notification-summary-card">
+
+          <span class="notification-summary-label">
+            Unread
+          </span>
+
+          <strong id="unreadNotificationCount">
+            3
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= NOTIFICATIONS ================= -->
+
+      <section class="panel notification-panel">
+
+        <div class="panel-head">
+
+          <div>
+
+            <div class="panel-title">
+              Recent Notifications
+            </div>
+
+            <div class="panel-subtitle">
+              Your latest MediQueue updates
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="notification-page-list"
+          id="notificationList"
+        >
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<script src="../js/pages/patient-notifications.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>MediQueue — Patient Login</title>
+
+  <link
+    rel="icon"
+    href="../assets/images/logo-icon.png"
+    type="image/png"
+  />
+
+  <link
+    rel="stylesheet"
+    href="../css/styles.css"
+  />
+</head>
+
+<body>
+
+  <div class="patient-login-page">
+
+    <!-- LEFT SIDE -->
+    <section class="patient-login-left">
+
+      <a
+        href="index.html"
+        class="patient-back-link"
+        aria-label="Back"
+      >
+        ←
+      </a>
+
+      <div class="patient-login-content">
+
+        <div class="patient-login-heading">
+
+          <h1 class="font-display">
+            Patient Login
+          </h1>
+
+          <p>
+            Access your health dashboard
+          </p>
+
+        </div>
+
+        <div class="patient-login-card">
+
+          <form id="patientLoginForm">
+
+            <div class="field">
+
+              <label for="patientEmail">
+                Email Address
+              </label>
+
+              <input
+                class="input"
+                type="email"
+                id="patientEmail"
+                placeholder="Enter your email"
+                required
+              />
+
+            </div>
+
+            <div class="field">
+
+              <label for="patientPassword">
+                Password
+              </label>
+
+              <div class="input-wrap">
+
+                <input
+                  class="input"
+                  type="password"
+                  id="patientPassword"
+                  placeholder="Enter your password"
+                  required
+                />
+
+                <button
+                  type="button"
+                  class="input-icon-btn"
+                  id="togglePatientPassword"
+                  aria-label="Show password"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+
+              </div>
+
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-primary btn-block patient-login-button"
+            >
+              Login
+            </button>
+
+            <div class="patient-forgot-row">
+
+              <a
+                href="patient-reset-password.html"
+                class="patient-text-link"
+              >
+                Forgot password?
+              </a>
+
+            </div>
+
+            <div class="patient-register-row">
+
+              <span>
+                Don’t have an account?
+              </span>
+
+              <a
+                href="patient-register.html"
+                class="patient-text-link"
+              >
+                Register
+              </a>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- RIGHT SIDE -->
+    <section class="patient-login-right">
+
+      <div class="patient-health-message">
+
+        <div class="patient-heart-icon">
+          ♥
+        </div>
+
+        <h2 class="font-display">
+          Your Health, Our Priority
+        </h2>
+
+        <p>
+          Book appointments, track your queue position,
+          and manage your medical records.
+        </p>
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <script src="../js/pages/patient-login.js"></script>
+
+</body>
+</html>
