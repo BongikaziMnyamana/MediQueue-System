@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
@@ -36,8 +37,19 @@ import jakarta.persistence.Table;
     @JsonSubTypes.Type(value = Patient.class, name = "patient"),
     @JsonSubTypes.Type(value = Staff.class, name = "staff")
 })
+/*
+ * email is declared unique above, which already creates the index used by the
+ * login lookup. These two cover the admin screens: filtering the staff list by
+ * role, and the name search on the staff table.
+ */
 @Entity
-@Table(name = "user")
+@Table(
+    name = "user",
+    indexes = {
+        @Index(name = "idx_user_role", columnList = "role_id"),
+        @Index(name = "idx_user_last_name", columnList = "last_name")
+    }
+)
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User {
 
@@ -141,6 +153,37 @@ public abstract class User {
 
     public Role getRole() {
         return role;
+    }
+
+    // Setters used by the service layer when applying a validated update.
+    // Password is only ever written here, never read back to a client.
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     // Hashes the password before persisting/updating if it is still

@@ -1607,6 +1607,75 @@
   font-weight: 600;
 }
 
+/*
+  The appointment card is a read-only summary: the patient manages bookings on
+  the My Appointments page, so the card itself carries no hover or focus
+  treatment and nothing is drawn around it when it is clicked.
+*/
+.patient-appointment-item {
+  transition: none;
+}
+
+.patient-appointment-item:hover {
+  border-color: var(--line);
+  box-shadow: none;
+  transform: none;
+}
+
+.patient-appointment-body {
+  flex: 1;
+
+  min-width: 0;
+}
+
+.patient-appointment-actions {
+  display: flex;
+
+  flex-shrink: 0;
+
+  gap: 8px;
+
+  align-items: center;
+}
+
+/* Inline hint shown on cards the patient may no longer change. */
+.patient-appointment-locked {
+  color: var(--slate);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+/* Search / filter / sort row above the appointment cards. */
+.patient-appointment-toolbar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+
+  gap: 14px;
+
+  margin-bottom: 6px;
+}
+
+.patient-appointment-toolbar .field {
+  margin-bottom: 10px;
+}
+
+.patient-appointment-toolbar .input {
+  margin: 0;
+}
+
+
+/* ---------- Modal footer buttons ---------- */
+
+.modal-actions {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
 
 /* ---------- Notifications ---------- */
 
@@ -4085,4 +4154,154 @@
   .patient-appointment-list {
     padding: 12px;
   }
+}
+
+/* =========================================================
+   VISUAL REFINEMENTS (no color changes — depth & motion only)
+========================================================= */
+
+/* Smooth page/app transitions */
+* {
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, color 0.15s ease;
+}
+
+/* Cards: subtle depth + lift on hover */
+.card {
+  box-shadow: 0 1px 3px rgba(8,30,29,0.04);
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(8,30,29,0.08);
+  border-color: var(--line);
+}
+
+/* Panels: gentle hover boundary */
+.panel {
+  box-shadow: 0 1px 3px rgba(8,30,29,0.04);
+}
+
+/* Buttons: active press + focus */
+.btn {
+  transition: all 0.12s ease;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn-primary:hover {
+  background: var(--teal-dark);
+}
+.btn-primary:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+.btn-gold:hover {
+  background: var(--gold-dark);
+}
+.btn-gold:focus-visible {
+  outline: 2px solid var(--gold-dark);
+  outline-offset: 2px;
+}
+.btn-ghost:hover {
+  background: var(--teal-tint);
+}
+.btn-ghost:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+/* Inputs: focus ring using existing teal */
+.input, select.input, textarea.input {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input:focus-visible, select.input:focus-visible, textarea.input:focus-visible {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(15,110,108,0.12);
+}
+
+/* Table rows: softer hover, active state */
+td {
+  transition: background 0.12s ease;
+}
+tr:hover td {
+  background: rgba(244,248,247,0.6);
+}
+tr.clickable:hover td {
+  background: var(--teal-tint);
+}
+
+/* Badges: subtle dimension */
+.badge {
+  box-shadow: 0 1px 2px rgba(8,30,29,0.06);
+}
+
+/* Empty states: softer text */
+.empty-state {
+  color: var(--slate);
+  font-size: 13px;
+}
+
+/* Sidebar nav items: active glow + hover depth */
+.nav-item {
+  transition: all 0.15s ease;
+}
+.nav-item:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+.nav-item.active {
+  box-shadow: 0 2px 6px rgba(232,169,74,0.18);
+}
+
+/* Modal backdrop: slightly deeper for focus */
+.modal-overlay {
+  background: rgba(8,30,29,0.55);
+  backdrop-filter: blur(2px);
+}
+.modal-box {
+  box-shadow: 0 12px 40px rgba(8,30,29,0.18);
+  border: 1px solid rgba(8,30,29,0.06);
+}
+
+/* Form fields: label focus color */
+.field label {
+  transition: color 0.15s ease;
+}
+.input:focus-visible + .field label,
+.field:focus-within label {
+  color: var(--teal);
+}
+
+/* Stat sub text: slight lift on card hover */
+.admin-stat-card:hover .admin-stat-sub,
+.card:hover .card-sub {
+  opacity: 0.9;
+}
+
+/* Role badge: subtle pulse on load */
+.role-badge {
+  animation: badgeFadeIn 0.6s ease;
+}
+@keyframes badgeFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Quick action buttons: hover lift */
+.admin-action-btn {
+  transition: all 0.15s ease;
+}
+.admin-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(8,30,29,0.08);
+}
+
+/* Notifications/dropdown: softer shadow */
+.dropdown-panel {
+  box-shadow: 0 12px 40px rgba(8,30,29,0.14);
+}
+
+/* Topbar: subtle shadow */
+.topbar {
+  box-shadow: 0 1px 3px rgba(8,30,29,0.06);
 }

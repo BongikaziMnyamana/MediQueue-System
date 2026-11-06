@@ -21,11 +21,12 @@ import com.cput.mediqueuesystem.domain.Visit;
 public class QueueEntryFactory {
 
     public static QueueEntry createQueueEntry(String queueEntryId, Queue queue, Patient patient,
-                                               Staff doctor, Visit visit, int queueNumber,
+                                               Staff doctor, Visit visit, Integer queueNumber,
                                                String priorityLevel, String status, LocalTime checkInTime) {
 
-        // A doctor is optional: patients get a queue number when they book,
-        // before admin/reception assigns a doctor to the appointment.
+        // A doctor is optional, and so is the queue number: the number is only
+        // issued once admin/reception has assigned a doctor and approved the
+        // booking, so an unapproved request is created without one.
         if (GenericValidator.isBlankOrNull(queueEntryId) || queue == null || patient == null) {
             return null;
         }

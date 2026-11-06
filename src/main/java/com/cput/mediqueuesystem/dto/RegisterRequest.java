@@ -6,7 +6,7 @@ import java.time.LocalDate;
  * RegisterRequest.java
  * Payload for self-registration of a new patient.
  *
- * Author: MediQueue
+ * Author: Charmaine Dlamini
  * Date: 24 September 2026
  */
 public class RegisterRequest {

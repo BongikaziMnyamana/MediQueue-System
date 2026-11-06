@@ -1,87 +1,34 @@
 // js/data.js
-// Loaded on every page. Tries to pull real data from the MediQueue
-// backend REST API first; falls back to the seeded mock data (localStorage)
-// when the backend is not reachable. getData()/setData() keep the same
-// synchronous API so every page works unchanged either way.
-
-const DEFAULT_DATA = {
-  patients: [
-    { id: "P-0231", name: "Sipho Dlamini", gender: "M", age: 34, phone: "082 123 4567", dept: "General Medicine" },
-    { id: "P-0232", name: "Nomsa Khumalo", gender: "F", age: 27, phone: "071 555 9081", dept: "Pediatrics" },
-    { id: "P-0233", name: "Thabo Mokoena", gender: "M", age: 45, phone: "063 887 2210", dept: "Antenatal Care" },
-    { id: "P-0234", name: "Lerato Molefe", gender: "F", age: 22, phone: "060 234 8890", dept: "HIV Care" },
-    { id: "P-0235", name: "Jacob van Wyk", gender: "M", age: 58, phone: "082 776 1290", dept: "General Medicine" },
-    { id: "P-0236", name: "Amahle Ndlovu", gender: "F", age: 31, phone: "071 903 4471", dept: "Pediatrics" },
-  ],
-  appointments: [
-    { time: "09:00 AM", patient: "Sipho Dlamini", dept: "General Medicine", doctor: "Dr. N. Zulu", status: "Checked In" },
-    { time: "10:30 AM", patient: "Nomsa Khumalo", dept: "Pediatrics", doctor: "Dr. L. Pillay", status: "Confirmed" },
-    { time: "11:00 AM", patient: "Thabo Mokoena", dept: "Antenatal Care", doctor: "Dr. T. Mthembu", status: "Confirmed" },
-    { time: "12:00 PM", patient: "Lerato Molefe", dept: "HIV Care", doctor: "Dr. R. Jacobs", status: "Pending" },
-    { time: "01:00 PM", patient: "Jacob van Wyk", dept: "General Medicine", doctor: "Dr. N. Zulu", status: "Pending" },
-  ],
-  queue: [
-    { no: "Q012", patient: "Sipho Dlamini", dept: "General Medicine", status: "In Consultation", wait: "15 min", id: "P-0231", age: 34, gender: "M", phone: "082 123 4567" },
-    { no: "Q013", patient: "Nomsa Khumalo", dept: "Pediatrics", status: "Waiting", wait: "10 min", id: "P-0232", age: 27, gender: "F", phone: "071 555 9081" },
-    { no: "Q014", patient: "Thabo Mokoena", dept: "Antenatal Care", status: "Waiting", wait: "8 min", id: "P-0233", age: 45, gender: "M", phone: "063 887 2210" },
-    { no: "Q015", patient: "Lerato Molefe", dept: "HIV Care", status: "Waiting", wait: "5 min", id: "P-0234", age: 22, gender: "F", phone: "060 234 8890" },
-    { no: "Q016", patient: "Jacob van Wyk", dept: "General Medicine", status: "Waiting", wait: "2 min", id: "P-0235", age: 58, gender: "M", phone: "082 776 1290" },
-  ],
-  visits: [
-    { id: "V-1042", patient: "Sipho Dlamini", date: "01 Aug 2026", dept: "General Medicine", outcome: "Prescribed" },
-    { id: "V-1041", patient: "Nomsa Khumalo", date: "01 Aug 2026", dept: "Pediatrics", outcome: "Referred" },
-    { id: "V-1040", patient: "Thabo Mokoena", date: "31 Jul 2026", dept: "Antenatal Care", outcome: "Follow-up" },
-    { id: "V-1039", patient: "Lerato Molefe", date: "31 Jul 2026", dept: "HIV Care", outcome: "Prescribed" },
-  ],
-  records: [
-    { patient: "Sipho Dlamini", condition: "Hypertension", lastVisit: "01 Aug 2026", doctor: "Dr. N. Zulu" },
-    { patient: "Nomsa Khumalo", condition: "Asthma", lastVisit: "01 Aug 2026", doctor: "Dr. L. Pillay" },
-    { patient: "Thabo Mokoena", condition: "Routine antenatal", lastVisit: "31 Jul 2026", doctor: "Dr. T. Mthembu" },
-  ],
-  prescriptions: [
-    { id: "RX-501", patient: "Sipho Dlamini", medication: "Amlodipine 5mg", dosage: "1 tab daily", prescribedBy: "Dr. N. Zulu", duration: "30 days", date: "01 Aug 2026", status: "Pending" },
-    { id: "RX-502", patient: "Nomsa Khumalo", medication: "Salbutamol Inhaler", dosage: "2 puffs as needed", prescribedBy: "Dr. L. Pillay", duration: "N/A", date: "01 Aug 2026", status: "Pending" },
-    { id: "RX-503", patient: "Thabo Mokoena", medication: "Folic Acid 5mg", dosage: "1 tab daily", prescribedBy: "Dr. T. Mthembu", duration: "60 days", date: "31 Jul 2026", status: "Dispensed" },
-    { id: "RX-504", patient: "Lerato Molefe", medication: "Tenofovir/Emtricitabine", dosage: "1 tab daily", prescribedBy: "Dr. R. Jacobs", duration: "30 days", date: "31 Jul 2026", status: "Pending" },
-    { id: "RX-505", patient: "Jacob van Wyk", medication: "Paracetamol 500mg", dosage: "2 tabs 3x daily", prescribedBy: "Dr. N. Zulu", duration: "5 days", date: "30 Jul 2026", status: "Dispensed" },
-  ],
-  users: [
-    { name: "Thandi M.", role: "Receptionist", email: "thandi.m@mediqueue.co.za", status: "Active", clinic: "District Six Clinic", department: "General Medicine" },
-    { name: "Dr. N. Zulu", role: "Doctor", email: "n.zulu@mediqueue.co.za", status: "Active", clinic: "District Six Clinic", department: "General Medicine" },
-    { name: "Dr. L. Pillay", role: "Doctor", email: "l.pillay@mediqueue.co.za", status: "Active", clinic: "Bellville Clinic", department: "Pediatrics" },
-    { name: "P. Adams", role: "Pharmacist", email: "p.adams@mediqueue.co.za", status: "Active", clinic: "Bellville Clinic", department: "General Medicine" },
-  ],
-
-
- seenToday: 14,
-  departments: [
-    { name: "General Medicine", doctors: 4, today: 18, avgWait: "12 min" },
-    { name: "Pediatrics", doctors: 2, today: 11, avgWait: "9 min" },
-    { name: "Antenatal Care", doctors: 2, today: 7, avgWait: "14 min" },
-    { name: "HIV Care", doctors: 3, today: 9, avgWait: "6 min" },
-  ],
-  clinics: [
-    { id: "CL001", name: "District Six Clinic", code: "DS-01", location: "Cape Town", contact: "021 555 1001", email: "district6@mediqueue.co.za", hours: "08:00 - 17:00", status: "Active" },
-    { id: "CL002", name: "Bellville Clinic", code: "BV-02", location: "Bellville", contact: "021 555 1002", email: "bellville@mediqueue.co.za", hours: "08:00 - 17:00", status: "Active" },
-    { id: "CL003", name: "Khayelitsha Clinic", code: "KL-03", location: "Khayelitsha", contact: "021 555 1003", email: "khayelitsha@mediqueue.co.za", hours: "07:30 - 16:30", status: "Inactive" },
-    { id: "CL004", name: "Mitchells Plain Clinic", code: "MP-04", location: "Mitchells Plain", contact: "021 555 1004", email: "mitchellsplain@mediqueue.co.za", hours: "08:00 - 17:00", status: "Active" },
-  ],
-
-  announcements: [
-    { title: "Staff Meeting", body: "There will be a staff meeting on Friday at 10:00 AM in the boardroom." },
-    { title: "System Update", body: "The system will be undergoing maintenance on Sunday from 00:00–02:00." },
-  ],
-profiles: {
-    ADMIN: { name: "S. Ndaba", email: "s.ndaba@mediqueue.co.za", phone: "071 111 2222", clinic: "District Six Clinic", department: "General Medicine", joinDate: "Jan 2025" },
-    RECEPTIONIST: { name: "Thandi M.", email: "thandi.m@mediqueue.co.za", phone: "071 234 5678", clinic: "District Six Clinic", department: "General Medicine", joinDate: "Mar 2025" },
-    DOCTOR: { name: "Dr. N. Zulu", email: "n.zulu@mediqueue.co.za", phone: "082 345 6789", clinic: "District Six Clinic", department: "General Medicine", joinDate: "Aug 2023" },
-    NURSE: { name: "Bongikazi M.", email: "b.mnyamana@mediqueue.co.za", phone: "072 111 2233", clinic: "Bellville Clinic", department: "Pediatrics", joinDate: "Feb 2024" },
-    PHARMACIST: { name: "P. Adams", email: "p.adams@mediqueue.co.za", phone: "063 456 7890", clinic: "Bellville Clinic", department: "General Medicine", joinDate: "Jun 2024" },
-  },
-};
+// Loaded on every page. Every row the UI shows comes from the MediQueue REST
+// API (MySQL). localStorage only holds a cache of the last successful sync so
+// pages can still render synchronously; it is never seeded with demo rows and
+// never treated as a save target. When the backend is unreachable the app
+// shows a "not connected" banner and reports the failure instead of silently
+// pretending the change was stored.
 
 const DATA_KEY = "mq_data";
 const API_BASE = "http://localhost:8080/MediQueue";
+
+// Shape every page can rely on, whether the database is empty or the backend
+// could not be reached. Collections start empty so the UI shows its own
+// empty-state instead of invented records.
+function emptyData() {
+  return {
+    patients: [],
+    appointments: [],
+    queue: [],
+    visits: [],
+    vitalSigns: [],
+    records: [],
+    prescriptions: [],
+    users: [],
+    clinics: [],
+    departments: [],
+    profiles: {},
+    seenToday: 0,
+  };
+}
+
 
 // Endpoint for each collection, keyed by the name used in the frontend data object.
 const API_COLLECTIONS = {
@@ -92,6 +39,7 @@ const API_COLLECTIONS = {
   appointments: "/appointment/getAll",
   queueEntries: "/mediqueue/queue-entry/all",
   visits: "/mediqueue/visit/all",
+  vitalSigns: "/mediqueue/vital-signs/all",
   medicalRecords: "/medical-record/getAll",
   prescriptions: "/prescription/getAll",
 };
@@ -117,7 +65,7 @@ function connectBackendSync() {
   if (!raw || !Object.keys(API_COLLECTIONS).every((k) => raw[k] !== null)) return false;
   __mqBackendUp = true;
   stopBackendPoller();
-  localStorage.setItem(DATA_KEY, JSON.stringify(buildDataFromApi(raw)));
+  setData(buildDataFromApi(raw));
   hideOfflineNotice();
   console.log("[MediQueue] Connected to backend at " + API_BASE);
   return true;
@@ -223,6 +171,14 @@ function deptOfStaff(staff) {
   return staff && staff.department ? staff.department.departmentName : "";
 }
 
+function deptOfAppointment(appointment) {
+  return (
+    (appointment && appointment.department && appointment.department.departmentName) ||
+    deptOfStaff(appointment && appointment.doctor) ||
+    ""
+  );
+}
+
 function ageFromDob(dob) {
   if (!dob) return "";
   const birth = new Date(dob);
@@ -263,29 +219,133 @@ function buildDataFromApi(raw) {
   const patients = raw.patients || [];
   const appointments = raw.appointments || [];
   const staff = raw.staff || [];
+  const visits = raw.visits || [];
+  const queueEntries = raw.queueEntries || [];
 
   // Best-effort department per patient, taken from their latest appointment.
   const deptByPatient = {};
   appointments.forEach((a) => {
     const pid = a.patient && a.patient.userId;
-    const d = deptOfStaff(a.doctor);
+    const d = deptOfAppointment(a);
     if (pid && d) deptByPatient[pid] = d;
   });
 
-  return {
+  const mappedQueue = mapQueueEntries(queueEntries, appointments);
+  const mappedVitals = (raw.vitalSigns || []).map(mapVitalSigns);
+
+  // The vital-signs record has no department or queue number of its own, so
+  // borrow them from the patient's most recent queue entry. This is what the
+  // nurse visits table and its details modal display.
+  const queueByPatient = {};
+  mappedQueue.forEach((q) => {
+    if (!q.id) return;
+    const current = queueByPatient[q.id];
+    if (!current || String(q.queueDate || "") >= String(current.queueDate || "")) {
+      queueByPatient[q.id] = q;
+    }
+  });
+  mappedVitals.forEach((vital) => {
+    const entry = queueByPatient[vital.patientId];
+    if (entry) {
+      vital.department = entry.dept || "";
+      vital.queueNumber = entry.no || "";
+    }
+  });
+
+  return markQueuedPatients({
     patients: patients.map((p) => mapPatient(p, deptByPatient)),
     appointments: appointments.map(mapAppointment),
-    queue: (raw.queueEntries || []).map(mapQueueEntry),
-    visits: (raw.visits || []).map(mapVisit),
+    queue: mappedQueue,
+    visits: visits.map(mapVisit),
+    vitalSigns: mappedVitals,
     records: (raw.medicalRecords || []).map(mapRecord),
     prescriptions: (raw.prescriptions || []).map(mapPrescription),
     users: staff.map(mapUser),
     clinics: (raw.clinics || []).map(mapClinic),
-    departments: (raw.departments || []).map((d) => mapDepartment(d, staff)),
-    announcements: DEFAULT_DATA.announcements,
-    profiles: DEFAULT_DATA.profiles,
-    seenToday: patients.length,
+    departments: (raw.departments || []).map((d) => mapDepartment(d, staff, appointments)),
+    profiles: buildProfiles(patients, staff),
+    seenToday: countSeenToday(visits, appointments),
+  });
+}
+
+// The signed-in staff member / patient shown in headers and on the profile
+// page is looked up in the rows the API just returned, using the ids that came
+// back with the login token. Roles with no matching row are left out so pages
+// fall back to their "unknown" wording instead of a made-up person.
+function buildProfiles(patients, staff) {
+  const profiles = {};
+  const sessionRole = String(localStorage.getItem("mq_role") || "").toUpperCase();
+  const staffId = localStorage.getItem("mq_staffId") || "";
+  const patientId = localStorage.getItem("mq_patientId") || "";
+
+  staff.forEach((s) => {
+    const role = staffRoleKey(s);
+    if (!role) return;
+    const profile = staffProfile(s);
+    if (s.userId === staffId) profile.self = true;
+    if (!profiles[role] || profile.self) profiles[role] = profile;
+  });
+
+  const me = patients.find((p) => p.userId && p.userId === (patientId || localStorage.getItem("mq_userId")));
+  if (me) profiles.PATIENT = patientProfile(me);
+
+  if (sessionRole && !profiles[sessionRole]) {
+    const fallback = staff.find((s) => staffRoleKey(s) === sessionRole);
+    if (fallback) profiles[sessionRole] = staffProfile(fallback);
+  }
+
+  return profiles;
+}
+
+// Role keys are always upper case because every page looks its profile up with
+// the session role (RECEPTIONIST, DOCTOR, NURSE, ...).
+function staffRoleKey(s) {
+  const position = String((s && s.position) || "").toUpperCase();
+  if (position) return staffRoleForPosition(position);
+  const role = s && s.role && String(s.role.roleName || "").toUpperCase();
+  return role || "";
+}
+
+function staffRoleName(s) {
+  const key = staffRoleKey(s);
+  return key ? key.charAt(0) + key.slice(1).toLowerCase() : "";
+}
+
+function staffProfile(s) {
+  return {
+    name: staffDisplayName(s),
+    email: s.email || "",
+    phone: s.phoneNumber || "",
+    clinic: s.clinic && s.clinic.clinicName ? s.clinic.clinicName : "",
+    department: deptOfStaff(s),
+    joinDate: s.createdAt ? fmtDate(String(s.createdAt).slice(0, 10)) : "",
   };
+}
+
+function patientProfile(p) {
+  return {
+    name: fullName(p),
+    email: p.email || "",
+    phone: p.phoneNumber || "",
+    clinic: "",
+    department: "",
+    joinDate: p.createdAt ? fmtDate(String(p.createdAt).slice(0, 10)) : "",
+  };
+}
+
+// "Seen today" is counted from the rows the database returned, not stored as
+// a number that can drift: distinct patients with a visit or an appointment
+// booked for today.
+function countSeenToday(visits, appointments) {
+  const today = todayIso();
+  const ids = new Set();
+  visits.forEach((v) => {
+    if (v.visitDate === today && v.patient && v.patient.userId) ids.add(v.patient.userId);
+  });
+  appointments.forEach((a) => {
+    if (a.scheduledDate === today && a.patient && a.patient.userId) ids.add(a.patient.userId);
+  });
+  return ids.size;
 }
 
 // Per-collection mappers: backend domain JSON -> frontend display shape.
@@ -297,19 +357,41 @@ function mapPatient(p, deptByPatient) {
     name: fullName(p),
     gender: p.gender || "",
     age: ageFromDob(p.dateOfBirth),
+    dateOfBirth: p.dateOfBirth || "",
+    idNumber: p.idNumber || "",
+    email: p.email || "",
     phone: p.phoneNumber || "",
+    address: p.address || "",
+    allergies: p.allergies || "",
     dept: (deptByPatient && deptByPatient[p.userId]) || "",
   };
+}
+
+// Marks the patients that have a live queue entry so list pages can show where
+// they are instead of inventing a status the Patient table does not have. A
+// booking is in the live queue immediately, so it counts as queued until it is
+// cancelled or completed.
+function markQueuedPatients(data) {
+  const queued = new Set(
+    (data.queue || [])
+      .filter((q) => !["Cancelled", "Completed"].includes(q.status))
+      .map((q) => q.id)
+  );
+  (data.patients || []).forEach((patient) => {
+    patient.queued = queued.has(patient.id);
+  });
+  return data;
 }
 
 function mapAppointment(a) {
   return {
     id: a.appointmentId,
     time: fmtTime12(a.scheduledTime),
+    time24: a.scheduledTime,
     date: a.scheduledDate,
     patient: fullName(a.patient),
     patientId: a.patient && a.patient.userId,
-    dept: (a.department && a.department.departmentName) || deptOfStaff(a.doctor),
+    dept: deptOfAppointment(a),
     departmentId: a.department && a.department.departmentId,
     clinic: a.clinic && a.clinic.clinicName,
     clinicId: a.clinic && a.clinic.clinicId,
@@ -320,29 +402,123 @@ function mapAppointment(a) {
   };
 }
 
-function mapQueueEntry(qe) {
+function mapQueueEntry(qe, fallbackDept) {
   const pat = qe.patient || {};
   return {
-    no: "Q" + String(qe.queueNumber).padStart(3, "0"),
+    // The server issues the number as soon as the booking joins the live
+    // queue, so a numbered entry is the normal case.
+    no:
+      qe.queueNumber === null || qe.queueNumber === undefined
+        ? ""
+        : "Q" + String(qe.queueNumber).padStart(3, "0"),
     patient: fullName(pat),
-    dept: deptOfStaff(qe.doctor),
+    dept: deptOfStaff(qe.doctor) || fallbackDept || "",
     status: qe.status || "Waiting",
     wait: waitFromCheckIn(qe.checkInTime),
     id: pat.userId || "",
+    patientId: pat.userId || "",
     age: ageFromDob(pat.dateOfBirth),
     gender: pat.gender || "",
     phone: pat.phoneNumber || "",
     entryId: qe.queueEntryId,
+    queueId: qe.queue && qe.queue.queueId,
+    doctorId: qe.doctor && qe.doctor.userId,
+    priorityLevel: qe.priorityLevel || "",
+    queueDate: qe.queue && qe.queue.date,
   };
+}
+
+// Queue entries do not store a department of their own. Borrow it from the
+// patient's appointment for the same day so the nurse still sees the correct
+// department when no doctor has been assigned yet.
+function mapQueueEntries(entries, appointments) {
+  const byPatientDate = {};
+  const byPatient = {};
+
+  (appointments || []).forEach((appointment) => {
+    const patientId = appointment.patient && appointment.patient.userId;
+    const department = deptOfAppointment(appointment);
+    if (!patientId || !department) return;
+    byPatientDate[`${patientId}|${appointment.scheduledDate || ""}`] = department;
+    byPatient[patientId] = department;
+  });
+
+  return (entries || []).map((entry) => {
+    const patientId = entry.patient && entry.patient.userId;
+    const queueDate = entry.queue && entry.queue.date;
+    const fallback =
+      byPatientDate[`${patientId}|${queueDate || ""}`] ||
+      byPatient[patientId] ||
+      "";
+    return mapQueueEntry(entry, fallback);
+  });
+}
+
+// A live queue entry normally has a number, but legacy rows may not. Every
+// screen that shows a number needs the same fallback label rather than an empty
+// cell that looks like a rendering bug.
+function queueNoLabel(q) {
+  return (q && q.no) || "No number";
+}
+
+// A patient is waiting for the nurse while their entry is in the live queue
+// but has not been assessed yet. Legacy "Pending" entries are included so old
+// bookings still appear on the nurse screen. "In Assessment" means a nurse has
+// started assessing them and they should not be offered for assessment again.
+function isAwaitingNurseStatus(status) {
+  return ["Waiting", "Pending", "In Assessment"].includes(
+    String(status || "").trim()
+  );
+}
+
+// Entries without a number sort after the numbered patients instead of
+// pretending to be number zero.
+function queueNoSortKey(q) {
+  const n = Number(q && q.no ? q.no.replace("Q", "") : NaN);
+  return Number.isNaN(n) ? Infinity : n;
 }
 
 function mapVisit(v) {
   return {
     id: v.visitId,
     patient: fullName(v.patient),
+    patientId: v.patient && v.patient.userId,
     date: fmtDate(v.visitDate),
+    visitDate: v.visitDate,
+    appointmentId: v.appointment && v.appointment.appointmentId,
     dept: (v.appointment && deptOfStaff(v.appointment.doctor)) || "",
+    doctorId: v.appointment && v.appointment.doctor && v.appointment.doctor.userId,
+    checkInTime: v.checkInTime || "",
+    checkOutTime: v.checkOutTime || "",
     outcome: v.status || "Completed",
+  };
+}
+
+function mapVitalSigns(v) {
+  const patientName = v.visit && v.visit.patient ? fullName(v.visit.patient) : "";
+  const recordedBy = staffDisplayName(v.recordedBy);
+  return {
+    id: v.vitalId,
+    visitId: v.visit && v.visit.visitId,
+    patientId: v.visit && v.visit.patient && v.visit.patient.userId,
+    patient: patientName,
+    // The nurse pages use these names; keeping them here avoids every page
+    // having to know that the backend calls them patient/recordedBy.
+    patientName,
+    department: "",
+    queueNumber: "",
+    temperature: v.temperature || "",
+    bloodPressure: v.bloodPressure || "",
+    heartRate: v.heartRate || "",
+    weight: v.weight || "",
+    oxygenSaturation: v.oxygenSaturation || "",
+    respiratoryRate: v.respiratoryRate || "",
+    symptoms: v.symptoms || "",
+    nurseNotes: v.nurseNotes || "",
+    recordedBy,
+    assessedBy: recordedBy,
+    recordedAt: v.recordedAt || "",
+    assessedAt: v.recordedAt || "",
   };
 }
 
@@ -350,28 +526,36 @@ function mapRecord(r) {
   return {
     patient: fullName(r.patient),
     condition: r.diagnosis || r.notes || "",
+    diagnosis: r.diagnosis || "",
+    complaint: r.complaint || "",
     lastVisit: fmtDate(r.recordDate),
     doctor: staffDisplayName(r.createdBy),
     date: r.recordDate,
     visitDate: r.recordDate,
+    recordDate: r.recordDate,
     createdDate: r.recordDate,
     recordId: r.recordId,
+    notes: r.notes || "",
+    doctorId: r.createdBy && r.createdBy.userId,
     patientId: r.patient && r.patient.userId,
   };
 }
 
 function mapPrescription(pres) {
+  const record = pres.medicalRecord || {};
   return {
     id: pres.prescriptionId,
-    patient: fullName((pres.medicalRecord || {}).patient),
+    patient: fullName(record.patient),
     medication: pres.medicationName,
     dosage: pres.dosage || "",
-    prescribedBy: staffDisplayName((pres.medicalRecord || {}).createdBy),
+    prescribedBy: staffDisplayName(record.createdBy),
     duration: pres.instructions || "",
     date: fmtDate(pres.prescriptionDate),
-    status: "",
-    recordId: (pres.medicalRecord || {}).recordId,
-    patientId: ((pres.medicalRecord || {}).patient || {}).userId,
+    prescriptionDate: pres.prescriptionDate,
+    status: pres.status || "Pending",
+    recordId: record.recordId,
+    doctorId: record.createdBy && record.createdBy.userId,
+    patientId: (record.patient || {}).userId,
   };
 }
 
@@ -381,9 +565,12 @@ function mapUser(s) {
     name: staffDisplayName(s),
     role: s.position || (s.role && s.role.roleName) || "",
     email: s.email || "",
+    phone: s.phoneNumber || "",
     status: s.status ? "Active" : "Inactive",
-    clinic: "",
+    clinic: s.clinic && s.clinic.clinicName ? s.clinic.clinicName : "",
     department: deptOfStaff(s),
+    departmentId: s.department && s.department.departmentId,
+    createdAt: s.createdAt || "",
   };
 }
 
@@ -394,21 +581,27 @@ function mapClinic(c) {
     code: c.clinicId,
     location: c.location || "",
     contact: c.contactNumber || "",
-    email: "",
-    hours: "",
-    status: "Active",
   };
 }
 
-function mapDepartment(d, staff) {
+function mapDepartment(d, staff, appointments) {
   staff = staff || [];
+  appointments = appointments || [];
+  const today = todayIso();
+  const bookedToday = appointments.filter(
+    (a) =>
+      a.scheduledDate === today &&
+      ((a.department && a.department.departmentId === d.departmentId) ||
+        (a.doctor && deptOfStaff(a.doctor) === d.departmentName))
+  ).length;
   return {
     id: d.departmentId,
     name: d.departmentName,
+    description: d.description || "",
     doctors: staff.filter(
       (s) => deptOfStaff(s) === d.departmentName && /doctor/i.test(s.position || "")
     ).length,
-    today: 0,
+    today: bookedToday,
     avgWait: "",
   };
 }
@@ -480,6 +673,32 @@ function saveSession(res) {
 
 function clearSession() {
   SESSION_KEYS.forEach((k) => localStorage.removeItem(k));
+}
+
+const ROLE_LABELS = {
+  ADMIN: "Administrator",
+  RECEPTIONIST: "Receptionist",
+  DOCTOR: "Doctor",
+  NURSE: "Nurse",
+  PHARMACIST: "Pharmacist",
+  PATIENT: "Patient",
+};
+
+// Every page repeats the same sidebar/topbar identity chip, so it is filled
+// here from the signed-in record rather than being typed into each page.
+function fillIdentityChrome() {
+  const role = String(localStorage.getItem("mq_role") || "").toUpperCase();
+  const data = getData();
+  const profile = (data.profiles || {})[role];
+  const name = (profile && profile.name) || localStorage.getItem("mq_name") || "";
+  const roleLabel = ROLE_LABELS[role] || role;
+
+  document.querySelectorAll(".user-name").forEach((el) => {
+    if (name) el.textContent = name;
+  });
+  document.querySelectorAll(".user-role").forEach((el) => {
+    if (roleLabel) el.textContent = roleLabel;
+  });
 }
 
 function homeForRole(role) {
@@ -562,6 +781,14 @@ function todayIso() {
   return nowIsoLocal().split("T")[0];
 }
 
+// Queues are per clinic and per date. Operational screens (doctor, nurse,
+// reception) must not show a patient who is booked for another day, even
+// though the booking already has a queue entry on the server.
+function isTodayQueueEntry(entry) {
+  if (!entry) return false;
+  return !entry.queueDate || entry.queueDate === todayIso();
+}
+
 function uniqueId(prefix) {
   return `${prefix}-${new Date().getTime()}`;
 }
@@ -574,17 +801,11 @@ function splitName(full) {
 
 function dateFromAge(age) {
   const years = Number(age);
-  if (!years) return "2000-01-01";
+  if (!years) return "";
   const d = new Date();
   d.setFullYear(d.getFullYear() - years);
   const p = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-}
-
-function saIdFromDob(dob) {
-  const digits = String(dob || "").replace(/\D/g, "");
-  const base = (digits + "00000000000").slice(0, 11);
-  return base + String(Math.floor(Math.random() * 90) + 10);
 }
 
 function to24h(t) {
@@ -596,13 +817,29 @@ function to24h(t) {
   return `${String(h).padStart(2, "0")}:${m[2]}`;
 }
 
-function nextQueueNumber(data) {
-  let max = 0;
-  (data.queue || []).forEach((q) => {
-    const n = parseInt(q.no, 10);
-    if (!isNaN(n) && n > max) max = n;
-  });
-  return max + 1;
+// Builds a local Date from an ISO date and a 24-hour time. Returns null when
+// either value is missing or invalid.
+function localDateTime(dateStr, timeStr) {
+  const dateParts = String(dateStr || "").trim().split("-").map(Number);
+  const timeParts = to24h(String(timeStr || "").trim()).split(":").map(Number);
+  if (dateParts.length !== 3 || timeParts.length !== 2) return null;
+
+  const [year, month, day] = dateParts;
+  const [hour, minute] = timeParts;
+  if (
+    !year || !month || !day ||
+    Number.isNaN(hour) || Number.isNaN(minute)
+  ) {
+    return null;
+  }
+
+  const value = new Date(year, month - 1, day, hour, minute, 0, 0);
+  return Number.isNaN(value.getTime()) ? null : value;
+}
+
+function isPastDateTime(dateStr, timeStr) {
+  const value = localDateTime(dateStr, timeStr);
+  return !value || value < new Date();
 }
 
 // Matches a user against a display label like "Dr. N. Zulu".
@@ -614,188 +851,413 @@ function userMatchesLabel(user, label) {
 
 // ---- Payload builders (backend entity field names) ----
 
+// Throws-free: returns { payload, error } so a missing required field becomes a
+// visible message instead of a made-up value written into the database.
 function buildPatientPayload(f) {
   const [firstName, lastName] = splitName(f.name);
-  const dob = f.dateOfBirth || dateFromAge(f.age);
-  const role = roleRef("PATIENT") || { roleId: 1, roleName: "PATIENT" };
-  return {
+  const role = roleRef("PATIENT");
+  if (!firstName) return { error: "Patient first name is required." };
+  if (!f.email) return { error: "Patient email is required." };
+  if (!f.idNumber) return { error: "Patient ID number is required." };
+  if (!f.dateOfBirth) return { error: "Patient date of birth is required." };
+  if (!f.phone) return { error: "Patient phone number is required." };
+  if (!role) return { error: "Could not load the PATIENT role from the server." };
+  const payload = {
     type: "patient",
-    userId: f.patientId,
+    // The backend keys patients on userId and does not generate it, so a new
+    // id is minted here when the caller does not supply one.
+    userId: f.patientId || uniqueId("P"),
     firstName,
     lastName,
-    email: f.email || (String(f.patientId || "p").toLowerCase() + "@mediqueue.co.za"),
-    password: f.password || "pass123",
-    phoneNumber: String(f.phone == null ? "" : f.phone).replace(/\s+/g, ""),
+    email: f.email,
+    phoneNumber: String(f.phone).replace(/\s+/g, ""),
     status: true,
-    createdAt: nowIsoLocal(),
     role,
-    idNumber: f.idNumber || saIdFromDob(dob),
-    dateOfBirth: dob,
+    idNumber: f.idNumber,
+    dateOfBirth: f.dateOfBirth,
     gender: f.gender || "M",
-    address: f.address || "",
+    address: f.address || "Not provided",
     allergies: f.allergies || "",
   };
+  // Password is write-only and never sent back to the browser. When the form
+  // does not collect one, the backend generates an unusable random credential.
+  if (f.password) payload.password = f.password;
+  return { payload };
+}
+
+function buildStaffPayload(f) {
+  const [firstName, lastName] = splitName(f.name);
+  const role = roleRef(staffRoleForPosition(f.position));
+  const department = departmentRef(f.departmentId || f.department);
+  if (!firstName) return { error: "Staff first name is required." };
+  if (!f.email) return { error: "Staff email is required." };
+  if (!f.phone) return { error: "Staff phone number is required." };
+  if (!f.position) return { error: "Staff position is required." };
+  if (!role) return { error: "Could not load the role for this position from the server." };
+  if (!department) return { error: "Select a department for this staff member." };
+  const payload = {
+    type: "staff",
+    userId: f.staffId || uniqueId("S"),
+    firstName,
+    lastName,
+    email: f.email,
+    phoneNumber: String(f.phone).replace(/\s+/g, ""),
+    status: f.status === undefined ? true : Boolean(f.status),
+    role,
+    position: f.position,
+    department,
+  };
+  if (f.password) payload.password = f.password;
+  return { payload };
+}
+
+function staffRoleForPosition(position) {
+  const p = String(position || "").toUpperCase();
+  if (p.includes("DOCTOR")) return "DOCTOR";
+  if (p.includes("NURSE")) return "NURSE";
+  if (p.includes("PHARMAC")) return "PHARMACIST";
+  if (p.includes("RECEPTION")) return "RECEPTIONIST";
+  if (p.includes("ADMIN")) return "ADMIN";
+  return p;
+}
+
+function departmentRef(department) {
+  if (!department) return null;
+  const list = window.__mqDepartments || [];
+  const wanted = String(department);
+  const match = list.find(
+    (d) => String(d.departmentId) === wanted || String(d.departmentName) === wanted
+  );
+  return match ? { departmentId: match.departmentId, departmentName: match.departmentName } : null;
 }
 
 function buildAppointmentPayload(f) {
+  if (!f.patientId) return { error: "Select a patient for the appointment." };
+  if (!f.scheduledDate) return { error: "Appointment date is required." };
+  if (!f.scheduledTime) return { error: "Appointment time is required." };
   return {
-    appointmentId: f.appointmentId,
-    patient: { type: "patient", userId: f.patientId },
-    doctor: f.doctorId ? { type: "staff", userId: f.doctorId } : null,
-    clinic: f.clinicId ? { clinicId: f.clinicId } : null,
-    department: f.departmentId ? { departmentId: f.departmentId } : null,
-    reason: f.reason || "",
-    scheduledDate: f.scheduledDate,
-    scheduledTime: f.scheduledTime,
-    appointmentType: f.appointmentType || "booked",
-    status: f.status || "Pending",
-    createdBy: null,
+    payload: {
+      appointmentId: f.appointmentId,
+      patient: { type: "patient", userId: f.patientId },
+      // doctorId stays null until somebody is assigned - the column is nullable
+      // so a patient can be booked before a doctor is allocated.
+      doctor: f.doctorId ? { type: "staff", userId: f.doctorId } : null,
+      clinic: f.clinicId ? { clinicId: f.clinicId } : null,
+      department: f.departmentId ? { departmentId: f.departmentId } : null,
+      reason: f.reason || "",
+      scheduledDate: f.scheduledDate,
+      scheduledTime: f.scheduledTime,
+      appointmentType: f.appointmentType || "booked",
+      status: f.status || "Pending",
+      createdBy: f.createdById ? { type: "staff", userId: f.createdById } : null,
+    },
   };
 }
 
 function buildClinicPayload(f) {
+  if (!f.clinicName) return { error: "Clinic name is required." };
   return {
-    clinicId: f.clinicId,
-    clinicName: f.clinicName,
-    location: f.location || "",
-    contactNumber: f.contactNumber || "",
+    payload: {
+      // The backend keys clinics on clinicId and does not generate it.
+      clinicId: f.clinicId || uniqueId("CL"),
+      clinicName: f.clinicName,
+      location: f.location || "",
+      contactNumber: f.contactNumber || "",
+    },
   };
 }
 
 function buildDepartmentPayload(f) {
+  if (!f.departmentName) return { error: "Department name is required." };
   return {
-    departmentId: f.departmentId,
-    departmentName: f.departmentName,
-    description: f.description || "",
+    payload: {
+      // The backend keys departments on departmentId and does not generate it.
+      departmentId: f.departmentId || uniqueId("D"),
+      departmentName: f.departmentName,
+      description: f.description || "",
+    },
   };
 }
 
 function buildMedicalRecordPayload(f) {
+  if (!f.patientId) return { error: "Select a patient for the record." };
+  if (!f.doctorId) return { error: "Select the doctor who created the record." };
+  if (!f.recordDate) return { error: "Record date is required." };
   return {
-    recordId: f.recordId,
-    patient: { type: "patient", userId: f.patientId },
-    createdBy: { type: "staff", userId: f.doctorId },
-    diagnosis: f.diagnosis || "",
-    notes: f.notes || "",
-    recordDate: f.recordDate,
+    payload: {
+      recordId: f.recordId,
+      patient: { type: "patient", userId: f.patientId },
+      createdBy: { type: "staff", userId: f.doctorId },
+      complaint: f.complaint || "",
+      diagnosis: f.diagnosis || "",
+      notes: f.notes || "",
+      recordDate: f.recordDate,
+    },
   };
 }
 
 function buildPrescriptionPayload(f) {
+  if (!f.recordId) return { error: "A prescription must be linked to a medical record." };
+  if (!f.medicationName) return { error: "Medication name is required." };
+  if (!f.prescriptionDate) return { error: "Prescription date is required." };
   return {
-    prescriptionId: f.prescriptionId,
-    medicalRecord: { recordId: f.recordId },
-    medicationName: f.medicationName,
-    dosage: f.dosage || "",
-    instructions: f.instructions || "",
-    prescriptionDate: f.prescriptionDate,
+    payload: {
+      prescriptionId: f.prescriptionId,
+      medicalRecord: { recordId: f.recordId },
+      medicationName: f.medicationName,
+      dosage: f.dosage || "",
+      instructions: f.instructions || "",
+      prescriptionDate: f.prescriptionDate,
+      // status is NOT NULL in the database, so every new prescription starts
+      // as "Pending" and the pharmacist moves it to "Dispensed" afterwards.
+      status: f.status || "Pending",
+    },
   };
 }
 
 function buildVisitPayload(f) {
+  if (!f.patientId) return { error: "Select a patient for the visit." };
+  if (!f.visitDate) return { error: "Visit date is required." };
   return {
-    visitId: f.visitId,
-    patient: { type: "patient", userId: f.patientId },
-    appointment: null,
-    visitDate: f.visitDate,
-    checkInTime: f.checkInTime || null,
-    checkOutTime: f.checkOutTime || null,
-    status: f.status || "In Progress",
+    payload: {
+      visitId: f.visitId,
+      patient: { type: "patient", userId: f.patientId },
+      appointment: f.appointmentId ? { appointmentId: f.appointmentId } : null,
+      visitDate: f.visitDate,
+      checkInTime: f.checkInTime || null,
+      checkOutTime: f.checkOutTime || null,
+      status: f.status || "In Progress",
+    },
   };
 }
 
 function buildVitalSignsPayload(f) {
+  if (!f.visitId) return { error: "Vitals must be linked to a visit." };
+  const nurseId = localStorage.getItem("mq_staffId");
   return {
-    vitalId: f.vitalId,
-    visit: { visitId: f.visitId },
-    temperature: f.temperature == null ? null : String(f.temperature),
-    bloodPressure: f.bloodPressure || null,
-    heartRate: f.heartRate == null ? null : String(f.heartRate),
-    weight: f.weight == null ? null : String(f.weight),
-    recordedBy: null,
-    recordedAt: null,
+    payload: {
+      vitalId: f.vitalId,
+      visit: { visitId: f.visitId },
+      temperature: f.temperature == null || f.temperature === "" ? null : String(f.temperature),
+      bloodPressure: f.bloodPressure || null,
+      heartRate: f.heartRate == null || f.heartRate === "" ? null : String(f.heartRate),
+      weight: f.weight == null || f.weight === "" ? null : String(f.weight),
+      oxygenSaturation: f.oxygenSaturation || null,
+      respiratoryRate: f.respiratoryRate || null,
+      symptoms: f.symptoms || null,
+      nurseNotes: f.nurseNotes || null,
+      // recorded_by / recorded_at are nullable, but stamping the signed-in
+      // nurse makes the vitals traceable in the database.
+      recordedBy: nurseId ? { type: "staff", userId: nurseId } : null,
+      recordedAt: nowIsoLocal(),
+    },
   };
 }
 
 function buildQueuePayload(f) {
+  if (!f.clinicId) return { error: "Select a clinic for the queue." };
+  if (!f.date) return { error: "Queue date is required." };
   return {
-    queueId: f.queueId,
-    clinic: { clinicId: f.clinicId },
-    date: f.date,
-    maxCapacity: f.maxCapacity || 50,
+    payload: {
+      queueId: f.queueId,
+      clinic: { clinicId: f.clinicId },
+      date: f.date,
+      maxCapacity: f.maxCapacity || 50,
+    },
   };
 }
 
 function buildQueueEntryPayload(f) {
+  if (!f.queueId) return { error: "No queue is available for today." };
+  if (!f.patientId) return { error: "Select a patient to add to the queue." };
   return {
-    queueEntryId: f.queueEntryId,
-    queue: { queueId: f.queueId },
-    patient: { type: "patient", userId: f.patientId },
-    doctor: { type: "staff", userId: f.doctorId },
-    visit: null,
-    queueNumber: f.queueNumber,
-    priorityLevel: f.priorityLevel || "Normal",
-    status: f.status || "Waiting",
-    checkInTime: f.checkInTime || null,
+    payload: {
+      queueEntryId: f.queueEntryId,
+      queue: { queueId: f.queueId },
+      patient: { type: "patient", userId: f.patientId },
+      // A queue entry can be created before a doctor is allocated, so doctor
+      // is null rather than a reference with no id.
+      doctor: f.doctorId ? { type: "staff", userId: f.doctorId } : null,
+      visit: f.visitId ? { visitId: f.visitId } : null,
+      // No queueNumber is sent: the server issues the number as soon as the
+      // entry joins the live queue, so the client cannot hand out its own.
+      priorityLevel: f.priorityLevel || "Normal",
+      status: f.status || "Waiting",
+      checkInTime: f.checkInTime || null,
+    },
   };
 }
 
-// ---- Orchestration helpers: write + update the local cache ----
+// ---- Orchestration helpers: write to the backend, then refresh the cache ----
+// Every helper returns { ok, error, ... }. On failure nothing is written to the
+// cache and `error` holds a message the page can show the user, so a rejected
+// save is never presented as a success.
+
+function serverError(r, fallback) {
+  if (r && r.data && r.data.error) return r.data.error;
+  if (r && r.data && r.data.message) return r.data.message;
+  if (r && r.status === 0) return "Could not reach the server. Check that Spring Boot is running.";
+  if (r && r.status === 404) return "That record no longer exists on the server.";
+  if (r && r.status === 409) return "That record already exists (duplicate id, email or ID number).";
+  if (r && r.status === 400) return "The server rejected the values that were sent.";
+  return fallback || "The server rejected the request.";
+}
+
+function notFound(message) {
+  return { ok: false, error: message };
+}
+
+async function ensureDepartments() {
+  if (Array.isArray(window.__mqDepartments)) return true;
+  const r = await apiRequest("GET", "/department/getAll");
+  if (r.ok && Array.isArray(r.data)) {
+    window.__mqDepartments = r.data;
+    return true;
+  }
+  return false;
+}
 
 async function createPatientAsync(input) {
   await ensureRoles();
-  const payload = buildPatientPayload(input);
-  const r = await apiRequest("POST", "/patient/create", payload);
-  if (!r.ok) return { ok: false };
+  const built = buildPatientPayload(input);
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("POST", "/patient/create", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
   const data = getData();
   const deptMap = {};
-  deptMap[payload.userId] = input.dept || "";
-  data.patients = [mapPatient(r.data || payload, deptMap), ...data.patients];
+  if (built.payload.userId) deptMap[built.payload.userId] = input.dept || "";
+  data.patients = [mapPatient(r.data || built.payload, deptMap), ...(data.patients || [])];
   setData(data);
   return { ok: true, created: r.data };
+}
+
+async function updatePatientAsync(patientId, input) {
+  await ensureRoles();
+  const built = buildPatientPayload(Object.assign({}, input, { patientId }));
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("PUT", "/patient/update", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
+  const data = getData();
+  const saved = mapPatient(r.data || built.payload, {});
+  data.patients = (data.patients || []).map((p) => (p.id === patientId ? saved : p));
+  setData(data);
+  return { ok: true, updated: r.data };
+}
+
+async function deletePatientAsync(patientId) {
+  const r = await apiRequest("DELETE", "/patient/delete/" + encodeURIComponent(patientId));
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r, "Could not delete the patient.") };
+  const data = getData();
+  data.patients = (data.patients || []).filter((p) => p.id !== patientId);
+  data.queue = (data.queue || []).filter((q) => q.id !== patientId);
+  setData(data);
+  return { ok: true };
+}
+
+async function createStaffAsync(input) {
+  await ensureRoles();
+  await ensureDepartments();
+  const built = buildStaffPayload(input);
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("POST", "/staff/create", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
+  const data = getData();
+  data.users = [mapUser(r.data || built.payload), ...(data.users || [])];
+  setData(data);
+  return { ok: true, created: r.data };
+}
+
+async function updateStaffAsync(staffId, input) {
+  await ensureRoles();
+  await ensureDepartments();
+  const built = buildStaffPayload(Object.assign({}, input, { staffId }));
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("PUT", "/staff/update", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
+  const data = getData();
+  const saved = mapUser(r.data || built.payload);
+  data.users = (data.users || []).map((u) => (u.id === staffId ? saved : u));
+  setData(data);
+  return { ok: true, updated: r.data };
+}
+
+async function deleteStaffAsync(staffId) {
+  const r = await apiRequest("DELETE", "/staff/delete/" + encodeURIComponent(staffId));
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
+  const data = getData();
+  data.users = (data.users || []).filter((u) => u.id !== staffId);
+  setData(data);
+  return { ok: true };
+}
+
+// Refreshes just the queue collection. Booking and doctor-assignment both
+// create/update server-side queue entries, so the cache must adopt them before
+// any page decides whether a patient is already queued.
+async function refreshQueueFromApiAsync() {
+  const r = await apiRequest("GET", API_COLLECTIONS.queueEntries);
+  if (!r.ok || !Array.isArray(r.data)) {
+    return false;
+  }
+  const data = getData();
+  data.queue = mapQueueEntries(r.data, data.appointments);
+  setData(data);
+  return true;
 }
 
 async function createAppointmentAsync(input) {
-  const r = await apiRequest("POST", "/appointment/create", buildAppointmentPayload(input));
-  if (!r.ok) return { ok: false, status: r.status, data: r.data };
+  const built = buildAppointmentPayload(input);
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("POST", "/appointment/create", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
   const data = getData();
-  data.appointments = [mapAppointment(r.data || {}), ...data.appointments];
+  data.appointments = [mapAppointment(r.data || built.payload), ...(data.appointments || [])];
   setData(data);
+  await refreshQueueFromApiAsync();
   return { ok: true, created: r.data };
 }
 
+async function updateAppointmentAsync(appointmentId, input) {
+  const built = buildAppointmentPayload(Object.assign({}, input, { appointmentId }));
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("PUT", "/appointment/update", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
+  const data = getData();
+  const saved = mapAppointment(r.data || built.payload);
+  data.appointments = (data.appointments || []).map((a) => (a.id === appointmentId ? saved : a));
+  setData(data);
+  await refreshQueueFromApiAsync();
+  return { ok: true, updated: r.data };
+}
+
 // Assigns a doctor to an appointment; the backend also sets its status
-// to "Confirmed". Updates the local cache so lists re-render instantly.
+// to "Confirmed". Updates the cache from the server's response so lists
+// re-render instantly.
 async function assignAppointmentDoctorAsync(appointmentId, doctorId) {
   const r = await apiRequest("PUT", "/appointment/assign/" + encodeURIComponent(appointmentId) + "/" + encodeURIComponent(doctorId));
-  if (!r.ok || !r.data) return { ok: false, status: r.status, data: r.data };
+  if (!r.ok || !r.data) return { ok: false, status: r.status, error: serverError(r, "Could not assign the doctor.") };
   const data = getData();
-  const item = (data.appointments || []).find((a) => a.id === appointmentId);
-  if (item) {
-    const doctor = (data.users || []).find((u) => u.id === doctorId);
-    item.doctor = doctor ? doctor.name : "Dr. Assigned";
-    item.doctorId = doctorId;
-    item.status = "Confirmed";
-  }
+  data.appointments = (data.appointments || []).map((a) => (a.id === appointmentId ? mapAppointment(r.data) : a));
   setData(data);
+  await refreshQueueFromApiAsync();
   return { ok: true };
 }
 
 // Updates an appointment's status via the backend.
 async function updateAppointmentStatusAsync(appointmentId, status) {
   const r = await apiRequest("PUT", "/appointment/status/" + encodeURIComponent(appointmentId) + "/" + encodeURIComponent(status));
-  if (!r.ok || !r.data) return { ok: false, status: r.status, data: r.data };
+  if (!r.ok || !r.data) return { ok: false, status: r.status, error: serverError(r, "Could not update the appointment status.") };
   const data = getData();
-  const item = (data.appointments || []).find((a) => a.id === appointmentId);
-  if (item) item.status = status;
+  const saved = mapAppointment(r.data);
+  data.appointments = (data.appointments || []).map((a) => (a.id === appointmentId ? saved : a));
   setData(data);
+  await refreshQueueFromApiAsync();
   return { ok: true };
 }
 
 // Deletes an appointment via the backend and drops it from the cache.
 async function deleteAppointmentAsync(appointmentId) {
   const r = await apiRequest("DELETE", "/appointment/delete/" + encodeURIComponent(appointmentId));
-  if (!r.ok) return { ok: false, status: r.status, data: r.data };
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r, "Could not delete the appointment.") };
   const data = getData();
   data.appointments = (data.appointments || []).filter((a) => a.id !== appointmentId);
   setData(data);
@@ -803,260 +1265,315 @@ async function deleteAppointmentAsync(appointmentId) {
 }
 
 async function createMedicalRecordAsync(input) {
-  const r = await apiRequest("POST", "/medical-record/create", buildMedicalRecordPayload(input));
-  if (!r.ok) return { ok: false };
+  const built = buildMedicalRecordPayload(input);
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("POST", "/medical-record/create", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
   const data = getData();
-  data.records = [mapRecord(r.data || {}), ...data.records];
+  data.records = [mapRecord(r.data || built.payload), ...(data.records || [])];
   setData(data);
   return { ok: true, created: r.data };
 }
 
 async function createPrescriptionAsync(input) {
-  const r = await apiRequest("POST", "/prescription/create", buildPrescriptionPayload(input));
-  if (!r.ok) return { ok: false };
+  const built = buildPrescriptionPayload(input);
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("POST", "/prescription/create", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
   const data = getData();
-  data.prescriptions = [mapPrescription(r.data || {}), ...data.prescriptions];
+  data.prescriptions = [mapPrescription(r.data || built.payload), ...(data.prescriptions || [])];
   setData(data);
   return { ok: true, created: r.data };
+}
+
+// Pharmacist action: moves a prescription between Pending and Dispensed and
+// writes the new status to the database.
+async function updatePrescriptionStatusAsync(prescriptionId, status) {
+  const r = await apiRequest("PUT", "/prescription/status/" + encodeURIComponent(prescriptionId) + "/" + encodeURIComponent(status));
+  if (!r.ok || !r.data) return { ok: false, status: r.status, error: serverError(r, "Could not update the prescription status.") };
+  const data = getData();
+  data.prescriptions = (data.prescriptions || []).map((p) => (p.id === prescriptionId ? mapPrescription(r.data) : p));
+  setData(data);
+  return { ok: true };
+}
+
+async function deletePrescriptionAsync(prescriptionId) {
+  const r = await apiRequest("DELETE", "/prescription/delete/" + encodeURIComponent(prescriptionId));
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r, "Could not delete the prescription.") };
+  const data = getData();
+  data.prescriptions = (data.prescriptions || []).filter((p) => p.id !== prescriptionId);
+  setData(data);
+  return { ok: true };
 }
 
 async function createClinicAsync(input) {
-  const r = await apiRequest("POST", "/clinic/create", buildClinicPayload(input));
-  if (!r.ok) return { ok: false };
+  const built = buildClinicPayload(input);
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("POST", "/clinic/create", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
   const data = getData();
-  data.clinics = [mapClinic(r.data || {}), ...data.clinics];
+  data.clinics = [mapClinic(r.data || built.payload), ...(data.clinics || [])];
   setData(data);
   return { ok: true, created: r.data };
+}
+
+async function updateClinicAsync(clinicId, input) {
+  const built = buildClinicPayload(Object.assign({}, input, { clinicId }));
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("PUT", "/clinic/update", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
+  const data = getData();
+  data.clinics = (data.clinics || []).map((c) => (c.id === clinicId ? mapClinic(r.data || built.payload) : c));
+  setData(data);
+  return { ok: true, updated: r.data };
+}
+
+async function deleteClinicAsync(clinicId) {
+  const r = await apiRequest("DELETE", "/clinic/delete/" + encodeURIComponent(clinicId));
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r, "Could not delete the clinic.") };
+  const data = getData();
+  data.clinics = (data.clinics || []).filter((c) => c.id !== clinicId);
+  setData(data);
+  return { ok: true };
 }
 
 async function createDepartmentAsync(input) {
-  const r = await apiRequest("POST", "/department/create", buildDepartmentPayload(input));
-  if (!r.ok) return { ok: false };
+  const built = buildDepartmentPayload(input);
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("POST", "/department/create", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
+  window.__mqDepartments = null;
+  await ensureDepartments();
   const data = getData();
-  const deptDisplay = { name: input.departmentName, doctors: 0, today: 0, avgWait: "" };
-  data.departments = [deptDisplay, ...data.departments];
+  const created = r.data || built.payload;
+  const staff = data.users || [];
+  data.departments = [mapDepartment(created, staff, data.appointments || []), ...(data.departments || [])];
   setData(data);
   return { ok: true, created: r.data };
 }
 
-// Adds a patient to the queue by creating a QueueEntry on the backend.
-async function createQueueEntryAsync(input) {
-  let queueId = input.queueId;
-  if (!queueId) {
-    const qr = await apiRequest("GET", "/mediqueue/queue/all");
-    if (qr.ok && qr.data && qr.data.length) queueId = qr.data[0].queueId;
-    else return { ok: false };
-  }
+async function updateDepartmentAsync(departmentId, input) {
+  const built = buildDepartmentPayload(Object.assign({}, input, { departmentId }));
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("PUT", "/department/update", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
+  window.__mqDepartments = null;
+  await ensureDepartments();
   const data = getData();
-  const queueNumber = input.queueNumber || nextQueueNumber(data);
-  const payload = buildQueueEntryPayload({
-    queueEntryId: uniqueId("QE"),
-    queueId,
+  const saved = mapDepartment(r.data || built.payload, data.users || [], data.appointments || []);
+  data.departments = (data.departments || []).map((d) => (d.id === departmentId ? saved : d));
+  setData(data);
+  return { ok: true, updated: r.data };
+}
+
+async function deleteDepartmentAsync(departmentId) {
+  const r = await apiRequest("DELETE", "/department/delete/" + encodeURIComponent(departmentId));
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r, "Could not delete the department.") };
+  window.__mqDepartments = null;
+  await ensureDepartments();
+  const data = getData();
+  data.departments = (data.departments || []).filter((d) => d.id !== departmentId);
+  setData(data);
+  return { ok: true };
+}
+
+// Returns the queue for today, opening one for the first clinic when the day
+// has no queue yet. Queue numbers come from the database, not from the cache.
+async function ensureTodayQueueAsync(clinicId) {
+  const today = todayIso();
+  const all = await apiRequest("GET", "/mediqueue/queue/all");
+  if (all.ok && Array.isArray(all.data)) {
+    const match = all.data.find(
+      (q) => q.date === today && (!clinicId || (q.clinic && q.clinic.clinicId === clinicId))
+    );
+    if (match) return { queueId: match.queueId };
+  }
+  let clinic = clinicId;
+  if (!clinic) {
+    const cr = await apiRequest("GET", "/clinic/getAll");
+    if (!cr.ok || !Array.isArray(cr.data) || !cr.data.length) {
+      return { error: "No clinic exists yet. Add a clinic before queueing patients." };
+    }
+    clinic = cr.data[0].clinicId;
+  }
+  const built = buildQueuePayload({ queueId: uniqueId("Q"), clinicId: clinic, date: today, maxCapacity: 50 });
+  if (built.error) return { error: built.error };
+  const created = await apiRequest("POST", "/mediqueue/queue/create", built.payload);
+  if (!created.ok) return { error: serverError(created, "Could not open a queue for today.") };
+  return { queueId: (created.data || {}).queueId };
+}
+
+// Adds a patient to today's queue by creating a QueueEntry on the backend.
+async function createQueueEntryAsync(input) {
+  if (!input.patientId) return notFound("Select a patient to add to the queue.");
+  const queue = input.queueId ? { queueId: input.queueId } : await ensureTodayQueueAsync(input.clinicId);
+  if (!queue.queueId) return notFound(queue.error || "No queue is available for today.");
+  const built = buildQueueEntryPayload({
+    queueEntryId: input.queueEntryId || uniqueId("QE"),
+    queueId: queue.queueId,
     patientId: input.patientId,
-    doctorId: input.doctorId,
-    queueNumber,
-    priorityLevel: "Normal",
+    doctorId: input.doctorId || null,
+    visitId: input.visitId || null,
+    priorityLevel: input.priorityLevel || "Normal",
+    // Every new entry joins the live queue immediately, even before a doctor
+    // is allocated, so the patient can be numbered and seen by the nurse.
     status: input.status || "Waiting",
     checkInTime: input.checkInTime || null,
   });
-  const r = await apiRequest("POST", "/mediqueue/queue-entry/create", payload);
-  if (!r.ok) return { ok: false };
-  const d2 = getData();
-  d2.queue = [...d2.queue, mapQueueEntry(r.data || {})];
-  setData(d2);
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("POST", "/mediqueue/queue-entry/create", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
+  const data = getData();
+  data.queue = [
+    ...(data.queue || []),
+    ...mapQueueEntries([r.data || built.payload], data.appointments),
+  ];
+  setData(data);
   return { ok: true, created: r.data };
 }
 
-// Fetches the full QueueEntry, changes its status, saves it back.
+// Fetches the full QueueEntry, changes its status and saves it back.
 async function setQueueEntryStatusAsync(entryId, status) {
   const r = await apiRequest("GET", "/mediqueue/queue-entry/read/" + encodeURIComponent(entryId));
-  if (!r.ok || !r.data) return { ok: false };
+  if (!r.ok || !r.data) return { ok: false, status: r.status, error: serverError(r, "Could not load the queue entry.") };
   r.data.status = status;
   const u = await apiRequest("PUT", "/mediqueue/queue-entry/update", r.data);
-  if (!u.ok) return { ok: false };
+  if (!u.ok) return { ok: false, status: u.status, error: serverError(u, "Could not update the queue entry.") };
   const data = getData();
-  const item = (data.queue || []).find((q) => q.entryId === entryId);
-  if (item) item.status = status;
+  const saved = u.data ? mapQueueEntries([u.data], data.appointments)[0] : null;
+  data.queue = (data.queue || []).map((q) => (q.entryId === entryId ? saved || Object.assign({}, q, { status }) : q));
   setData(data);
+  return { ok: true };
+}
+
+// Links the visit a nurse opened to the queue entry the patient arrived on.
+async function attachVisitToQueueEntryAsync(entryId, visitId) {
+  if (!entryId || !visitId) return { ok: true };
+  const r = await apiRequest("GET", "/mediqueue/queue-entry/read/" + encodeURIComponent(entryId));
+  if (!r.ok || !r.data) return { ok: false, status: r.status, error: serverError(r) };
+  r.data.visit = { visitId };
+  const u = await apiRequest("PUT", "/mediqueue/queue-entry/update", r.data);
+  if (!u.ok) return { ok: false, status: u.status, error: serverError(u) };
   return { ok: true };
 }
 
 async function deleteQueueEntryAsync(entryId) {
   const r = await apiRequest("DELETE", "/mediqueue/queue-entry/delete/" + encodeURIComponent(entryId));
-  if (!r.ok) return { ok: false };
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r, "Could not remove the queue entry.") };
   const data = getData();
   data.queue = (data.queue || []).filter((q) => q.entryId !== entryId);
   setData(data);
   return { ok: true };
 }
 
-// Deletes a patient and everything that references them (appointments,
-// prescriptions, medical records, queue entries, visits + vital signs), in
-// the correct order so the backend's foreign keys never block the delete.
-async function deletePatientAsync(patientId) {
-  try {
-    // queue entries (a queue entry can't be looked up again once gone)
-    const qes = await apiRequest("GET", "/mediqueue/queue-entry/all");
-    if (qes.ok && Array.isArray(qes.data)) {
-      for (const q of qes.data) {
-        if (q.patient && q.patient.userId === patientId) {
-          await deleteQueueEntryAsync(q.queueEntryId);
-        }
-      }
-    }
-    // appointments
-    const appts = await apiRequest("GET", "/appointment/getAll");
-    if (appts.ok && Array.isArray(appts.data)) {
-      for (const a of appts.data) {
-        if (a.patient && a.patient.userId === patientId) {
-          await apiRequest("DELETE", "/appointment/delete/" + encodeURIComponent(a.appointmentId));
-        }
-      }
-    }
-    // prescriptions of this patient's medical records, then the records
-    const recs = await apiRequest("GET", "/medical-record/getAll");
-    const recordIds = new Set();
-    if (recs.ok && Array.isArray(recs.data)) {
-      for (const r of recs.data) {
-        if (r.patient && r.patient.userId === patientId) recordIds.add(r.recordId);
-      }
-    }
-    const rxs = await apiRequest("GET", "/prescription/getAll");
-    if (rxs.ok && Array.isArray(rxs.data)) {
-      for (const px of rxs.data) {
-        if (px.medicalRecord && recordIds.has(px.medicalRecord.recordId)) {
-          await apiRequest("DELETE", "/prescription/delete/" + encodeURIComponent(px.prescriptionId));
-        }
-      }
-    }
-    for (const rid of recordIds) {
-      await apiRequest("DELETE", "/medical-record/delete/" + encodeURIComponent(rid));
-    }
-    // visits (with their vital signs) belonging to the patient
-    const vs = await apiRequest("GET", "/mediqueue/visit/all");
-    const visitIds = new Set();
-    if (vs.ok && Array.isArray(vs.data)) {
-      for (const v of vs.data) {
-        if (v.patient && v.patient.userId === patientId) visitIds.add(v.visitId);
-      }
-    }
-    const vitals = await apiRequest("GET", "/mediqueue/vital-signs/all");
-    if (vitals.ok && Array.isArray(vitals.data)) {
-      for (const vt of vitals.data) {
-        if (vt.visit && visitIds.has(vt.visit.visitId)) {
-          await apiRequest("DELETE", "/mediqueue/vital-signs/delete/" + encodeURIComponent(vt.vitalId));
-        }
-      }
-    }
-    for (const vid of visitIds) {
-      await apiRequest("DELETE", "/mediqueue/visit/delete/" + encodeURIComponent(vid));
-    }
-    // finally the patient itself
-    const r = await apiRequest("DELETE", "/patient/delete/" + encodeURIComponent(patientId));
-    if (!r.ok) return { ok: false };
-    const d = getData();
-    const gone = (d.patients || []).find((p) => p.id === patientId);
-    const goneName = (gone && gone.name) || "";
-    d.patients = (d.patients || []).filter((p) => p.id !== patientId);
-    d.appointments = (d.appointments || []).filter(
-      (a) => !goneName || a.patient !== goneName
-    );
-    d.records = (d.records || []).filter((rc) => rc.patientId !== patientId);
-    d.queue = (d.queue || []).filter((q) => q.id !== patientId);
-    d.visits = (d.visits || []).filter((v) => !goneName || v.patient !== goneName);
-    setData(d);
-    return { ok: true };
-  } catch (e) {
-    return { ok: false };
-  }
+async function createVisitAsync(input) {
+  const built = buildVisitPayload(input);
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("POST", "/mediqueue/visit/create", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
+  const data = getData();
+  data.visits = [mapVisit(r.data || built.payload), ...(data.visits || [])];
+  setData(data);
+  return { ok: true, created: r.data };
 }
 
-// Creates a Visit (if needed) then the VitalSigns record for an assessment.
+async function updateVisitAsync(visitId, input) {
+  const built = buildVisitPayload(Object.assign({}, input, { visitId }));
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("PUT", "/mediqueue/visit/update", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
+  const data = getData();
+  data.visits = (data.visits || []).map((v) => (v.id === visitId ? mapVisit(r.data || built.payload) : v));
+  setData(data);
+  return { ok: true, updated: r.data };
+}
+
 async function createVitalSignsAsync(input) {
-  let visitId = input.visitId;
-  if (!visitId) {
-    const v = await apiRequest(
-      "POST",
-      "/mediqueue/visit/create",
-      buildVisitPayload({
-        visitId: uniqueId("V"),
-        patientId: input.patientId,
-        visitDate: todayIso(),
-        status: "In Progress",
-      })
-    );
-    if (!v.ok) return { ok: false };
-    visitId = (v.data || {}).visitId;
-  }
-  const r = await apiRequest(
-    "POST",
-    "/mediqueue/vital-signs/create",
-    buildVitalSignsPayload({
-      vitalId: uniqueId("VIT"),
-      visitId,
-      temperature: input.temperature,
-      bloodPressure: input.bloodPressure,
-      heartRate: input.heartRate,
-      weight: input.weight,
-    })
-  );
-  if (!r.ok) return { ok: false };
-  return { ok: true, visitId };
+  if (!input.visitId) return notFound("Vitals must be linked to a visit.");
+  const built = buildVitalSignsPayload({
+    vitalId: uniqueId("VIT"),
+    visitId: input.visitId,
+    temperature: input.temperature,
+    bloodPressure: input.bloodPressure,
+    heartRate: input.heartRate,
+    weight: input.weight,
+    oxygenSaturation: input.oxygenSaturation,
+    respiratoryRate: input.respiratoryRate,
+    symptoms: input.symptoms,
+    nurseNotes: input.nurseNotes,
+  });
+  if (built.error) return notFound(built.error);
+  const r = await apiRequest("POST", "/mediqueue/vital-signs/create", built.payload);
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r) };
+  return { ok: true, created: r.data };
 }
 
+// Nurse assessment: the symptoms are analysed and stored server-side, so the
+// result is in the database and the patient can read it back later.
+async function analyzeSymptomsAsync(patientId, inputText) {
+  if (!patientId) return notFound("Select a patient before running the analysis.");
+  if (!inputText) return notFound("Enter the symptoms to analyse.");
+  const r = await apiRequest("POST", "/mediqueue/symptoms-analysis/analyze", { patientId, inputText });
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r, "Could not run the symptom analysis.") };
+  return { ok: true, analysis: r.data };
+}
+
+async function listSymptomAnalysesAsync(patientId) {
+  if (!patientId) return { ok: true, analyses: [] };
+  const r = await apiRequest("GET", "/mediqueue/symptoms-analysis/patient/" + encodeURIComponent(patientId));
+  if (!r.ok) return { ok: false, status: r.status, error: serverError(r, "Could not load previous analyses.") };
+  return { ok: true, analyses: Array.isArray(r.data) ? r.data : [] };
+}
 
 /* =========================================================
    BOOTSTRAP
-========================================================= */
+   ========================================================= */
 
 // Pull fresh data from the backend in the background and cache it
-// (only replaces local data if every endpoint answered).
+// (only replaces the cache if every endpoint answered).
 async function refreshFromApiAsync() {
   const keys = Object.keys(API_COLLECTIONS);
   const results = await Promise.all(keys.map((k) => asyncGetJSON(API_COLLECTIONS[k])));
-  if (!results.every((r) => r !== null)) return; // backend not fully reachable
+  if (!results.every((r) => r !== null)) return false; // backend not fully reachable
   window.__mqConnected = true;
   hideOfflineNotice();
   const raw = {};
   keys.forEach((k, i) => (raw[k] = results[i]));
   setData(buildDataFromApi(raw));
   console.log("[MediQueue] Connected to backend at " + API_BASE);
+  return true;
 }
 
-// Writes sample data into localStorage the first time the site is opened.
-// If the backend answers, the real data is used instead of the mock. The
-// backend is probed again on every page load (and in the background while it
-// is down), so registered patients, bookings and queue changes made earlier
-// show up on the next page load instead of stale cached data.
+// Probes the backend on every page load. The cache is only ever filled from the
+// database; if the backend cannot be reached the app stays on the empty shape
+// and shows the "not connected" banner instead of demo rows.
 function initData() {
-  if (localStorage.getItem(DATA_KEY)) {
-    connectBackendSync();
-    return;
-  }
-
-  if (connectBackendSync()) {
-    // Connected: the cache was already built from the database above.
-    console.log("[MediQueue] Synced data from backend at " + API_BASE);
-  } else {
-    localStorage.setItem(DATA_KEY, JSON.stringify(DEFAULT_DATA));
+  if (!connectBackendSync()) {
+    // Drop any cache left over from an earlier session so nothing stale (and
+    // nothing that used to be seeded demo data) is shown.
+    localStorage.removeItem(DATA_KEY);
+    setData(emptyData());
   }
 }
 
-// Small, dismissable banner telling users when nothing is being saved to the
-// database because the Spring Boot backend is not reachable.
+
+// Banner telling the user the app cannot reach the database, so writes are
+// being refused instead of being kept in the browser.
 function showOfflineNotice() {
   if (typeof document === "undefined" || !document.body || window.__mqConnected) return;
   if (document.getElementById("mqOfflineBar")) return;
   const bar = document.createElement("div");
   bar.id = "mqOfflineBar";
+  bar.setAttribute("role", "alert");
   bar.style.cssText =
     "position:fixed;top:0;left:0;right:0;z-index:99999;background:#b3261e;color:#fff;" +
     "padding:8px 40px 8px 14px;font-size:12.5px;text-align:center;";
   bar.textContent =
-    "Offline: the backend is not reachable, so changes are saved in your browser only " +
-    "(nothing is written to the database). Start Spring Boot with mvnw.cmd spring-boot:run, then reload this page.";
+    "Not connected to the database: the MediQueue backend is not reachable, so nothing can be " +
+    "saved right now. Start Spring Boot with mvnw.cmd spring-boot:run, then reload this page.";
   const close = document.createElement("button");
   close.type = "button";
+  close.setAttribute("aria-label", "Dismiss");
   close.textContent = "×";
   close.style.cssText = "position:absolute;right:8px;top:3px;background:none;border:none;color:#fff;font-size:18px;cursor:pointer;";
   close.addEventListener("click", () => bar.remove());
@@ -1070,12 +1587,35 @@ function hideOfflineNotice() {
   if (bar) bar.remove();
 }
 
-function getData() { return JSON.parse(localStorage.getItem(DATA_KEY)); }
-function setData(data) { localStorage.setItem(DATA_KEY, JSON.stringify(data)); }
-function resetData() { localStorage.setItem(DATA_KEY, JSON.stringify(DEFAULT_DATA)); }
+// The cache holds exactly what the API last returned. It is never seeded, so
+// an empty database (or an unreachable backend) renders as an empty list rather
+// than invented records.
+function getData() {
+  let parsed = null;
+  try {
+    parsed = JSON.parse(localStorage.getItem(DATA_KEY));
+  } catch (e) {
+    parsed = null;
+  }
+  if (!parsed || typeof parsed !== "object") return emptyData();
+  return Object.assign(emptyData(), parsed);
+}
+
+function setData(data) {
+  const merged = markQueuedPatients(Object.assign(emptyData(), data || {}));
+  localStorage.setItem(DATA_KEY, JSON.stringify(merged));
+  syncDepartments(merged.departments || []);
+  return merged;
+}
+
+// DEPARTMENTS is used by several pages as a plain array; it is kept in step
+// with the cache so those dropdowns always follow the database.
+const DEPARTMENTS = [];
+function syncDepartments(list) {
+  DEPARTMENTS.splice(0, DEPARTMENTS.length, ...list);
+}
 
 initData();
-const DEPARTMENTS = getData().departments;
 
 // Keep polling while the backend is down so the app adopts it the moment it
 // comes up, without requiring a page refresh.
@@ -1084,4 +1624,7 @@ startBackendPoller();
 // Show the offline banner as soon as the page body is available.
 if (typeof document !== "undefined" && document.addEventListener) {
   document.addEventListener("DOMContentLoaded", showOfflineNotice);
+  // The sidebar/topbar identity chip is repeated across every page; fill it
+  // from the signed-in record instead of a name typed into the markup.
+  document.addEventListener("DOMContentLoaded", fillIdentityChrome);
 }

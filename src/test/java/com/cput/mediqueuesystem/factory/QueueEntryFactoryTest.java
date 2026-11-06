@@ -74,11 +74,13 @@ class QueueEntryFactoryTest {
     }
 
     @Test
-    void createQueueEntry_withNullDoctor_returnsNull() {
+    void createQueueEntry_withNullDoctor_stillReturnsQueueEntry() {
+        // a patient gets a queue number when they book, before a doctor is assigned
         var entry = QueueEntryFactory.createQueueEntry(
                 "QE-004", queue(), patient(), null, null, 1, "Normal", "Waiting", LocalTime.now());
 
-        assertNull(entry);
+        assertNotNull(entry);
+        assertNull(entry.getDoctor());
     }
 
     @Test

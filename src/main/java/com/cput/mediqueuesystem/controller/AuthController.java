@@ -26,7 +26,7 @@ import com.cput.mediqueuesystem.service.AuthService.AuthException;
  * user, logout, and session lookup. Login/register succeed only when
  * the backend actually validated the credentials - no fake success.
  *
- * Author: MediQueue
+ * Author: Charmaine Dlamini
  * Date: 24 September 2026
  */
 @RestController

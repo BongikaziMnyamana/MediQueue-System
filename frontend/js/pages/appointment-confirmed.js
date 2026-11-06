@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
   const appointment =
     JSON.parse(localStorage.getItem("mq_appointment") || "null");
@@ -14,8 +14,59 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
+  /*
+    The booking is in the live queue as soon as it is created. Refresh the
+    queue cache so the confirmation always shows the number the server issued,
+    even if the cache was written by an older page load.
+  */
+  if (typeof refreshQueueFromApiAsync === "function") {
+    await refreshQueueFromApiAsync();
+  }
+
+  const queueEntry =
+    (typeof getData === "function" ? getData().queue || [] : []).find(
+      (q) =>
+        q.patientId === appointment.patientId &&
+        (!appointment.date || q.queueDate === appointment.date) &&
+        !["Cancelled", "Completed"].includes(q.status)
+    );
+
+  const queueNumber =
+    appointment.queueNumber || (queueEntry && queueEntry.no) || "-";
+
+
   const patientName =
     localStorage.getItem("mq_name") || "Patient";
+
+
+  /*
+    The booking is only confirmed once a doctor has been assigned. A request
+    without a doctor is still a valid request, but the heading must not tell
+    the patient it is already confirmed.
+  */
+
+  const status =
+    String(appointment.status || "Pending");
+
+  const isConfirmed =
+    status.toLowerCase() === "confirmed";
+
+  document.title = isConfirmed
+    ? "MediQueue - Appointment Confirmed"
+    : "MediQueue - Appointment Requested";
+
+
+  const titleEl =
+    document.querySelector(
+      ".appointment-confirmed-title"
+    );
+
+  if (titleEl) {
+    titleEl.textContent =
+      isConfirmed
+        ? "Appointment Confirmed!"
+        : "Appointment Requested";
+  }
 
 
   /*
@@ -56,13 +107,13 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById(
     "confirmedBookingId"
   ).textContent =
-    appointment.appointmentId || "Pending";
+    appointment.appointmentId || "Not available";
 
 
   document.getElementById(
     "confirmedQueueNumber"
   ).textContent =
-    appointment.queueNumber || "—";
+    queueNumber;
 
 
   document.getElementById(
@@ -101,6 +152,21 @@ document.addEventListener("DOMContentLoaded", () => {
     appointment.department;
 
 
+  const doctorEl =
+    document.getElementById("confirmedDoctor");
+  if (doctorEl) {
+    doctorEl.textContent =
+      appointment.doctor || "Not assigned yet";
+  }
+
+
+  const statusEl =
+    document.getElementById("confirmedStatus");
+  if (statusEl) {
+    statusEl.textContent = status;
+  }
+
+
   document.getElementById(
     "confirmedReason"
   ).textContent =
@@ -118,7 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById(
     "confirmedTimestamp"
   ).textContent =
-    `Booking confirmed on ${confirmedAt.toLocaleDateString(
+    `${isConfirmed ? "Booking confirmed on" : "Booking requested on"} ${confirmedAt.toLocaleDateString(
       "en-ZA",
       {
         day: "numeric",

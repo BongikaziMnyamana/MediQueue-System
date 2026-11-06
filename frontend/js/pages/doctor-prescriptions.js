@@ -1,6 +1,25 @@
-// js/pages/doctor-prescriptions.js
+﻿// js/pages/doctor-prescriptions.js
 
-const DOCTOR_NAME = "Dr. N. Zulu";
+// The prescriber is whoever is signed in - there is no hardcoded doctor.
+function currentPrescriber() {
+  const staffId = localStorage.getItem("mq_staffId");
+  const staff = (getData().users || []);
+  return staff.find(u => u.id === staffId) || null;
+}
+
+function currentPrescriberName() {
+  const doctor = currentPrescriber();
+  return doctor ? doctor.name : localStorage.getItem("mq_name") || "Doctor";
+}
+
+function isMine(prescription) {
+  const doctor = currentPrescriber();
+  if (!doctor) return false;
+  if (prescription.doctorId && doctor.id) {
+    return prescription.doctorId === doctor.id;
+  }
+  return prescription.prescribedBy === doctor.name;
+}
 
 let doctorPrescriptions = [];
 
@@ -86,14 +105,15 @@ function generatePrescriptionId(data) {
 
 function getAvailablePatients(data) {
   const patients = new Map();
+  const doctorId = localStorage.getItem("mq_staffId") || "";
 
 
   /*
-    Add patients currently in the queue.
+    Add patients currently in this doctor's queue.
   */
   if (Array.isArray(data.queue)) {
 
-    data.queue.forEach(patient => {
+    data.queue.filter((patient) => doctorId && patient.doctorId === doctorId).forEach(patient => {
 
       if (!patient.patient) {
         return;
@@ -127,7 +147,7 @@ function getAvailablePatients(data) {
   */
   if (Array.isArray(data.records)) {
 
-    data.records.forEach(record => {
+    data.records.filter((record) => doctorId && record.doctorId === doctorId).forEach(record => {
 
       if (!record.patient) {
         return;
@@ -250,11 +270,7 @@ function renderDoctorPrescriptions() {
 
   doctorPrescriptions =
     Array.isArray(data.prescriptions)
-      ? data.prescriptions.filter(
-          prescription =>
-            prescription.prescribedBy ===
-            DOCTOR_NAME
-        )
+      ? data.prescriptions.filter(isMine)
       : [];
 
 
@@ -313,7 +329,7 @@ function renderDoctorPrescriptions() {
               ${esc(
                 safeRxText(
                   prescription.id,
-                  "—"
+                  "â€”"
                 )
               )}
             </td>
@@ -352,7 +368,7 @@ function renderDoctorPrescriptions() {
                 safeRxText(
                   prescription.date ||
                   prescription.prescribedDate,
-                  "—"
+                  "â€”"
                 )
               )}
             </td>
@@ -512,91 +528,41 @@ async function savePrescription(event) {
 
   /* ---------- Create prescription ---------- */
 
-  const prescription = {
-
-    id:
-      generatePrescriptionId(data),
-
-    patient:
-      patient.name,
-
-    patientId:
-      patient.id || "",
-
-    medication:
-      medication,
-
-    dosage:
-      dosage,
-
-    instructions:
-      instructions,
-
-    prescribedBy:
-      DOCTOR_NAME,
-
-    date:
-      getPrescriptionDate(),
-
-    prescribedDate:
-      getPrescriptionISODate(),
-
-    status:
-      "Pending"
-
-  };
-
-
   /*
-    Persist the prescription on the backend when possible.
-    The page still keeps its own display record either way.
+    A prescription is stored against a medical record, so the patient's most
+    recent record is used. Nothing is written to the cache until the server
+    confirmed the insert.
   */
-  if (window.__mqConnected && patient.id) {
+  const records = data.records || [];
+  const record = records
+    .filter(r => r.patientId === patient.id)
+    .sort((a, b) => String(b.date || b.visitDate || "").localeCompare(String(a.date || a.visitDate || "")))[0];
 
-    const record =
-      (data.records || []).find(r =>
-        r.patientId === patient.id
-      );
+  if (!record || !record.recordId) {
+    alert(
+      "This patient has no medical record yet. Save a consultation record before prescribing."
+    );
+    return;
+  }
 
-    if (record && record.recordId) {
+  const saved = await createPrescriptionAsync({
+    prescriptionId: generatePrescriptionId(data),
+    recordId: record.recordId,
+    medicationName: medication,
+    dosage: dosage,
+    instructions: instructions,
+    prescriptionDate: getPrescriptionISODate(),
+    status: "Pending"
+  });
 
-      const saved =
-        await apiRequest(
-          "POST",
-          "/prescription/create",
-          buildPrescriptionPayload({
-            prescriptionId: prescription.id,
-            recordId: record.recordId,
-            medicationName: medication,
-            dosage: dosage,
-            instructions: instructions,
-            prescriptionDate: prescription.prescribedDate
-          })
-        );
-
-      if (!saved.ok) {
-
-        alert(
-          `Prescription ${prescription.id} could not be saved to the server – saved locally only.`
-        );
-
-      }
-
-    }
-
+  if (!saved.ok) {
+    alert(saved.error || "The prescription could not be saved to the server.");
+    return;
   }
 
 
-  data.prescriptions.unshift(
-    prescription
-  );
-
-
-  setData(data);
-
-
   alert(
-    `Prescription ${prescription.id} saved successfully.`
+    `Prescription ${(saved.created || {}).prescriptionId || ""} saved successfully.`
   );
 
 
@@ -929,7 +895,7 @@ function openPrescriptionDetails(
         ${esc(
           safeRxText(
             prescription.prescribedBy,
-            DOCTOR_NAME
+            currentPrescriberName()
           )
         )}
       </strong>
@@ -1016,3 +982,5 @@ document.addEventListener(
 
   }
 );
+
+

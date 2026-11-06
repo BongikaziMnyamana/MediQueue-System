@@ -21,7 +21,7 @@ import com.cput.mediqueuesystem.domain.Staff;
 public class MedicalRecordFactory {
 
     public static MedicalRecord createMedicalRecord(String recordId, Patient patient, Staff createdBy,
-                                                      String diagnosis, String notes, LocalDate recordDate) {
+                                                      String complaint, String diagnosis, String notes, LocalDate recordDate) {
 
         if (GenericValidator.isBlankOrNull(recordId)
                 || patient == null
@@ -34,6 +34,7 @@ public class MedicalRecordFactory {
                 .setRecordId(recordId)
                 .setPatient(patient)
                 .setCreatedBy(createdBy)
+                .setComplaint(complaint)
                 .setDiagnosis(diagnosis)
                 .setNotes(notes)
                 .setRecordDate(recordDate)

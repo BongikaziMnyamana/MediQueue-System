@@ -21,6 +21,81 @@ document.addEventListener("DOMContentLoaded", () => {
   const submitButton =
     document.querySelector(".patient-register-submit");
 
+  const idNumberInput =
+    document.getElementById("idNumber");
+
+  const dateOfBirthInput =
+    document.getElementById("dateOfBirth");
+
+
+  /*
+    South African ID numbers start with YYMMDD, so the date of birth can be
+    filled in automatically once all 13 digits have been entered.
+  */
+
+  function dateOfBirthFromId(idNumber) {
+
+    if (!/^[0-9]{13}$/.test(idNumber)) {
+      return "";
+    }
+
+    const shortYear =
+      Number(idNumber.slice(0, 2));
+
+    const month =
+      Number(idNumber.slice(2, 4));
+
+    const day =
+      Number(idNumber.slice(4, 6));
+
+    const currentYear =
+      new Date().getFullYear();
+
+    let year =
+      Math.floor(currentYear / 100) * 100 + shortYear;
+
+    if (year > currentYear) {
+      year -= 100;
+    }
+
+    const date =
+      new Date(year, month - 1, day);
+
+    const isValid =
+      date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day;
+
+    if (!isValid) {
+      return "";
+    }
+
+    return [
+      String(year).padStart(4, "0"),
+      String(month).padStart(2, "0"),
+      String(day).padStart(2, "0")
+    ].join("-");
+
+  }
+
+
+  function fillDateOfBirthFromId() {
+
+    const value =
+      dateOfBirthFromId(idNumberInput.value.trim());
+
+    if (value) {
+      dateOfBirthInput.value = value;
+    }
+
+  }
+
+
+  idNumberInput.addEventListener(
+    "input",
+    fillDateOfBirthFromId
+  );
+
 
   togglePasswordButton.addEventListener("click", () => {
 
@@ -92,6 +167,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (!allergies) {
+      errorMessage.textContent =
+        "Please enter your allergies, or write None.";
+      return;
+    }
+
     if (password !== confirmPassword) {
       errorMessage.textContent =
         "Passwords do not match.";
@@ -108,9 +189,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /*
       Register with the backend. The account is only created when the
-      server accepted it — no fake success. On success the response
-      already contains a session token, so the patient is logged in
-      and sent straight to their dashboard.
+      server accepted it - no fake success. The patient is then shown a
+      success page and must sign in from the login page.
     */
 
     if (submitButton) {
@@ -147,19 +227,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    if (firstName) {
-      localStorage.setItem(
-        "mq_patient",
-        JSON.stringify({ fullName, patientId: res.data.patientId })
-      );
-    }
-
-
-    saveSession(res.data);
+    // Do not keep the registration token: the patient must sign in through
+    // the login page after the success screen.
+    clearSession();
 
 
     window.location.href =
-      "patient-dashboard.html";
+      "patient-register-success.html";
 
   });
 

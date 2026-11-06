@@ -2,8 +2,12 @@ package com.cput.mediqueuesystem.domain;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -18,9 +22,21 @@ import jakarta.persistence.Table;
  * Date: 28 July 2026
  */
 
+/*
+ * Indexes:
+ *  - department_id : the book-appointment dropdown loads doctors per department.
+ *  - position      : filtering the staff list by role.
+ */
 @Entity
-@Table(name = "staff")
+@Table(
+    name = "staff",
+    indexes = {
+        @Index(name = "idx_staff_department", columnList = "department_id"),
+        @Index(name = "idx_staff_position", columnList = "position")
+    }
+)
 @PrimaryKeyJoinColumn(name = "user_id")
+@JsonDeserialize(builder = Staff.Builder.class)
 public class Staff extends User {
 
     // Department the staff member belongs to
@@ -53,6 +69,16 @@ public class Staff extends User {
         return position;
     }
 
+    // Setters used by the service layer when applying a validated update
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
     // Returns the Staff object as a String
     @Override
     public String toString() {
@@ -73,6 +99,7 @@ public class Staff extends User {
      * User.Builder to Staff.Builder, so chaining works with Staff-only
      * setters (setDepartment, setPosition) and .build().
      */
+    @JsonPOJOBuilder(withPrefix = "set")
     public static class Builder extends User.Builder {
 
         private Department department;

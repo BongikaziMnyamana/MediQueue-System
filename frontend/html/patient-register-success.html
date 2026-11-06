@@ -45,6 +45,16 @@
         Registered Successfully!
       </h1>
 
+      <p
+        style="
+          margin:14px 0 0;
+          color:var(--slate);
+          font-size:14px;
+        "
+      >
+        Redirecting you to the login page...
+      </p>
+
       <a
         href="patient-login.html"
         class="btn btn-primary patient-success-login-btn"
@@ -55,6 +65,12 @@
     </div>
 
   </main>
+
+  <script>
+    window.setTimeout(function () {
+      window.location.href = "patient-login.html";
+    }, 4000);
+  </script>
 
 </body>
 </html>

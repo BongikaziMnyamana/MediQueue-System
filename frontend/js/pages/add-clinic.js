@@ -1,12 +1,15 @@
+// js/pages/add-clinic.js
+// The clinic is written to the database; the page only moves on once the
+// server confirmed the insert.
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const form = document.getElementById("addClinicPageForm");
+  const submit = form.querySelector("button[type='submit']");
 
   form.addEventListener("submit", async (event) => {
 
     event.preventDefault();
-
-    const data = getData();
 
     const clinicName =
       document
@@ -14,57 +17,21 @@ document.addEventListener("DOMContentLoaded", () => {
         .value
         .trim();
 
-    const clinicLocation =
-      document
-        .getElementById("clinicLocation")
-        .value
-        .trim();
+    const saved = await createClinicAsync({
+      clinicName,
+      location: document.getElementById("clinicLocation").value.trim(),
+      contactNumber: document.getElementById("clinicContact").value.trim()
+    });
 
-    const clinicContact =
-      document
-        .getElementById("clinicContact")
-        .value
-        .trim();
-
-    const clinicId =
-      `CL${String(data.clinics.length + 1).padStart(3, "0")}`;
-
-    /*
-      Create the clinic on the backend when it is reachable.
-    */
-    if (window.__mqConnected) {
-
-      const saved =
-        await createClinicAsync({
-          clinicId,
-          clinicName,
-          location: clinicLocation,
-          contactNumber: clinicContact
-        });
-
-      if (!saved.ok) {
-        alert(
-          "Could not save the clinic to the server – saved locally only."
-        );
-      }
-
+    if (!saved.ok) {
+      alert(saved.error || "Could not save the clinic to the server.");
+      return;
     }
 
-    const newClinic = {
-      id: clinicId,
-      name: clinicName,
-      location: clinicLocation,
-      contact: clinicContact,
-      dateCreated: new Date().toLocaleDateString("en-ZA", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-      })
-    };
-
-    data.clinics.push(newClinic);
-
-    setData(data);
+    if (submit) {
+      submit.disabled = true;
+      submit.textContent = "Saving...";
+    }
 
     window.location.href = "clinic-success.html";
 

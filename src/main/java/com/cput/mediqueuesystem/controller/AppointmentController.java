@@ -3,6 +3,8 @@ package com.cput.mediqueuesystem.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,53 +39,76 @@ public class AppointmentController {
     }
 
     @PostMapping("/create")
-    public Appointment create(@RequestBody Appointment appointment) {
-        return appointmentService.create(appointment);
+    public ResponseEntity<Appointment> create(@RequestBody Appointment appointment) {
+        Appointment created = appointmentService.create(appointment);
+        if (created == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @GetMapping("/read/{id}")
-    public Appointment read(@PathVariable("id") String appointmentId) {
-        return appointmentService.read(appointmentId);
+    public ResponseEntity<Appointment> read(@PathVariable("id") String appointmentId) {
+        Appointment appointment = appointmentService.read(appointmentId);
+        if (appointment == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(appointment, HttpStatus.OK);
     }
 
     @PutMapping("/update")
-    public Appointment update(@RequestBody Appointment appointment) {
-        return appointmentService.update(appointment);
+    public ResponseEntity<Appointment> update(@RequestBody Appointment appointment) {
+        Appointment updated = appointmentService.update(appointment);
+        if (updated == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public boolean delete(@PathVariable("id") String appointmentId) {
-        return appointmentService.delete(appointmentId);
+    public ResponseEntity<Boolean> delete(@PathVariable("id") String appointmentId) {
+        if (!appointmentService.delete(appointmentId)) {
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @GetMapping("/getAll")
-    public List<Appointment> getAll() {
-        return appointmentService.getAll();
+    public ResponseEntity<List<Appointment>> getAll() {
+        return new ResponseEntity<>(appointmentService.getAll(), HttpStatus.OK);
     }
 
     // Appointments for a specific patient (used by the patient dashboard)
     @GetMapping("/patient/{patientId}")
-    public List<Appointment> getByPatient(@PathVariable("patientId") String patientId) {
-        return appointmentService.getByPatient(patientId);
+    public ResponseEntity<List<Appointment>> getByPatient(@PathVariable("patientId") String patientId) {
+        return new ResponseEntity<>(appointmentService.getByPatient(patientId), HttpStatus.OK);
     }
 
     // Appointments assigned to a specific doctor (used by the doctor dashboard)
     @GetMapping("/doctor/{doctorId}")
-    public List<Appointment> getByDoctor(@PathVariable("doctorId") String doctorId) {
-        return appointmentService.getByDoctor(doctorId);
+    public ResponseEntity<List<Appointment>> getByDoctor(@PathVariable("doctorId") String doctorId) {
+        return new ResponseEntity<>(appointmentService.getByDoctor(doctorId), HttpStatus.OK);
     }
 
     // Assign a doctor to an appointment (admin/doctor/receptionist)
     @PutMapping("/assign/{appointmentId}/{doctorId}")
-    public Appointment assignDoctor(@PathVariable("appointmentId") String appointmentId,
-                                    @PathVariable("doctorId") String doctorId) {
-        return appointmentService.assignDoctor(appointmentId, doctorId);
+    public ResponseEntity<Appointment> assignDoctor(@PathVariable("appointmentId") String appointmentId,
+                                                    @PathVariable("doctorId") String doctorId) {
+        Appointment appointment = appointmentService.assignDoctor(appointmentId, doctorId);
+        if (appointment == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(appointment, HttpStatus.OK);
     }
 
     // Update the status of an appointment (admin/doctor/receptionist)
     @PutMapping("/status/{appointmentId}/{status}")
-    public Appointment updateStatus(@PathVariable("appointmentId") String appointmentId,
-                                    @PathVariable("status") String status) {
-        return appointmentService.updateStatus(appointmentId, status);
+    public ResponseEntity<Appointment> updateStatus(@PathVariable("appointmentId") String appointmentId,
+                                                    @PathVariable("status") String status) {
+        Appointment appointment = appointmentService.updateStatus(appointmentId, status);
+        if (appointment == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(appointment, HttpStatus.OK);
     }
 }

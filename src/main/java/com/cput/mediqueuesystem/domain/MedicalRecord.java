@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -22,8 +23,19 @@ import jakarta.persistence.Table;
  * Date: 03 August 2026
  */
 
+/*
+ * Indexes:
+ *  - patient_id : the medical-record page loads one patient's records.
+ *  - record_date: newest-first history ordering.
+ */
 @Entity
-@Table(name = "medical_record")
+@Table(
+    name = "medical_record",
+    indexes = {
+        @Index(name = "idx_medical_record_patient", columnList = "patient_id"),
+        @Index(name = "idx_medical_record_date", columnList = "record_date")
+    }
+)
 public class MedicalRecord {
 
     // Primary Key
@@ -40,6 +52,10 @@ public class MedicalRecord {
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
     private Staff createdBy;
+
+    // Chief complaint reported by the patient
+    @Column(name = "complaint")
+    private String complaint;
 
     // Diagnosis given by the doctor
     @Column(name = "diagnosis")
@@ -62,6 +78,7 @@ public class MedicalRecord {
         this.recordId = builder.recordId;
         this.patient = builder.patient;
         this.createdBy = builder.createdBy;
+        this.complaint = builder.complaint;
         this.diagnosis = builder.diagnosis;
         this.notes = builder.notes;
         this.recordDate = builder.recordDate;
@@ -79,6 +96,10 @@ public class MedicalRecord {
 
     public Staff getCreatedBy() {
         return createdBy;
+    }
+
+    public String getComplaint() {
+        return complaint;
     }
 
     public String getDiagnosis() {
@@ -100,6 +121,7 @@ public class MedicalRecord {
                 "recordId='" + recordId + '\'' +
                 ", patient=" + (patient != null ? patient.getUserId() : null) +
                 ", createdBy=" + (createdBy != null ? createdBy.getUserId() : null) +
+                ", complaint='" + complaint + '\'' +
                 ", diagnosis='" + diagnosis + '\'' +
                 ", notes='" + notes + '\'' +
                 ", recordDate=" + recordDate +
@@ -114,6 +136,7 @@ public class MedicalRecord {
         private String recordId;
         private Patient patient;
         private Staff createdBy;
+        private String complaint;
         private String diagnosis;
         private String notes;
         private LocalDate recordDate;
@@ -130,6 +153,11 @@ public class MedicalRecord {
 
         public Builder setCreatedBy(Staff createdBy) {
             this.createdBy = createdBy;
+            return this;
+        }
+
+        public Builder setComplaint(String complaint) {
+            this.complaint = complaint;
             return this;
         }
 
@@ -152,6 +180,7 @@ public class MedicalRecord {
             this.recordId = medicalRecord.recordId;
             this.patient = medicalRecord.patient;
             this.createdBy = medicalRecord.createdBy;
+            this.complaint = medicalRecord.complaint;
             this.diagnosis = medicalRecord.diagnosis;
             this.notes = medicalRecord.notes;
             this.recordDate = medicalRecord.recordDate;

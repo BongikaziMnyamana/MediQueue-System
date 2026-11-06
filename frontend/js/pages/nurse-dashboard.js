@@ -37,7 +37,7 @@ function renderNurseDashboard() {
   // -----------------------------
   const waitingPatients =
     Array.isArray(data.queue)
-      ? data.queue.filter((patient) => patient.status === "Waiting")
+      ? data.queue.filter((patient) => isAwaitingNurseStatus(patient.status))
       : [];
 
   const patientsSeenToday =
@@ -46,25 +46,26 @@ function renderNurseDashboard() {
       : 0;
 
   /*
-    For now, we do not yet have a separate vital-signs
-    collection in data.js.
-
-    So for the frontend prototype:
-    - Waiting patients are treated as still requiring assessment.
-    - In Consultation patients are treated as assessment completed.
+    Assessments are the vital-signs rows recorded by the nursing team. A
+    waiting patient only needs vitals while they have no assessment yet.
   */
 
-  const pendingVitals =
-    Array.isArray(data.queue)
-      ? data.queue.filter((patient) => patient.status === "Waiting")
+  const assessments =
+    Array.isArray(data.vitalSigns)
+      ? data.vitalSigns
       : [];
 
+  const assessedPatientIds = new Set(
+    assessments.map((assessment) => assessment.patientId).filter(Boolean)
+  );
+
+  const pendingVitals =
+    waitingPatients.filter(
+      (patient) => !assessedPatientIds.has(patient.id)
+    );
+
   const completedAssessments =
-    Array.isArray(data.queue)
-      ? data.queue.filter(
-          (patient) => patient.status === "In Consultation"
-        )
-      : [];
+    assessments;
 
 
   setText(
@@ -210,7 +211,7 @@ function renderNurseQueue(waitingPatients) {
                     margin-top:3px;
                   "
                 >
-                  ${escapeHtml(patient.no)}
+                  ${escapeHtml(queueNoLabel(patient))}
                   &nbsp;•&nbsp;
                   ${escapeHtml(patient.dept)}
                 </div>
@@ -251,22 +252,42 @@ function renderNurseQueue(waitingPatients) {
                     margin-top:2px;
                   "
                 >
-                  Waiting
+                  ${
+                    patient.status === "In Assessment"
+                      ? "Being assessed"
+                      : "Waiting"
+                  }
                 </div>
 
               </div>
 
 
-              <a
-                href="nurse-queue.html"
-                class="btn btn-primary btn-sm"
-                style="
-                  text-decoration:none;
-                  white-space:nowrap;
-                "
-              >
-                Assess
-              </a>
+              ${
+                patient.status !== "In Assessment"
+                  ? `
+                    <a
+                      href="nurse-queue.html"
+                      class="btn btn-primary btn-sm"
+                      style="
+                        text-decoration:none;
+                        white-space:nowrap;
+                      "
+                    >
+                      Assess
+                    </a>
+                  `
+                  : `
+                    <button
+                      class="btn btn-primary btn-sm"
+                      disabled
+                      style="
+                        white-space:nowrap;
+                      "
+                    >
+                      Being assessed
+                    </button>
+                  `
+              }
 
             </div>
 
@@ -274,6 +295,24 @@ function renderNurseQueue(waitingPatients) {
         `;
       })
       .join("");
+}
+
+
+function formatActivityTime(value) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toLocaleTimeString("en-ZA", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
 
@@ -288,41 +327,53 @@ function renderRecentActivity(data) {
     return;
   }
 
+  // Derived from the real vital-signs and queue rows, never from a
+  // hardcoded prototype list.
+  const activities = [];
 
-  /*
-    These are frontend prototype activities.
+  const assessments = Array.isArray(data.vitalSigns)
+    ? [...data.vitalSigns]
+    : [];
 
-    Once the backend and Vital_Signs data are connected,
-    this section can be populated from actual nurse actions.
-  */
+  assessments
+    .sort(
+      (a, b) =>
+        new Date(b.recordedAt || 0) - new Date(a.recordedAt || 0)
+    )
+    .slice(0, 2)
+    .forEach((assessment) => {
+      activities.push({
+        title: "Vital signs recorded",
+        description:
+          `${assessment.patient || "Patient"}` +
+          `${assessment.recordedBy ? " by " + assessment.recordedBy : ""}.`,
+        time: formatActivityTime(assessment.recordedAt)
+      });
+    });
 
-  const activities = [
-    {
-      title: "Vital signs recorded",
-      description:
-        "Sipho Dlamini's assessment was completed.",
-      time: "09:10 AM"
-    },
-    {
-      title: "Patient prepared for consultation",
-      description:
-        "Sipho Dlamini was moved to consultation.",
-      time: "09:15 AM"
-    },
-    {
+  const waiting = (data.queue || []).filter(
+    (patient) =>
+      isTodayQueueEntry(patient) &&
+      (isAwaitingNurseStatus(patient.status) ||
+        patient.status === "Ready for Doctor")
+  );
+
+  waiting.slice(0, 2).forEach((patient) => {
+    activities.push({
       title: "Patient waiting",
-      description:
-        "Nomsa Khumalo is waiting for nurse assessment.",
-      time: "10:05 AM"
-    },
-    {
-      title: "Patient waiting",
-      description:
-        "Thabo Mokoena is waiting for nurse assessment.",
-      time: "10:20 AM"
-    }
-  ];
+      description: `${patient.patient} is waiting for nurse assessment.`,
+      time: patient.wait || ""
+    });
+  });
 
+  if (activities.length === 0) {
+    activities.push({
+      title: "No activity yet",
+      description:
+        "Vital signs you record and patients waiting for assessment will appear here.",
+      time: ""
+    });
+  }
 
   activityContainer.innerHTML =
     activities

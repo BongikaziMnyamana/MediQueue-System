@@ -184,6 +184,27 @@
 
         Book Appointment
 
+      </a>
+      <!-- My Appointments -->
+      <a
+        href="patient-appointments.html"
+        class="nav-item"
+      >
+
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="9"></circle>
+          <polyline points="12 7 12 12 15 14"></polyline>
+        </svg>
+
+        My Appointments
+
       </a>
 
 
@@ -328,7 +349,6 @@
               class="user-name"
               id="patientTopbarName"
             >
-              Charmaine
             </div>
 
             <div class="user-role">
@@ -359,7 +379,7 @@
           </h1>
 
           <div class="page-sub">
-            Schedule your next visit
+            Request a visit and the clinic will assign your doctor
           </div>
 
         </div>
@@ -446,49 +466,6 @@
 
                 <option value="Mitchells Plain Clinic">
                   Mitchells Plain Clinic
-                </option>
-
-              </select>
-
-            </div>
-
-
-            <!-- Department -->
-
-            <div class="field">
-
-              <label for="appointmentDepartment">
-                Department
-              </label>
-
-              <select
-                class="input"
-                id="appointmentDepartment"
-                required
-              >
-
-                <option value="" selected disabled>
-                  Select department
-                </option>
-
-                <option value="General Medicine">
-                  General Medicine
-                </option>
-
-                <option value="Pediatrics">
-                  Pediatrics
-                </option>
-
-                <option value="Antenatal Care">
-                  Antenatal Care
-                </option>
-
-                <option value="HIV Care">
-                  HIV Care
-                </option>
-
-                <option value="Dental">
-                  Dental
                 </option>
 
               </select>
@@ -629,6 +606,7 @@
 
 
 <script src="../js/data.js"></script>
+<script src="../js/render-helpers.js"></script>
 <script src="../js/guard.js"></script>
 <script src="../js/pages/book-appointment.js"></script>
 

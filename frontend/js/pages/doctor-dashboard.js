@@ -12,9 +12,52 @@ let consultDraft = {
 ========================================================= */
 
 function currentPatient(data) {
+  const doctorId = currentDoctorId(data);
+  if (!doctorId) {
+    return null;
+  }
   return data.queue.find(
-    patient => patient.status === "In Consultation"
+    patient =>
+      patient.status === "In Consultation" &&
+      patient.doctorId === doctorId
   );
+}
+
+// Every patient assigned to the signed-in doctor, excluding closed entries.
+// A patient who is Ready for Doctor must show even if their queue entry was
+// opened on an earlier day — they are still waiting to be called.
+function doctorQueue(data, doctorId) {
+  return (data.queue || []).filter(
+    (entry) =>
+      entry.doctorId === doctorId &&
+      !["Cancelled", "Completed"].includes(entry.status)
+  );
+}
+
+function isNurseReady(entry) {
+  return Boolean(
+    entry &&
+      String(entry.status || "").trim().toLowerCase() === "ready for doctor"
+  );
+}
+
+function findQueueEntryForPatient(patientId, doctorId) {
+  if (!patientId) {
+    return null;
+  }
+  return (getData().queue || []).find(
+    (entry) =>
+      entry.patientId === patientId &&
+      entry.doctorId === doctorId &&
+      !["Cancelled", "Completed"].includes(entry.status)
+  ) || null;
+}
+
+function waitingPatients(data, doctorId) {
+  // The doctor may only call patients the nurse has assessed and marked
+  // "Ready for Doctor". A patient who is still waiting for vitals must not be
+  // pulled into the consultation from here.
+  return doctorQueue(data, doctorId).filter(isNurseReady);
 }
 
 
@@ -120,7 +163,7 @@ function getVitalValue(vitals, possibleKeys, fallback = "Not recorded") {
 
 function callNext(data) {
   /*
-    If a patient is already in consultation,
+    If a patient is already in consultation with this doctor,
     we do not replace them.
   */
   const existing = currentPatient(data);
@@ -129,14 +172,17 @@ function callNext(data) {
     return existing;
   }
 
-  const nextPatient = data.queue.find(
-    patient => patient.status === "Waiting"
-  );
+  const doctorId = currentDoctorId(data);
+  const nextPatient = waitingPatients(data, doctorId)[0];
 
   if (!nextPatient) {
     return null;
   }
 
+  /*
+    Mark the patient in the cache so the form has somebody to work on; the
+    status itself is written to the database by the caller.
+  */
   nextPatient.status = "In Consultation";
 
   return nextPatient;
@@ -149,14 +195,50 @@ function callNext(data) {
 
 function getConsultationsToday(data) {
   const today = getTodayISO();
+  const doctorId = currentDoctorId(data);
 
   return data.records.filter(record => {
-    return (
+    const onToday =
       record.visitDate === today ||
       record.date === today ||
-      record.createdDate === today
-    );
+      record.createdDate === today;
+    return onToday && doctorId && record.doctorId === doctorId;
   }).length;
+}
+
+
+// How many distinct patients this doctor has actually seen today, counted from
+// the records, visits and appointments that belong to them.
+function countSeenTodayForDoctor() {
+  const data = getData();
+  const today = getTodayISO();
+  const doctorId = currentDoctorId(data);
+  if (!doctorId) return 0;
+  const seen = new Set();
+
+  (data.records || []).forEach(record => {
+    const onToday = record.visitDate === today || record.date === today || record.createdDate === today;
+    if (onToday && record.doctorId === doctorId && record.patientId) seen.add(record.patientId);
+  });
+
+  (data.visits || []).forEach(visit => {
+    if (visit.visitDate === today && visit.doctorId === doctorId && visit.patientId) {
+      seen.add(visit.patientId);
+    }
+  });
+
+  (data.appointments || []).forEach(appointment => {
+    if (
+      appointment.date === today &&
+      appointment.doctorId === doctorId &&
+      appointment.patientId &&
+      (appointment.status === "Completed" || appointment.status === "Checked In")
+    ) {
+      seen.add(appointment.patientId);
+    }
+  });
+
+  return seen.size;
 }
 
 
@@ -169,9 +251,14 @@ function renderDoctorDashboard() {
 
   const inConsult = currentPatient(data);
 
-  const waitingCount = data.queue.filter(
-    patient => patient.status === "Waiting"
-  ).length;
+  const profile = (data.profiles || {})[String(localStorage.getItem("mq_role") || "").toUpperCase()] || {};
+  const sub = document.getElementById("doctorPageSub");
+  if (sub) {
+    sub.textContent = [profile.name, profile.department].filter(Boolean).join(" — ") || "Doctor dashboard";
+  }
+
+  const doctorId = currentDoctorId(data);
+  const waitingCount = waitingPatients(data, doctorId).length;
 
 
   /* ---------- Summary cards ---------- */
@@ -180,7 +267,7 @@ function renderDoctorDashboard() {
     waitingCount;
 
   document.getElementById("seenTodayVal").textContent =
-    data.seenToday || 0;
+    countSeenTodayForDoctor();
 
   document.getElementById("consultCount").textContent =
     getConsultationsToday(data);
@@ -327,6 +414,12 @@ function renderDoctorDashboard() {
           <div class="consult-meta">
 
             ${esc(inConsult.id || "")}
+
+            ${
+              inConsult.dept
+                ? ` · ${esc(inConsult.dept)}`
+                : ""
+            }
 
             ${
               inConsult.gender
@@ -711,86 +804,102 @@ function validateConsultation() {
 
 /* =========================================================
    CREATE / UPDATE PATIENT RECORD
-========================================================= */
+   ========================================================= */
 
-function saveConsultationRecord(data, patient) {
-  const todayISO = getTodayISO();
-
-  /*
-    We give the consultation a stable reference linked
-    to the current queue entry.
-
-    This allows "Save record" to update the same
-    consultation rather than adding duplicates every
-    time the Doctor presses Save.
-  */
-  const consultationRef =
-    `CONS-${patient.no}`;
-
-
-  const existingIndex =
-    data.records.findIndex(record =>
-      record.consultationRef === consultationRef
-    );
-
-
-  const record = {
-    consultationRef: consultationRef,
-
-    patient: patient.patient,
-
-    patientId: patient.id,
-
-    complaint:
-      consultDraft.complaint.trim(),
-
-    diagnosis:
-      consultDraft.diagnosis.trim(),
-
-    notes:
-      consultDraft.notes.trim(),
-
-    /*
-      Keep condition and lastVisit because the existing
-      doctor-records.js currently expects those fields.
-    */
-    condition:
-      consultDraft.diagnosis.trim(),
-
-    lastVisit:
-      getTodayLabel(),
-
-    visitDate:
-      todayISO,
-
-    doctor:
-      "Dr. N. Zulu",
-
-    department:
-      patient.dept || "General Medicine",
-
-    queueNo:
-      patient.no,
-
-    status:
-      "Completed"
-  };
-
-
-  if (existingIndex !== -1) {
-    data.records[existingIndex] = {
-      ...data.records[existingIndex],
-      ...record
-    };
-  } else {
-    data.records.unshift(record);
+// The signed-in doctor, taken from the session the backend issued. There is
+// deliberately no "first doctor" fallback: a doctor must never see another
+// doctor's patients just because their own staff row failed to load.
+function currentDoctor(data) {
+  const staffId = localStorage.getItem("mq_staffId");
+  if (!staffId) {
+    return null;
   }
+  return (data.users || []).find(u => u.id === staffId) || null;
+}
+
+function currentDoctorId(data) {
+  const doctor = currentDoctor(data);
+  return doctor ? doctor.id : (localStorage.getItem("mq_staffId") || null);
+}
+
+function currentDoctorName(data) {
+  const doctor = currentDoctor(data);
+  return doctor ? doctor.name : "";
+}
+
+// Writes the consultation to the database. A record for the same patient on the
+// same day is updated instead of duplicated, so pressing save twice is safe.
+async function saveConsultationRecord(patient) {
+  const data = getData();
+  const doctorId = currentDoctorId(data);
+  if (!doctorId) {
+    return { ok: false, error: "Your staff record could not be found on the server." };
+  }
+
+  const recordDate = getTodayISO();
+  const consultationRef = `CONS-${patient.no || patient.entryId || patient.id}`;
+  // The cache reference is lost on a full re-sync, so an existing record for
+  // this patient on this date counts as the same consultation.
+  const existing = (data.records || []).find(
+    (record) =>
+      record.doctorId === doctorId &&
+      (record.consultationRef === consultationRef ||
+        (record.patientId === patient.id &&
+          (record.visitDate === recordDate || record.date === recordDate)))
+  );
+  const complaint = consultDraft.complaint.trim();
+  const notes = complaint
+    ? `${complaint}\n${consultDraft.notes.trim()}`.trim()
+    : consultDraft.notes.trim();
+
+  if (existing) {
+    const updated = await apiRequest("PUT", "/medical-record/update", {
+      recordId: existing.recordId,
+      patient: { type: "patient", userId: patient.id },
+      createdBy: { type: "staff", userId: doctorId },
+      complaint,
+      diagnosis: consultDraft.diagnosis.trim(),
+      notes,
+      recordDate,
+    });
+    if (!updated.ok) {
+      return { ok: false, status: updated.status, error: "Could not update the consultation record on the server." };
+    }
+    return { ok: true };
+  }
+
+  const created = await createMedicalRecordAsync({
+    recordId: uniqueId("REC"),
+    patientId: patient.id,
+    doctorId,
+    complaint,
+    diagnosis: consultDraft.diagnosis.trim(),
+    notes,
+    recordDate,
+  });
+  if (!created.ok) {
+    return { ok: false, status: created.status, error: created.error };
+  }
+
+  // Keep the queue reference the records list uses for display.
+  const fresh = getData();
+  const saved = (fresh.records || []).find(r => r.recordId === (created.created || {}).recordId);
+  if (saved) {
+    saved.consultationRef = consultationRef;
+    saved.complaint = complaint;
+    saved.department = patient.dept || "";
+    saved.queueNo = patient.no || "";
+    saved.status = "Completed";
+    saved.doctor = currentDoctorName(fresh);
+    setData(fresh);
+  }
+  return { ok: true };
 }
 
 
 /* =========================================================
    SAVE RECORD
-========================================================= */
+   ========================================================= */
 
 async function saveRecord() {
   if (!validateConsultation()) {
@@ -812,49 +921,11 @@ async function saveRecord() {
   }
 
 
-  saveConsultationRecord(
-    data,
-    patient
-  );
+  const saved = await saveConsultationRecord(patient);
 
-
-  setData(data);
-
-
-  /*
-    Persist the consultation on the backend when possible.
-  */
-  if (window.__mqConnected && patient.id) {
-
-    const doctor =
-      (data.users || []).find(u =>
-        userMatchesLabel(u, "Dr. N. Zulu")
-      );
-
-    if (doctor && doctor.id) {
-
-      const saved =
-        await apiRequest(
-          "POST",
-          "/medical-record/create",
-          buildMedicalRecordPayload({
-            recordId: uniqueId("REC"),
-            patientId: patient.id,
-            doctorId: doctor.id,
-            diagnosis: consultDraft.diagnosis.trim(),
-            notes: consultDraft.notes.trim(),
-            recordDate: getTodayISO()
-          })
-        );
-
-      if (!saved.ok) {
-        alert(
-          "Consultation record could not be saved to the server."
-        );
-      }
-
-    }
-
+  if (!saved.ok) {
+    alert(saved.error || "Consultation record could not be saved to the server.");
+    return;
   }
 
 
@@ -869,7 +940,7 @@ async function saveRecord() {
 
 /* =========================================================
    COMPLETE CONSULTATION
-========================================================= */
+   ========================================================= */
 
 async function completeConsultation() {
   if (!validateConsultation()) {
@@ -887,57 +958,46 @@ async function completeConsultation() {
   }
 
 
-  /*
-    Backend: complete this patient's queue entry.
-  */
-  if (window.__mqConnected && patient.entryId) {
+  // Save the consultation first: if that fails nothing else is changed.
+  const saved = await saveConsultationRecord(patient);
 
-    const queued =
-      await setQueueEntryStatusAsync(
-        patient.entryId,
-        "Completed"
-      );
-
-    if (!queued.ok) {
-      alert(
-        "Could not update the queue on the server."
-      );
-    }
-
+  if (!saved.ok) {
+    alert(saved.error || "Consultation record could not be saved to the server.");
+    return;
   }
 
 
-  /*
-    Save the consultation before removing the patient.
-  */
-  saveConsultationRecord(
-    data,
-    patient
+  // Then close the queue entry on the server.
+  if (patient.entryId) {
+    const queued = await setQueueEntryStatusAsync(patient.entryId, "Completed");
+
+    if (!queued.ok) {
+      alert(queued.error || "Could not update the queue on the server.");
+      return;
+    }
+  } else {
+    alert("This patient has no stored queue entry, so the queue was not updated.");
+    return;
+  }
+
+
+  // Keep the appointment list in step with the consultation: the booking this
+  // doctor saw today is marked Completed rather than left "Confirmed".
+  const doctorId = currentDoctorId(data);
+  const appointment = (getData().appointments || []).find(
+    (a) =>
+      a.patientId === patient.id &&
+      a.doctorId === doctorId &&
+      a.date === getTodayISO() &&
+      !["Completed", "Cancelled"].includes(a.status)
   );
-
-
-  /*
-    Remove the completed patient from the active queue.
-  */
-  data.queue = data.queue.filter(
-    item => item.no !== patient.no
-  );
-
-
-  /*
-    Count patient as seen today.
-  */
-  data.seenToday =
-    (data.seenToday || 0) + 1;
-
-
-  /*
-    Automatically call the next waiting patient.
-  */
-  callNext(data);
-
-
-  setData(data);
+  if (appointment) {
+    const apptUpdated = await updateAppointmentStatusAsync(appointment.id, "Completed");
+    if (!apptUpdated.ok) {
+      alert(apptUpdated.error || "The queue was updated but the appointment could not be completed.");
+      return;
+    }
+  }
 
 
   /*
@@ -956,12 +1016,13 @@ async function completeConsultation() {
 
 
   renderDoctorDashboard();
+  loadDoctorAppointments();
 }
 
 
 /* =========================================================
    CALL NEXT PATIENT
-========================================================= */
+   ========================================================= */
 
 async function callNextPatient() {
   const data = getData();
@@ -978,25 +1039,22 @@ async function callNextPatient() {
   }
 
 
+  if (!patient.entryId) {
+    alert("This patient is not stored in the server queue. Reload the page to sync from the database.");
+    renderDoctorDashboard();
+    return;
+  }
+
+
   /*
     Persist the "In Consultation" status on the backend.
   */
-  if (window.__mqConnected && patient.entryId) {
+  const updated = await setQueueEntryStatusAsync(patient.entryId, "In Consultation");
 
-    const updated =
-      await setQueueEntryStatusAsync(
-        patient.entryId,
-        "In Consultation"
-      );
-
-    if (!updated.ok) {
-      setData(data);
-    }
-
-  } else {
-
-    setData(data);
-
+  if (!updated.ok) {
+    alert(updated.error || "Could not update the queue on the server.");
+    renderDoctorDashboard();
+    return;
   }
 
 
@@ -1008,7 +1066,9 @@ async function callNextPatient() {
 
 
   renderDoctorDashboard();
+  loadDoctorAppointments();
 }
+
 
 
 /* =========================================================
@@ -1063,7 +1123,7 @@ function getAppointmentPatientName(appointment) {
 function getAppointmentLabel(appointment) {
   const clinic = appointment.clinic && appointment.clinic.clinicName;
   const dept = appointment.department && appointment.department.departmentName;
-  return [clinic, dept].filter(Boolean).join(" · ") || "General Medicine";
+  return [clinic, dept].filter(Boolean).join(" · ") || "Clinic visit";
 }
 
 async function loadDoctorAppointments() {
@@ -1089,6 +1149,8 @@ async function loadDoctorAppointments() {
   }
 
   const appointments = Array.isArray(res.data) ? res.data : [];
+  const inConsultation = currentPatient(getData());
+  const today = todayIso();
 
   const statusOrder = {
     Confirmed: 0,
@@ -1112,7 +1174,14 @@ async function loadDoctorAppointments() {
     return;
   }
 
-  listEl.innerHTML = sorted.map(appointment => `
+  const doctorIdForQueue = currentDoctorId(getData());
+
+  listEl.innerHTML = sorted.map(appointment => {
+    const patientId = appointment.patient && appointment.patient.userId;
+    const queueEntry = findQueueEntryForPatient(patientId, doctorIdForQueue);
+    const readyForDoctor = isNurseReady(queueEntry);
+
+    return `
     <div style="
       display:flex;
       align-items:center;
@@ -1167,16 +1236,165 @@ async function loadDoctorAppointments() {
         </div>
       </div>
 
-      <span class="badge" style="
-        background:${appointment.status === "Confirmed" ? "var(--teal-tint, #e0f2f1)" : "var(--gold-tint, #fff4d6)"};
-        color:${appointment.status === "Confirmed" ? "var(--teal, #0d9488)" : "var(--gold, #b8860b)"};
-        white-space:nowrap;
+      <div style="
+        display:flex;
+        flex-direction:column;
+        align-items:flex-end;
+        gap:7px;
       ">
-        ${esc(appointment.status || "Scheduled")}
-      </span>
+        <span class="badge" style="
+          background:${appointment.status === "Confirmed" ? "var(--teal-tint, #e0f2f1)" : "var(--gold-tint, #fff4d6)"};
+          color:${appointment.status === "Confirmed" ? "var(--teal, #0d9488)" : "var(--gold, #b8860b)"};
+          white-space:nowrap;
+        ">
+          ${esc(appointment.status || "Scheduled")}
+        </span>
+
+        ${
+          inConsultation && patientId && inConsultation.id === patientId
+            ? `
+              <span class="badge" style="
+                background:var(--teal-tint, #e0f2f1);
+                color:var(--teal, #0d9488);
+                white-space:nowrap;
+              ">
+                In consultation
+              </span>
+            `
+            : appointment.status !== "Completed" &&
+              appointment.status !== "Cancelled" &&
+              appointment.scheduledDate === today
+              ? readyForDoctor
+                ? `
+                  <button
+                    class="btn btn-primary btn-sm"
+                    type="button"
+                    data-start-appointment="${esc(appointment.appointmentId || "")}"
+                    data-patient-id="${esc(patientId || "")}"
+                  >
+                    Start consultation
+                  </button>
+                `
+                : `
+                  <span class="badge" style="
+                    background:var(--gold-tint, #fff4d6);
+                    color:var(--gold, #b8860b);
+                    white-space:nowrap;
+                  ">
+                    Awaiting nurse assessment
+                  </span>
+                `
+              : ""
+        }
+      </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
 }
+
+// A doctor can start a consultation straight from their appointment list,
+// which is the missing link between an assigned booking and the queue.
+async function startAppointmentConsultation(appointmentId, patientId) {
+  if (!patientId) {
+    alert("This appointment has no patient record.");
+    return;
+  }
+
+  const data = getData();
+  const doctorId = currentDoctorId(data);
+
+  const appointment = (data.appointments || []).find((a) => a.id === appointmentId);
+  if (appointment && appointment.date && appointment.date !== todayIso()) {
+    alert("This appointment is booked for another day, so it cannot be started today.");
+    return;
+  }
+
+  let entry = (data.queue || []).find(
+    (q) =>
+      q.patientId === patientId &&
+      q.doctorId === doctorId &&
+      !["Cancelled", "Completed"].includes(q.status)
+  );
+
+  if (!entry) {
+    // The cache may predate a booking made in another tab/session, so ask the
+    // server before creating a second queue entry for the same patient.
+    await refreshQueueFromApiAsync();
+    const refreshed = getData();
+    entry = (refreshed.queue || []).find(
+      (q) =>
+        q.patientId === patientId &&
+        q.doctorId === doctorId &&
+        !["Cancelled", "Completed"].includes(q.status)
+    );
+  }
+
+  if (!entry) {
+    const created = await createQueueEntryAsync({
+      patientId,
+      doctorId,
+      status: "Waiting",
+    });
+    if (!created.ok) {
+      alert(created.error || "Could not add this patient to the queue.");
+      return;
+    }
+    const fresh = getData();
+    entry = (fresh.queue || []).find(
+      (q) => q.entryId === ((created.created || {}).queueEntryId)
+    );
+  }
+
+  if (!entry || !entry.entryId) {
+    alert("This patient is not in the server queue yet. Reload the page and try again.");
+    return;
+  }
+
+  if (entry.status !== "In Consultation" && !isNurseReady(entry)) {
+    alert("This patient must be assessed by a nurse before the consultation can start.");
+    renderDoctorDashboard();
+    loadDoctorAppointments();
+    return;
+  }
+
+  const inProgress = currentPatient(getData());
+  if (inProgress && inProgress.entryId !== entry.entryId) {
+    alert("Please complete the current consultation before starting another patient.");
+    return;
+  }
+
+  if (entry.status !== "In Consultation") {
+    const updated = await setQueueEntryStatusAsync(entry.entryId, "In Consultation");
+    if (!updated.ok) {
+      alert(updated.error || "Could not start the consultation on the server.");
+      return;
+    }
+  }
+
+  consultDraft = { complaint: "", diagnosis: "", notes: "" };
+  renderDoctorDashboard();
+  loadDoctorAppointments();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.addEventListener("click", async (e) => {
+  const button = e.target.closest("[data-start-appointment]");
+  if (!button) {
+    return;
+  }
+  button.disabled = true;
+  button.textContent = "Starting...";
+  await startAppointmentConsultation(
+    button.getAttribute("data-start-appointment"),
+    button.getAttribute("data-patient-id")
+  );
+  // A successful start re-renders the list, so only a failed start still has
+  // this button in the document and needs its label restored.
+  if (document.body.contains(button)) {
+    button.disabled = false;
+    button.textContent = "Start consultation";
+  }
+});
 
 function formatDay(dateValue) {
   if (!dateValue) {
@@ -1199,10 +1417,28 @@ function formatMonth(dateValue) {
    START
 ========================================================= */
 
+async function refreshDoctorQueue() {
+  if (typeof refreshQueueFromApiAsync !== "function") {
+    return false;
+  }
+  return refreshQueueFromApiAsync();
+}
+
 document.addEventListener(
   "DOMContentLoaded",
-  () => {
+  async () => {
+    await refreshDoctorQueue();
     renderDoctorDashboard();
     loadDoctorAppointments();
   }
 );
+
+// The nurse may complete an assessment in another tab. Re-read the queue when
+// the doctor returns to this page so the "Start consultation" button appears
+// as soon as the patient is Ready for Doctor.
+window.addEventListener("focus", async () => {
+  if (await refreshDoctorQueue()) {
+    renderDoctorDashboard();
+    loadDoctorAppointments();
+  }
+});

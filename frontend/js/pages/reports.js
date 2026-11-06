@@ -53,8 +53,8 @@ function renderReports() {
 
   document.getElementById("clinicStatus").innerHTML = data.clinics.map(c => `
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);">
-      <div><div style="font-weight:600;font-size:13.5px;">${esc(c.name)}</div><div style="font-size:12px;color:var(--slate);">${c.location}</div></div>
-      ${badge(c.status)}
+      <div><div style="font-weight:600;font-size:13.5px;">${esc(c.name)}</div><div style="font-size:12px;color:var(--slate);">${esc(c.location || "")}</div></div>
+      ${badge("Active")}
     </div>`).join("");
 
   const byApptStatus = groupCount(data.appointments, "status");

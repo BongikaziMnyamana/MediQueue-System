@@ -34,7 +34,7 @@ public class MedicalRecordService implements IMedicalRecordService {
         }
         MedicalRecord validated = MedicalRecordFactory.createMedicalRecord(
                 medicalRecord.getRecordId(), medicalRecord.getPatient(), medicalRecord.getCreatedBy(),
-                medicalRecord.getDiagnosis(), medicalRecord.getNotes(), medicalRecord.getRecordDate());
+                medicalRecord.getComplaint(), medicalRecord.getDiagnosis(), medicalRecord.getNotes(), medicalRecord.getRecordDate());
         if (validated == null) {
             return null;
         }

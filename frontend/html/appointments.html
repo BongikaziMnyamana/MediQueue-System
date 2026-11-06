@@ -41,7 +41,7 @@
           <div class="bell-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="bell-dot"></div></div>
           <div class="user-block">
             <div class="avatar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 12 0v2"/></svg></div>
-            <div><div class="user-name">Thandi M.</div><div class="user-role">Receptionist</div></div>
+            <div><div class="user-name"></div><div class="user-role">Receptionist</div></div>
           </div>
         </div>
       </div>
@@ -70,12 +70,16 @@
   <div class="modal-box">
     <div class="modal-head"><h3 class="modal-title font-display">Book appointment</h3><button class="modal-close" onclick="closeModal('bookApptModal')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l18 18"/></svg></button></div>
     <form id="bookApptForm">
-      <div class="field"><label for="naPatient">Patient name</label><input class="input" id="naPatient" required /></div>
+      <div class="field"><label for="naPatient">Patient name</label><input class="input" id="naPatient" list="patientNameList" required /><datalist id="patientNameList"></datalist></div>
       <div class="field"><label for="naDept">Department</label>
-        <select class="input" id="naDept"><option>General Medicine</option><option>Pediatrics</option><option>Antenatal Care</option><option>HIV Care</option></select>
+        <select class="input" id="naDept"></select>
       </div>
-      <div class="field"><label for="naDoctor">Doctor</label><input class="input" id="naDoctor" value="Dr. N. Zulu" /></div>
-      <div class="field"><label for="naTime">Time</label><input class="input" id="naTime" placeholder="e.g. 02:30 PM" required /></div>
+      <div class="field"><label for="naDoctor">Doctor</label>
+        <select class="input" id="naDoctor"></select>
+      </div>
+      <div class="field"><label for="naDate">Date</label><input class="input" id="naDate" type="date" required /></div>
+      <div class="field"><label for="naTime">Time</label><input class="input" id="naTime" type="time" required /></div>
+      <div class="field"><label for="naReason">Reason</label><input class="input" id="naReason" required /></div>
       <button type="submit" class="btn btn-primary btn-block" style="margin-top:6px;">Book appointment</button>
     </form>
   </div>
@@ -86,15 +90,35 @@
   <script src="../js/modal.js"></script>
   <script src="../js/pages/appointments.js"></script>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const role = localStorage.getItem("mq_role") || "";
+      const isAdmin = /ADMIN/i.test(role);
+
+      const badge = document.querySelector(".role-badge");
+      const roleEl = document.querySelector(".user-role");
+      const backLink = document.querySelector(".link[href='receptionist-dashboard.html']");
+
+      if (badge) badge.textContent = isAdmin ? "Administrator dashboard" : "Receptionist dashboard";
+      if (roleEl) roleEl.textContent = isAdmin ? "Administrator" : "Receptionist";
+      if (backLink) backLink.href = isAdmin ? "admin-dashboard.html" : "receptionist-dashboard.html";
+
+      const sidebarDashboard = document.querySelector('.nav a[href="receptionist-dashboard.html"]');
+      if (sidebarDashboard) sidebarDashboard.href = isAdmin ? "admin-dashboard.html" : "receptionist-dashboard.html";
+    });
+  </script>
+
   <div class="modal-overlay" id="editApptModal" style="display:none;" onclick="if(event.target===this) closeModal('editApptModal')">
   <div class="modal-box">
     <div class="modal-head"><h3 class="modal-title font-display">Edit appointment</h3><button class="modal-close" onclick="closeModal('editApptModal')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l18 18"/></svg></button></div>
     <form id="editApptForm">
       <input type="hidden" id="eaEditId" />
-      <div class="field"><label>Patient name</label><input class="input" id="eaPatient" required /></div>
+      <div class="field"><label>Patient name</label><input class="input" id="eaPatient" readonly /></div>
       <div class="field"><label>Department</label><select class="input" id="eaDept"></select></div>
-      <div class="field"><label>Doctor</label><input class="input" id="eaDoctor" required /></div>
-      <div class="field"><label>Time</label><input class="input" id="eaTime" required /></div>
+      <div class="field"><label>Doctor</label><select class="input" id="eaDoctor"></select></div>
+      <div class="field"><label>Date</label><input class="input" id="eaDate" type="date" required /></div>
+      <div class="field"><label>Time</label><input class="input" id="eaTime" type="time" required /></div>
+      <div class="field"><label>Reason</label><input class="input" id="eaReason" /></div>
       <div class="field"><label>Status</label>
         <select class="input" id="eaStatus">
           <option>Pending</option><option>Confirmed</option><option>Checked In</option><option>Completed</option><option>Cancelled</option>

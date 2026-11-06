@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -17,8 +18,14 @@ import jakarta.persistence.Table;
  * Date: 03 August 2026
  */
 
+// The dashboards list the current day's queues, so the date is indexed.
 @Entity
-@Table(name = "queue")
+@Table(
+    name = "queue",
+    indexes = {
+        @Index(name = "idx_queue_date", columnList = "date")
+    }
+)
 public class Queue {
 
     // Primary Key

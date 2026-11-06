@@ -4,7 +4,7 @@ function renderNurseQueuePage() {
   const data = getData();
 
   const waitingPatients = Array.isArray(data.queue)
-    ? data.queue.filter((patient) => patient.status === "Waiting")
+    ? data.queue.filter((patient) => isAwaitingNurseStatus(patient.status))
     : [];
 
   updateQueueCount(waitingPatients.length);
@@ -67,7 +67,7 @@ function renderQueueTable(waitingPatients) {
 
             <td>
               <strong>
-                ${escapeHtml(patient.no)}
+                ${escapeHtml(queueNoLabel(patient))}
               </strong>
             </td>
 
@@ -146,21 +146,48 @@ function renderQueueTable(waitingPatients) {
 
 
             <td>
-              <span class="badge badge-gold">
-                Waiting
-              </span>
+              ${
+                patient.status === "In Assessment"
+                  ? `
+                    <span class="badge badge-gold" style="
+                      background:var(--gold-tint);
+                      color:var(--gold);
+                    ">
+                      Being assessed
+                    </span>
+                  `
+                  : `
+                    <span class="badge badge-gold">
+                      Waiting
+                    </span>
+                  `
+              }
             </td>
 
 
             <td>
 
-              <button
-                type="button"
-                class="btn btn-primary btn-sm"
-                onclick="assessPatient('${escapeAttribute(patient.id)}')"
-              >
-                Assess Patient
-              </button>
+              ${
+                patient.status !== "In Assessment"
+                  ? `
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-sm"
+                      onclick="assessPatient('${escapeAttribute(patient.id)}')"
+                    >
+                      Assess Patient
+                    </button>
+                  `
+                  : `
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-sm"
+                      disabled
+                    >
+                      Being assessed
+                    </button>
+                  `
+              }
 
             </td>
 
@@ -174,25 +201,22 @@ function renderQueueTable(waitingPatients) {
 // --------------------------------------
 // ASSESS PATIENT
 // --------------------------------------
-function assessPatient(patientId) {
+async function assessPatient(patientId) {
   /*
-    Store the selected patient ID temporarily so the
-    nurse assessment page knows which patient was chosen.
+    Mark the patient as "In Assessment" so other screens know a nurse
+    is already working with them, then open the assessment form.
   */
+  const entry = getData().queue.find((q) => q.id === patientId);
+  if (entry && entry.entryId) {
+    await setQueueEntryStatusAsync(entry.entryId, "In Assessment");
+  }
 
   localStorage.setItem(
     "mq_selected_patient_id",
     patientId
   );
 
-
-  /*
-    The next page we will create is:
-    nurse-assessment.html
-  */
-
-  window.location.href =
-    "nurse-assessment.html";
+  window.location.href = "nurse-assessment.html";
 }
 
 

@@ -24,6 +24,7 @@ function updateSummaryCards(data, assessments) {
     Array.isArray(data.queue)
       ? data.queue.filter(
           (patient) =>
+            isTodayQueueEntry(patient) &&
             patient.status === "Ready for Doctor"
         ).length
       : 0;
