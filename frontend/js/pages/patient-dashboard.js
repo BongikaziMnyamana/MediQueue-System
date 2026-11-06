@@ -67,7 +67,10 @@ document.addEventListener("DOMContentLoaded", () => {
       meAsync(),
       patientId
         ? apiRequest("GET", "/appointment/patient/" + encodeURIComponent(patientId))
-        : Promise.resolve({ ok: false, status: 401 })
+        : Promise.resolve({ ok: false, status: 401 }),
+      typeof refreshQueueFromApiAsync === "function"
+        ? refreshQueueFromApiAsync()
+        : Promise.resolve(false)
     ]);
 
     if (meRes.ok && meRes.data && meRes.data.firstName) {
@@ -81,21 +84,28 @@ document.addEventListener("DOMContentLoaded", () => {
       (apptsRes.ok && Array.isArray(apptsRes.data)) ? apptsRes.data : [];
 
 
-    // Queue number for this patient (from the live queue), else "—".
+    // The queue number is issued at booking time and stays visible while the
+    // patient waits for the nurse and then the doctor.
     const cached = typeof getData === "function" ? getData() : null;
     const qEntry = patientId && cached
-      ? (cached.queue || []).find((q) => q.id === patientId)
+      ? (cached.queue || []).find(
+          (q) =>
+            q.id === patientId &&
+            !["Cancelled", "Completed"].includes(q.status)
+        )
       : null;
+    const numbered = Boolean(qEntry && qEntry.no);
 
-    queueNumberEl.textContent =
-      qEntry && qEntry.no ? qEntry.no : "—";
+    queueNumberEl.textContent = numbered ? qEntry.no : "—";
 
     queueNumberEl.parentElement.querySelector(
       ".patient-dashboard-card-sub"
     ).textContent =
-      qEntry
+      numbered
         ? `Status: ${qEntry.status}`
-        : "No active queue number";
+        : qEntry
+          ? "Please see reception for your queue number"
+          : "No active queue number";
 
 
     totalVisitsEl.textContent =
@@ -155,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
 
-            <div class="patient-appointment-info">
+            <div class="patient-appointment-body">
 
               <div class="patient-appointment-doctor ${doctorClass}">
                 ${esc(doctor)}

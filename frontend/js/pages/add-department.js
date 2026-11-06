@@ -1,70 +1,43 @@
+// js/pages/add-department.js
+// The department is written to the database; the page only moves on once the
+// server confirmed the insert.
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const form = document.getElementById("addDepartmentForm");
+  const submit = form.querySelector("button[type='submit']");
 
   form.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
-    const data = getData();
+    const saved = await createDepartmentAsync({
+      departmentId:
+        document
+          .getElementById("departmentId")
+          .value
+          .trim() || undefined,
+      departmentName:
+        document
+          .getElementById("departmentName")
+          .value
+          .trim(),
+      description:
+        document
+          .getElementById("departmentDescription")
+          .value
+          .trim()
+    });
 
-    const departmentId =
-      document
-        .getElementById("departmentId")
-        .value
-        .trim();
-
-    const departmentName =
-      document
-        .getElementById("departmentName")
-        .value
-        .trim();
-
-    const departmentDescription =
-      document
-        .getElementById("departmentDescription")
-        .value
-        .trim();
-
-    /*
-      Create the department on the backend when it is reachable.
-    */
-    if (window.__mqConnected) {
-
-      const saved =
-        await createDepartmentAsync({
-          departmentId,
-          departmentName,
-          description: departmentDescription
-        });
-
-      if (!saved.ok) {
-        alert(
-          "Could not save the department to the server – saved locally only."
-        );
-      }
-
+    if (!saved.ok) {
+      alert(saved.error || "Could not save the department to the server.");
+      return;
     }
 
-    const newDepartment = {
-
-      id: departmentId,
-
-      name: departmentName,
-
-      description: departmentDescription,
-
-      dateCreated: new Date().toLocaleDateString("en-ZA", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-      })
-
-    };
-
-    data.departments.push(newDepartment);
-
-    setData(data);
+    if (submit) {
+      submit.disabled = true;
+      submit.textContent = "Saving...";
+    }
 
     window.location.href = "department-success.html";
 

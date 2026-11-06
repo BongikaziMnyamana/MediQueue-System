@@ -20,127 +20,133 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /*
-    Load patient name from registration.
+    The topbar name comes from the signed-in session, not from a copy of the
+    registration form that was stored in the browser.
   */
 
-  const storedPatient =
-    localStorage.getItem("mq_patient");
+  const sessionName =
+    localStorage.getItem("mq_name");
 
 
-  if (storedPatient) {
+  if (sessionName && patientTopbarName) {
 
-    try {
-
-      const patient =
-        JSON.parse(storedPatient);
-
-
-      if (patient.fullName) {
-
-        patientTopbarName.textContent =
-          patient.fullName.split(" ")[0];
-
-      }
-
-    } catch (error) {
-
-      console.log(
-        "Could not load patient information."
-      );
-
-    }
+    patientTopbarName.textContent =
+      sessionName.split(" ")[0];
 
   }
 
 
   /*
-    Temporary frontend notifications.
-
-    Later these will come from the backend.
+    Notifications are derived from the rows the API returned for this patient -
+    there is no sample feed. Only the read/unread flags are kept locally,
+    because the database has no notification table.
   */
 
-  const defaultNotifications = [
+  function buildNotifications() {
 
-    {
-      id: 1,
-      type: "appointment",
-      title: "Appointment Confirmed",
-      message:
-        "Your appointment has been successfully confirmed.",
-      time: "Today, 14:30",
-      unread: true
-    },
+    const data =
+      typeof getData === "function" ? getData() : null;
 
-    {
-      id: 2,
-      type: "queue",
-      title: "Queue Update",
-      message:
-        "Your queue number is A-023. Your turn is coming soon.",
-      time: "Today, 13:45",
-      unread: true
-    },
+    const patientId =
+      localStorage.getItem("mq_patientId") ||
+      localStorage.getItem("mq_userId") ||
+      "";
 
-    {
-      id: 3,
-      type: "reminder",
-      title: "Appointment Reminder",
-      message:
-        "Please arrive at least 15 minutes before your appointment.",
-      time: "Today, 09:00",
-      unread: true
-    },
+    const items = [];
 
-    {
-      id: 4,
-      type: "medical",
-      title: "Medical Record Updated",
-      message:
-        "Your latest vital signs and visit information are now available.",
-      time: "28 Aug 2026",
-      unread: false
-    },
+    const readIds = loadReadIds();
 
-    {
-      id: 5,
-      type: "system",
-      title: "Welcome to MediQueue",
-      message:
-        "You can manage appointments, monitor your queue and view your medical record from your patient portal.",
-      time: "27 Aug 2026",
-      unread: false
+    const push = (item) => {
+      items.push({
+        unread: !readIds.includes(item.id),
+        ...item
+      });
+    };
+
+
+    (data && data.appointments || [])
+      .filter((a) => !patientId || a.patientId === patientId)
+      .forEach((a) => {
+        const status = a.status || "Pending";
+        const when = `${a.date || ""} ${a.time || ""}`.trim() || "No date set";
+        push({
+          id: `appt-${a.id}`,
+          type: "appointment",
+          title: `Appointment ${status.toLowerCase()}`,
+          message: `${a.reason || "Consultation"} on ${when}${a.doctor ? " with " + a.doctor : ""}.`,
+          time: when
+        });
+      });
+
+
+    const queueEntry =
+      data && patientId
+        ? (data.queue || []).find(
+            (q) =>
+              q.id === patientId &&
+              isTodayQueueEntry(q) &&
+              !["Cancelled", "Completed"].includes(q.status)
+          )
+        : null;
+
+    if (queueEntry) {
+      // The queue number is issued when the booking joins the live queue, so
+      // it is announced immediately. The fallback covers legacy rows only.
+      push({
+        id: `queue-${queueEntry.entryId || queueEntry.no}`,
+        type: "queue",
+        title: queueEntry.no ? "Queue update" : "Queue request received",
+        message: queueEntry.no
+          ? `Your queue number is ${queueEntry.no} and your status is ${queueEntry.status}.`
+          : `Your booking is in the queue. Please ask reception if your queue number is not shown.`,
+        time: queueEntry.queueDate || ""
+      });
     }
 
-  ];
+
+    (data && data.prescriptions || [])
+      .filter((p) => !patientId || p.patientId === patientId)
+      .forEach((p) => {
+        push({
+          id: `rx-${p.id}`,
+          type: "medical",
+          title: `Prescription ${String(p.status || "pending").toLowerCase()}`,
+          message: `${p.medication || "Medication"} - ${p.dosage || "see instructions"}.`,
+          time: p.date || p.prescribedDate || ""
+        });
+      });
 
 
-  /*
-    Load saved notification state if available.
-  */
+    (data && data.records || [])
+      .filter((r) => !patientId || r.patientId === patientId)
+      .forEach((r) => {
+        push({
+          id: `record-${r.recordId}`,
+          type: "medical",
+          title: "Medical record updated",
+          message: `${r.diagnosis || r.condition || "Consultation recorded"}${r.doctor ? " - " + r.doctor : ""}.`,
+          time: r.date || r.visitDate || ""
+        });
+      });
 
-  const storedNotifications =
-    localStorage.getItem("mq_notifications");
 
-
-  let notifications =
-    defaultNotifications;
-
-
-  if (storedNotifications) {
-
-    try {
-
-      notifications =
-        JSON.parse(storedNotifications);
-
-    } catch (error) {
-
-      notifications =
-        defaultNotifications;
-
-    }
+    return items;
 
   }
+
+
+  function loadReadIds() {
+    try {
+      const raw = localStorage.getItem("mq_notifications_read");
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+
+  let notifications = buildNotifications();
 
 
   /*
@@ -389,7 +395,7 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener("click", () => {
 
           const notificationId =
-            Number(button.dataset.id);
+            button.dataset.id;
 
 
           notifications =
@@ -424,14 +430,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /*
-    Save notification state.
+    Save which notifications have been read. Only the ids are stored; the
+    content always comes from the database.
   */
 
   function saveNotifications() {
 
     localStorage.setItem(
-      "mq_notifications",
-      JSON.stringify(notifications)
+      "mq_notifications_read",
+      JSON.stringify(
+        notifications
+          .filter(notification => !notification.unread)
+          .map(notification => notification.id)
+      )
     );
 
   }

@@ -76,15 +76,25 @@ function queueStatusBadge(status) {
    RENDER QUEUE
 ========================================================= */
 
+function doctorQueueEntries(data) {
+  const doctorId = localStorage.getItem("mq_staffId") || "";
+  if (!doctorId) {
+    return [];
+  }
+  return (data.queue || []).filter(
+    (entry) =>
+      entry.doctorId === doctorId &&
+      !["Cancelled", "Completed"].includes(entry.status)
+  );
+}
+
 function renderDoctorQueue() {
   const data =
     getData();
 
 
   const queue =
-    Array.isArray(data.queue)
-      ? data.queue
-      : [];
+    doctorQueueEntries(data);
 
 
   const body =
@@ -112,7 +122,9 @@ function renderDoctorQueue() {
   const waiting =
     queue.filter(
       patient =>
-        patient.status === "Waiting"
+        patient.status === "Waiting" ||
+        patient.status === "Ready for Doctor" ||
+        patient.status === "Pending"
     ).length;
 
 
@@ -200,11 +212,11 @@ function renderDoctorQueue() {
 
 
         const numberA =
-          Number(a.no) || 0;
+          queueNoSortKey(a);
 
 
         const numberB =
-          Number(b.no) || 0;
+          queueNoSortKey(b);
 
 
         return numberA - numberB;
@@ -246,7 +258,7 @@ function renderDoctorQueue() {
               <strong>
                 ${esc(
                   queueSafeText(
-                    patient.no
+                    queueNoLabel(patient)
                   )
                 )}
               </strong>
@@ -311,7 +323,7 @@ function renderDoctorQueue() {
               ${esc(
                 queueSafeText(
                   patient.dept,
-                  "General Medicine"
+                  "—"
                 )
               )}
 
@@ -355,16 +367,26 @@ function renderDoctorQueue() {
                       Go to Consultation
                     </button>
                   `
-                  : `
-                    <span
-                      style="
-                        font-size:11px;
-                        color:var(--slate);
-                      "
-                    >
-                      Waiting
-                    </span>
-                  `
+                  : patient.entryId
+                    ? `
+                      <button
+                        class="btn btn-gold btn-sm"
+                        type="button"
+                        data-start-queue="${esc(patient.entryId)}"
+                      >
+                        Start consultation
+                      </button>
+                    `
+                    : `
+                      <span
+                        style="
+                          font-size:11px;
+                          color:var(--slate);
+                        "
+                      >
+                        Waiting
+                      </span>
+                    `
               }
 
             </td>
@@ -396,6 +418,51 @@ function renderDoctorQueue() {
 
         }
       );
+
+    });
+
+
+  /* =====================================================
+     START CONSULTATION FROM THE QUEUE
+  ===================================================== */
+
+  document
+    .querySelectorAll("[data-start-queue]")
+    .forEach(button => {
+
+      button.addEventListener("click", async () => {
+        const entryId = button.getAttribute("data-start-queue");
+        if (!entryId) {
+          return;
+        }
+
+        const data = getData();
+        const doctorId = localStorage.getItem("mq_staffId") || "";
+        const inProgress = (data.queue || []).find(
+          (entry) =>
+            entry.status === "In Consultation" &&
+            entry.doctorId === doctorId &&
+            entry.entryId !== entryId
+        );
+        if (inProgress) {
+          alert("Please complete the current consultation before starting another patient.");
+          window.location.href = "doctor-dashboard.html";
+          return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Starting...";
+
+        const updated = await setQueueEntryStatusAsync(entryId, "In Consultation");
+        if (!updated.ok) {
+          alert(updated.error || "Could not start the consultation on the server.");
+          button.disabled = false;
+          button.textContent = "Start consultation";
+          return;
+        }
+
+        window.location.href = "doctor-dashboard.html";
+      });
 
     });
 }

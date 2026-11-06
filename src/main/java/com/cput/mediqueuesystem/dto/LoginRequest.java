@@ -6,7 +6,7 @@ package com.cput.mediqueuesystem.dto;
  * the response carries their role so the frontend can route to the
  * correct dashboard.
  *
- * Author: MediQueue
+ * Author: Charmaine Dlamini
  * Date: 24 September 2026
  */
 public class LoginRequest {

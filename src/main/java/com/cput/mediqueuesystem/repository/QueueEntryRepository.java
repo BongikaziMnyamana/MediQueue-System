@@ -25,4 +25,6 @@ public interface QueueEntryRepository extends JpaRepository<QueueEntry, String> 
     Optional<QueueEntry> findFirstByPatientUserIdAndStatusIn(String patientId, Collection<String> statuses);
 
     List<QueueEntry> findByPatientUserIdAndStatusIn(String patientId, Collection<String> statuses);
+
+    List<QueueEntry> findByPatientUserId(String patientId);
 }

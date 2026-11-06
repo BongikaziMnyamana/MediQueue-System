@@ -316,7 +316,7 @@ function openRecordDetails(record) {
           ${esc(
             safeText(
               record.department,
-              "General Medicine"
+              "—"
             )
           )}
         </div>
@@ -641,11 +641,16 @@ document.addEventListener(
   () => {
 
     const data = getData();
+    const doctorId = localStorage.getItem("mq_staffId") || "";
 
 
+    // Only this doctor's consultations belong on this page; falling back to
+    // every record would leak other doctors' patient history.
     allDoctorRecords =
       Array.isArray(data.records)
-        ? data.records
+        ? data.records.filter(
+            (record) => doctorId && record.doctorId === doctorId
+          )
         : [];
 
 

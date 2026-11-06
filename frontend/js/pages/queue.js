@@ -5,71 +5,89 @@
 
 function renderQueue() {
   const data = getData();
+  const queue = (data.queue || []).filter(isTodayQueueEntry);
   const body = document.getElementById("queueBody");
-  document.getElementById("queueBodyCount").textContent = `${data.queue.length} records`;
-  body.innerHTML = data.queue.map((q, i) => `
+  document.getElementById("queueBodyCount").textContent = `${queue.length} records`;
+  if (!queue.length) {
+    body.innerHTML = `<tr><td colspan="6">The queue is empty.</td></tr>`;
+    return;
+  }
+  body.innerHTML = queue.map((q) => `
     <tr>
-      <td>${q.no}</td><td>${esc(q.patient)}</td><td>${q.dept}</td>
+      <td>${esc(queueNoLabel(q))}</td><td>${esc(q.patient)}</td><td>${esc(q.dept)}</td>
       <td>
-        <select class="input" style="padding:5px 8px;font-size:12.5px;width:auto;" onchange="updateQueueStatus(${i}, this.value)">
+        <select class="input" style="padding:5px 8px;font-size:12.5px;width:auto;" onchange="updateQueueStatus('${esc(q.entryId || "")}', this.value)">
+          <option value="Pending" ${q.status === "Pending" ? "selected" : ""}>Pending (not approved)</option>
           <option value="Waiting" ${q.status === "Waiting" ? "selected" : ""}>Waiting</option>
+          <option value="Ready for Doctor" ${q.status === "Ready for Doctor" ? "selected" : ""}>Ready for Doctor</option>
           <option value="In Consultation" ${q.status === "In Consultation" ? "selected" : ""}>In Consultation</option>
           <option value="Completed" ${q.status === "Completed" ? "selected" : ""}>Completed</option>
         </select>
       </td>
       <td>${q.wait}</td>
       <td class="action-cell">
-        <button class="btn btn-danger btn-sm" onclick="removeFromQueue(${i})">Remove</button>
+        <button class="btn btn-danger btn-sm" onclick="removeFromQueue('${esc(q.entryId || "")}')">Remove</button>
       </td>
     </tr>
   `).join("");
 }
 
-async function updateQueueStatus(index, newStatus) {
-  const data0 = getData();
-  if (!data0.queue[index]) return;
-  const entry = data0.queue[index];
+async function updateQueueStatus(entryId, newStatus) {
+  const entry = getData().queue.find((q) => q.entryId === entryId);
+  if (!entry) return;
+  if (!entry.entryId) {
+    alert("This queue row is not stored on the server. Reload the page to sync from the database.");
+    renderQueue();
+    return;
+  }
 
-  // Backend: persist on the real queue entry when it exists.
-  if (window.__mqConnected && entry.entryId) {
-    // Only one person can be "In Consultation" at a time.
-    if (newStatus === "In Consultation") {
-      for (const q of data0.queue) {
-        if (q.entryId && q.entryId !== entry.entryId && q.status === "In Consultation") {
-          await setQueueEntryStatusAsync(q.entryId, "Waiting");
+  if (
+    newStatus === "In Consultation" &&
+    entry.status !== "Ready for Doctor" &&
+    entry.status !== "In Consultation"
+  ) {
+    alert("This patient must be assessed by a nurse before the consultation can start.");
+    renderQueue();
+    return;
+  }
+
+  // Only one person can be "In Consultation" at a time, so the others are
+  // moved back to Waiting in the database first.
+  if (newStatus === "In Consultation") {
+    for (const q of getData().queue.filter(isTodayQueueEntry)) {
+      if (q.entryId && q.entryId !== entry.entryId && q.status === "In Consultation") {
+        const moved = await setQueueEntryStatusAsync(q.entryId, "Waiting");
+        if (!moved.ok) {
+          alert(moved.error || "Could not move the current patient back to Waiting.");
+          renderQueue();
+          return;
         }
       }
     }
-    const r = await setQueueEntryStatusAsync(entry.entryId, newStatus);
-    if (r.ok) { renderQueue(); return; }
   }
 
-  const data = getData();
-  const i = Math.min(index, data.queue.length - 1);
-  if (newStatus === "In Consultation") {
-    data.queue = data.queue.map((q, j) => i === j ? { ...q, status: newStatus } : (q.status === "In Consultation" ? { ...q, status: "Waiting" } : q));
-  } else {
-    data.queue[i] = { ...data.queue[i], status: newStatus };
+  const r = await setQueueEntryStatusAsync(entry.entryId, newStatus);
+  if (!r.ok) {
+    alert(r.error || "Could not update the queue status on the server.");
   }
-  setData(data);
   renderQueue();
 }
 
-async function removeFromQueue(index) {
-  const data0 = getData();
-  const q = data0.queue[index];
+async function removeFromQueue(entryId) {
+  const q = getData().queue.find((entry) => entry.entryId === entryId);
   if (!q) return;
-  if (!confirm(`Remove ${q.patient} (${q.no}) from the queue? This can't be undone.`)) return;
+  if (!confirm(`Remove ${q.patient} (${queueNoLabel(q)}) from the queue? This can't be undone.`)) return;
 
-  if (window.__mqConnected && q.entryId) {
-    const r = await deleteQueueEntryAsync(q.entryId);
-    if (r.ok) { renderQueue(); return; }
-    alert("Could not remove the patient from the server queue.");
+  if (!q.entryId) {
+    alert("This queue row is not stored on the server. Reload the page to sync from the database.");
+    renderQueue();
+    return;
   }
-
-  const data = getData();
-  data.queue.splice(Math.min(index, data.queue.length - 1), 1);
-  setData(data);
+  const r = await deleteQueueEntryAsync(q.entryId);
+  if (!r.ok) {
+    alert(r.error || "Could not remove the patient from the server queue.");
+    return;
+  }
   renderQueue();
 }
 

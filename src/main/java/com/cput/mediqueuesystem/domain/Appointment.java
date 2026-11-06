@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -25,8 +26,23 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
  * Date: 03 August 2026
  */
 
+/*
+ * Indexes:
+ *  - patient_id      : "my appointments" on the patient portal.
+ *  - scheduled_date  : the reception dashboard asks for one day's diary.
+ *  - doctor_id       : the doctor dashboard asks for one doctor's diary.
+ *  - status          : filtering the daily list by state.
+ */
 @Entity
-@Table(name = "appointment")
+@Table(
+    name = "appointment",
+    indexes = {
+        @Index(name = "idx_appointment_patient", columnList = "patient_id"),
+        @Index(name = "idx_appointment_date", columnList = "scheduled_date"),
+        @Index(name = "idx_appointment_doctor", columnList = "doctor_id"),
+        @Index(name = "idx_appointment_status", columnList = "status")
+    }
+)
 @JsonDeserialize(builder = Appointment.Builder.class)
 public class Appointment {
 
@@ -147,7 +163,11 @@ public class Appointment {
         return createdBy;
     }
 
-    // Setters used by the service layer (doctor assignment, status update)
+    // Setters used by the service layer (updates, doctor assignment, status)
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
 
     public void setDoctor(Staff doctor) {
         this.doctor = doctor;
@@ -165,8 +185,24 @@ public class Appointment {
         this.reason = reason;
     }
 
+    public void setScheduledDate(LocalDate scheduledDate) {
+        this.scheduledDate = scheduledDate;
+    }
+
+    public void setScheduledTime(LocalTime scheduledTime) {
+        this.scheduledTime = scheduledTime;
+    }
+
+    public void setAppointmentType(String appointmentType) {
+        this.appointmentType = appointmentType;
+    }
+
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setCreatedBy(Staff createdBy) {
+        this.createdBy = createdBy;
     }
 
     // Returns the Appointment object as a String

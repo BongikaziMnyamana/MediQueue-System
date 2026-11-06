@@ -15,7 +15,7 @@ import javax.crypto.spec.PBEKeySpec;
  * verified by direct comparison so accounts seeded before hashing
  * keep working; they are re-hashed on first successful login.
  *
- * Author: MediQueue
+ * Author: Charmaine Dlamini
  * Date: 24 September 2026
  */
 public class PasswordUtil {
@@ -41,6 +41,15 @@ public class PasswordUtil {
         return PREFIX + ITERATIONS + "$"
                 + Base64.getEncoder().encodeToString(salt) + "$"
                 + Base64.getEncoder().encodeToString(derived);
+    }
+
+    // Generates a random secret for accounts that are provisioned without a
+    // password. It is hashed like any other password before it is stored, so
+    // nobody can sign in with it until a real password is set.
+    public static String generateRandomPassword() {
+        byte[] bytes = new byte[24];
+        new SecureRandom().nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
     // Verifies a plaintext password against the stored value.

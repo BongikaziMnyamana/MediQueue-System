@@ -169,6 +169,29 @@
       </a>
 
 
+      <!-- My Appointments -->
+      <a
+        href="patient-appointments.html"
+        class="nav-item"
+      >
+
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="9"></circle>
+          <polyline points="12 7 12 12 15 14"></polyline>
+        </svg>
+
+        My Appointments
+
+      </a>
+
+
       <!-- Medical Record -->
       <a
         href="patient-medical-record.html"
@@ -292,7 +315,6 @@
               class="user-name"
               id="patientTopbarName"
             >
-              Charmaine
             </div>
 
             <div class="user-role">
@@ -322,7 +344,7 @@
             class="page-title font-display"
             id="patientWelcome"
           >
-            Welcome back, Charmaine!
+            Welcome back!
           </h1>
 
           <div class="page-sub">
@@ -352,7 +374,7 @@
               class="patient-dashboard-card-value"
               id="queueNumber"
             >
-              A-023
+              �
             </div>
 
             <div class="patient-dashboard-card-sub">
@@ -452,61 +474,31 @@
             </div>
 
 
-            <a
-              href="book-appointment.html"
-              class="patient-panel-link"
-            >
-              Book Appointment
-            </a>
+            <div>
+
+              <a
+                href="patient-appointments.html"
+                class="patient-panel-link"
+              >
+                View all
+              </a>
+
+              <a
+                href="book-appointment.html"
+                class="patient-panel-link"
+              >
+                Book Appointment
+              </a>
+
+            </div>
 
           </div>
 
 
           <div class="patient-appointment-list">
 
-            <div class="patient-appointment-item">
-
-              <div class="patient-appointment-date">
-
-                <span class="patient-appointment-month">
-                  MAY
-                </span>
-
-                <strong>
-                  13
-                </strong>
-
-              </div>
-
-
-              <div class="patient-appointment-info">
-
-                <div class="patient-appointment-doctor">
-                  Dr. Sarah Smith
-                </div>
-
-                <div class="patient-appointment-reason">
-                  General checkup
-                </div>
-
-                <div class="patient-appointment-meta">
-
-                  <span>
-                    May 13, 2026
-                  </span>
-
-                  <span>
-                    •
-                  </span>
-
-                  <span>
-                    10:00 AM
-                  </span>
-
-                </div>
-
-              </div>
-
+            <div class="patient-appointment-empty">
+              Loading your appointments…
             </div>
 
           </div>
@@ -545,49 +537,11 @@
               <div>
 
                 <div class="patient-notification-title">
-                  Appointment Confirmed
+                  Loading
                 </div>
 
                 <div class="patient-notification-text">
-                  Your appointment with Dr. Sarah Smith has been confirmed.
-                </div>
-
-              </div>
-
-            </div>
-
-
-            <div class="patient-notification-item">
-
-              <div class="patient-notification-dot"></div>
-
-              <div>
-
-                <div class="patient-notification-title">
-                  Queue Update
-                </div>
-
-                <div class="patient-notification-text">
-                  Your queue number is A-023. Your turn is coming soon.
-                </div>
-
-              </div>
-
-            </div>
-
-
-            <div class="patient-notification-item">
-
-              <div class="patient-notification-dot"></div>
-
-              <div>
-
-                <div class="patient-notification-title">
-                  Reminder
-                </div>
-
-                <div class="patient-notification-text">
-                  Remember to arrive 15 minutes before your appointment.
+                  Fetching your latest updates…
                 </div>
 
               </div>

@@ -80,6 +80,9 @@ public class AuthService {
                 || Helper.isNullOrEmpty(request.getAddress())) {
             throw new AuthException("Date of birth, gender and address are required.");
         }
+        if (Helper.isNullOrEmpty(request.getAllergies())) {
+            throw new AuthException("Please enter your allergies, or write None.");
+        }
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new AuthException("An account with that email address already exists.");

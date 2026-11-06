@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -17,8 +18,22 @@ import jakarta.persistence.Table;
  * Date: 03 August 2026
  */
 
+/*
+ * Indexes:
+ *  - queue_id  : the queue board loads every entry for one queue, in order.
+ *  - patient_id: the patient portal reads a single patient's queue entry.
+ *  - status    : the dashboard filters entries by state (Waiting, In
+ *               Consultation, Ready for Doctor, ...).
+ */
 @Entity
-@Table(name = "queue_entry")
+@Table(
+    name = "queue_entry",
+    indexes = {
+        @Index(name = "idx_queue_entry_queue", columnList = "queue_id"),
+        @Index(name = "idx_queue_entry_patient", columnList = "patient_id"),
+        @Index(name = "idx_queue_entry_status", columnList = "status")
+    }
+)
 public class QueueEntry {
 
     // Primary Key
@@ -46,9 +61,11 @@ public class QueueEntry {
     @JoinColumn(name = "visit_id")
     private Visit visit;
 
-    // Number assigned to the patient in the queue
-    @Column(name = "queue_number", nullable = false)
-    private int queueNumber;
+    // Number assigned to the patient in the queue. It is issued by the server
+    // when the entry joins a numbered status such as Waiting, which happens at
+    // booking time even before a doctor is assigned.
+    @Column(name = "queue_number")
+    private Integer queueNumber;
 
     // Priority level for the queue entry
     @Column(name = "priority_level")
@@ -105,7 +122,7 @@ public class QueueEntry {
         return visit;
     }
 
-    public int getQueueNumber() {
+    public Integer getQueueNumber() {
         return queueNumber;
     }
 
@@ -119,6 +136,36 @@ public class QueueEntry {
 
     public LocalTime getCheckInTime() {
         return checkInTime;
+    }
+
+    // Setters used by the service layer when applying a validated update
+
+    public void setQueue(Queue queue) {
+        this.queue = queue;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
+
+    public void setVisit(Visit visit) {
+        this.visit = visit;
+    }
+
+    public void setQueueNumber(Integer queueNumber) {
+        this.queueNumber = queueNumber;
+    }
+
+    public void setPriorityLevel(String priorityLevel) {
+        this.priorityLevel = priorityLevel;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setCheckInTime(LocalTime checkInTime) {
+        this.checkInTime = checkInTime;
     }
 
     // Returns the QueueEntry object as a String
@@ -147,7 +194,7 @@ public class QueueEntry {
         private Patient patient;
         private Staff doctor;
         private Visit visit;
-        private int queueNumber;
+        private Integer queueNumber;
         private String priorityLevel;
         private String status;
         private LocalTime checkInTime;
@@ -177,7 +224,7 @@ public class QueueEntry {
             return this;
         }
 
-        public Builder setQueueNumber(int queueNumber) {
+        public Builder setQueueNumber(Integer queueNumber) {
             this.queueNumber = queueNumber;
             return this;
         }

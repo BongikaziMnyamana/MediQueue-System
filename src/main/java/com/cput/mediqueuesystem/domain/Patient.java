@@ -3,6 +3,9 @@ package com.cput.mediqueuesystem.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -20,6 +23,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "patient")
 @PrimaryKeyJoinColumn(name = "user_id")
+@JsonDeserialize(builder = Patient.Builder.class)
 public class Patient extends User {
 
     // South African ID number
@@ -87,6 +91,32 @@ public class Patient extends User {
         return allergies;
     }
 
+    // Setters used by the service layer when applying a validated update
+
+    public void setIdNumber(String idNumber) {
+        this.idNumber = idNumber;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setMedicalAidNumber(String medicalAidNumber) {
+        this.medicalAidNumber = medicalAidNumber;
+    }
+
+    public void setAllergies(String allergies) {
+        this.allergies = allergies;
+    }
+
     @Override
     public String toString() {
         return "Patient{" +
@@ -113,6 +143,7 @@ public class Patient extends User {
      * *declared* return type of whichever setter was last called - and
      * User.Builder's setters are declared to return User.Builder.
      */
+    @JsonPOJOBuilder(withPrefix = "set")
     public static class Builder extends User.Builder {
 
         private String idNumber;

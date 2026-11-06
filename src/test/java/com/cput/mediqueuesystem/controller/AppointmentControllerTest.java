@@ -115,8 +115,7 @@ class AppointmentControllerTest {
                 .setStatus("confirmed")
                 .build();
         String url = BASE_URL + "/update";
-        ResponseEntity<Appointment> updateResponse =
-                this.restTemplate.exchange(url, HttpMethod.PUT, withToken(updatedAppt), Appointment.class);
+        this.restTemplate.exchange(url, HttpMethod.PUT, withToken(updatedAppt), Appointment.class);
         ResponseEntity<Appointment> response = this.restTemplate.getForEntity(BASE_URL + "/read/" + updatedAppt.getAppointmentId(), Appointment.class);
         assertEquals(response.getStatusCode(), HttpStatus.OK);
         assertNotNull(response.getBody());

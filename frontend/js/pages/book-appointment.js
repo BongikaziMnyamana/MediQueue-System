@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const appointmentDate =
     document.getElementById("appointmentDate");
 
+  const appointmentTime =
+    document.getElementById("appointmentTime");
+
   const appointmentError =
     document.getElementById("appointmentError");
 
@@ -49,6 +52,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /*
+    Clinics come from the database; an empty list means the admin has not
+    created any yet.
+  */
+
+  const clinicSelect =
+    document.getElementById("appointmentClinic");
+
+  const clinicOptions =
+    (getData().clinics || [])
+      .map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`)
+      .join("");
+
+  clinicSelect.innerHTML =
+    `<option value="" selected disabled>Select clinic</option>` +
+    clinicOptions;
+
+  if (!clinicOptions) {
+    appointmentError.textContent =
+      "No clinics have been set up yet. Please contact reception.";
+    appointmentError.style.display = "block";
+  }
+
+  /*
     Prevent dates before today.
   */
 
@@ -67,32 +93,33 @@ document.addEventListener("DOMContentLoaded", () => {
   appointmentDate.min =
     `${year}-${month}-${day}`;
 
+  function refreshTimeSlotAvailability() {
+    const selectedDate = appointmentDate.value;
+    const isToday = selectedDate === todayIso();
+    const isPastDate = Boolean(selectedDate) && selectedDate < todayIso();
 
-  /*
-    Resolve the backend clinic/department ids for the selected names so
-    the appointment is linked to the real entities on the server.
-  */
+    Array.from(appointmentTime.options).forEach((option) => {
+      if (!option.value) return;
+      option.disabled =
+        isPastDate ||
+        (isToday && isPastDateTime(selectedDate, option.value));
+    });
 
-  function matchIdByKey(key, list, name, nameKey, idKey) {
-    const item = (list || []).find((x) => String(x[nameKey]) === String(name));
-    return item && item[idKey] ? item[idKey] : null;
+    const selected = appointmentTime.selectedOptions[0];
+    if (selected && selected.disabled) {
+      appointmentTime.value = "";
+    }
   }
 
-  function clinicIdFor(name) {
-    const cached = typeof getData === "function" ? getData() : null;
-    return matchIdByKey("clinics", cached && cached.clinics, name, "name", "id");
-  }
-
-  function departmentIdFor(name) {
-    const cached = typeof getData === "function" ? getData() : null;
-    return matchIdByKey("departments", cached && cached.departments, name, "name", "id");
-  }
+  appointmentDate.addEventListener("change", refreshTimeSlotAvailability);
+  refreshTimeSlotAvailability();
 
 
   /*
     Handle appointment form submission. Bookings are created without a
-    doctor — staff assign one later. The backend only accepts the
-    booking when the caller is authenticated.
+    doctor or department; the admin assigns a doctor later, and the
+    appointment inherits that doctor's department. The backend only accepts
+    the booking when the caller is authenticated.
   */
 
   appointmentForm.addEventListener("submit", async (event) => {
@@ -102,15 +129,15 @@ document.addEventListener("DOMContentLoaded", () => {
     appointmentError.textContent = "";
 
 
-    const clinic =
+    const clinicId =
       document.getElementById(
         "appointmentClinic"
       ).value;
 
-    const department =
-      document.getElementById(
-        "appointmentDepartment"
-      ).value;
+    const clinicName =
+      clinicSelect.options[clinicSelect.selectedIndex]
+        ? clinicSelect.options[clinicSelect.selectedIndex].text
+        : "";
 
     const date =
       appointmentDate.value;
@@ -128,8 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (
       !patientId ||
-      !clinic ||
-      !department ||
+      !clinicId ||
       !date ||
       !time ||
       !reason
@@ -137,6 +163,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       appointmentError.textContent =
         "Please complete all appointment fields.";
+
+      return;
+
+    }
+
+
+    if (date < todayIso() || isPastDateTime(date, time)) {
+
+      appointmentError.textContent =
+        "Please choose a date and time in the future.";
 
       return;
 
@@ -159,8 +195,9 @@ document.addEventListener("DOMContentLoaded", () => {
       await createAppointmentAsync({
         appointmentId: uniqueId("APP"),
         patientId,
-        clinicId: clinicIdFor(clinic),
-        departmentId: departmentIdFor(department),
+        doctorId: null,
+        clinicId,
+        departmentId: null,
         reason,
         scheduledDate: date,
         scheduledTime: to24h(time),
@@ -178,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!saved.ok) {
 
       appointmentError.textContent =
-        (saved.data && saved.data.error) ||
+        saved.error ||
         "Could not create the booking. Please try again.";
 
       if (submitButton) {
@@ -199,17 +236,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const createdId =
       (saved.created && saved.created.appointmentId) || "";
 
+    /*
+      The backend puts the booking into the live queue immediately and issues
+      its number. createAppointmentAsync has already refreshed the queue cache,
+      so the confirmation page can show the number straight away.
+    */
+    const queueEntry =
+      (getData().queue || []).find(
+        (q) =>
+          q.patientId === patientId &&
+          q.queueDate === date &&
+          !["Cancelled", "Completed"].includes(q.status)
+      );
+
     localStorage.setItem(
       "mq_appointment",
       JSON.stringify({
         appointmentId: createdId,
         patientId,
-        clinic,
-        department,
+        clinic: clinicName,
+        department: "Not assigned yet",
+        doctor: "Not assigned yet",
         date,
         time,
         reason,
-        status: "Pending"
+        status: "Pending",
+        queueNumber: queueEntry ? queueEntry.no : "",
+        queueStatus: queueEntry ? queueEntry.status : "Waiting"
       })
     );
 

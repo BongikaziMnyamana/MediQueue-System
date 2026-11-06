@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * issued for. Tokens are lost on restart (fine for this system);
  * the login flow simply issues a fresh token each time.
  *
- * Author: MediQueue
+ * Author: Charmaine Dlamini
  * Date: 24 September 2026
  */
 @Service

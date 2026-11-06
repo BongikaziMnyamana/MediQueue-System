@@ -1,4 +1,5 @@
 // js/pages/departments.js
+// Add / edit / delete all go through the REST API.
 
 function renderDepartments() {
 
@@ -11,6 +12,13 @@ function renderDepartments() {
     `Showing ${departments.length} of ${departments.length} departments`;
 
 
+  if (!departments.length) {
+    document.getElementById("departmentsBody").innerHTML =
+      `<tr><td colspan="5">No departments have been added yet.</td></tr>`;
+    return;
+  }
+
+
   document.getElementById("departmentsBody").innerHTML =
     departments.map((department, index) => `
 
@@ -21,7 +29,7 @@ function renderDepartments() {
         </td>
 
         <td>
-          ${esc(department.id || `DEP-${String(index + 1).padStart(3, "0")}`)}
+          ${esc(department.id || "")}
         </td>
 
         <td>
@@ -29,7 +37,7 @@ function renderDepartments() {
         </td>
 
         <td>
-          ${department.dateCreated || "27 May 2025"}
+          ${esc(String(department.doctors || 0))}
         </td>
 
         <td class="action-cell">
@@ -67,12 +75,9 @@ function openEditDept(index) {
 
   document.getElementById("edIndex").value = index;
 
-  document.getElementById("edId").value =
-    department.id ||
-    `DEP-${String(index + 1).padStart(3, "0")}`;
+  document.getElementById("edId").value = department.id || "";
 
-  document.getElementById("edName").value =
-    department.name;
+  document.getElementById("edName").value = department.name;
 
   document.getElementById("edDescription").value =
     department.description || "";
@@ -82,7 +87,7 @@ function openEditDept(index) {
 }
 
 
-function deleteDept(index) {
+async function deleteDept(index) {
 
   const data = getData();
 
@@ -99,9 +104,12 @@ function deleteDept(index) {
   if (!confirmed) return;
 
 
-  data.departments.splice(index, 1);
+  const res = await deleteDepartmentAsync(department.id);
 
-  setData(data);
+  if (!res.ok) {
+    alert(res.error || "Could not delete the department from the server.");
+    return;
+  }
 
   renderDepartments();
 }
@@ -114,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document
     .getElementById("editDeptForm")
-    .addEventListener("submit", (event) => {
+    .addEventListener("submit", async (event) => {
 
       event.preventDefault();
 
@@ -129,20 +137,13 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-      if (!data.departments[index]) return;
+      const department = data.departments[index];
+
+      if (!department) return;
 
 
-      data.departments[index] = {
-
-        ...data.departments[index],
-
-        id:
-          document
-            .getElementById("edId")
-            .value
-            .trim(),
-
-        name:
+      const res = await updateDepartmentAsync(department.id, {
+        departmentName:
           document
             .getElementById("edName")
             .value
@@ -153,11 +154,13 @@ document.addEventListener("DOMContentLoaded", () => {
             .getElementById("edDescription")
             .value
             .trim()
+      });
 
-      };
+      if (!res.ok) {
+        alert(res.error || "Could not save the department changes to the server.");
+        return;
+      }
 
-
-      setData(data);
 
       closeModal("editDeptModal");
 

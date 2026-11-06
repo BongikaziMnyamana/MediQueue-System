@@ -41,7 +41,7 @@
           <div class="bell-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="bell-dot"></div></div>
           <div class="user-block">
             <div class="avatar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 12 0v2"/></svg></div>
-            <div><div class="user-name">Thandi M.</div><div class="user-role">Receptionist</div></div>
+            <div><div class="user-name"></div><div class="user-role">Receptionist</div></div>
           </div>
         </div>
       </div>
@@ -75,11 +75,15 @@
         <div class="field"><label for="npGender">Gender</label>
           <select class="input" id="npGender"><option value="F">Female</option><option value="M">Male</option></select>
         </div>
-        <div class="field"><label for="npAge">Age</label><input class="input" id="npAge" type="number" required /></div>
+        <div class="field"><label for="npAge">Age</label><input class="input" id="npAge" type="number" min="0" max="120" required /></div>
       </div>
+      <div class="field"><label for="npDob">Date of birth</label><input class="input" id="npDob" type="date" required /></div>
+      <div class="field"><label for="npIdNumber">ID number</label><input class="input" id="npIdNumber" required /></div>
+      <div class="field"><label for="npEmail">Email</label><input class="input" id="npEmail" type="email" required /></div>
       <div class="field"><label for="npPhone">Phone</label><input class="input" id="npPhone" required /></div>
+      <div class="field"><label for="npAddress">Address</label><input class="input" id="npAddress" required /></div>
       <div class="field"><label for="npDept">Department</label>
-        <select class="input" id="npDept"><option>General Medicine</option><option>Pediatrics</option><option>Antenatal Care</option><option>HIV Care</option></select>
+        <select class="input" id="npDept"></select>
       </div>
       <button type="submit" class="btn btn-primary btn-block" style="margin-top:6px;">Register patient</button>
     </form>
@@ -91,6 +95,25 @@
   <script src="../js/modal.js"></script>
   <script src="../js/pages/patients.js"></script>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const role = localStorage.getItem("mq_role") || "";
+      const isAdmin = /ADMIN/i.test(role);
+
+      const badge = document.querySelector(".role-badge");
+      const roleEl = document.querySelector(".user-role");
+      const backLink = document.querySelector(".link[href='receptionist-dashboard.html']");
+
+      if (badge) badge.textContent = isAdmin ? "Administrator dashboard" : "Receptionist dashboard";
+      if (roleEl) roleEl.textContent = isAdmin ? "Administrator" : "Receptionist";
+      if (backLink) backLink.href = isAdmin ? "admin-dashboard.html" : "receptionist-dashboard.html";
+
+      // Make the sidebar Dashboard link role-aware.
+      const sidebarDashboard = document.querySelector('.nav a[href="receptionist-dashboard.html"]');
+      if (sidebarDashboard) sidebarDashboard.href = isAdmin ? "admin-dashboard.html" : "receptionist-dashboard.html";
+    });
+  </script>
+
   <div class="modal-overlay" id="editPatientModal" style="display:none;" onclick="if(event.target===this) closeModal('editPatientModal')">
   <div class="modal-box">
     <div class="modal-head"><h3 class="modal-title font-display">Edit patient</h3><button class="modal-close" onclick="closeModal('editPatientModal')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l18 18"/></svg></button></div>
@@ -99,9 +122,13 @@
       <div class="field"><label>Full name</label><input class="input" id="epName" required /></div>
       <div class="form-row-2">
         <div class="field"><label>Gender</label><select class="input" id="epGender"><option value="F">Female</option><option value="M">Male</option></select></div>
-        <div class="field"><label>Age</label><input class="input" id="epAge" type="number" required /></div>
+        <div class="field"><label>Age</label><input class="input" id="epAge" type="number" min="0" max="120" required /></div>
       </div>
+      <div class="field"><label>Date of birth</label><input class="input" id="epDob" type="date" required /></div>
+      <div class="field"><label>ID number</label><input class="input" id="epIdNumber" required /></div>
+      <div class="field"><label>Email</label><input class="input" id="epEmail" type="email" required /></div>
       <div class="field"><label>Phone</label><input class="input" id="epPhone" required /></div>
+      <div class="field"><label>Address</label><input class="input" id="epAddress" required /></div>
       <div class="field"><label>Department</label><select class="input" id="epDept"></select></div>
       <button type="submit" class="btn btn-primary btn-block" style="margin-top:6px;">Save changes</button>
     </form>

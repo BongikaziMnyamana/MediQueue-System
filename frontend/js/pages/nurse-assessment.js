@@ -13,12 +13,18 @@ function loadNurseAssessmentPage() {
     return;
   }
 
+  const activeEntries = Array.isArray(data.queue)
+    ? data.queue.filter(
+        (item) =>
+          item.id === selectedPatientId &&
+          !["Cancelled", "Completed"].includes(item.status)
+      )
+    : [];
+
   const patient =
-    Array.isArray(data.queue)
-      ? data.queue.find(
-          (item) => item.id === selectedPatientId
-        )
-      : null;
+    activeEntries.sort((a, b) =>
+      String(b.queueDate || "").localeCompare(String(a.queueDate || ""))
+    )[0] || null;
 
   if (!patient) {
     localStorage.removeItem(SELECTED_PATIENT_KEY);
@@ -37,8 +43,8 @@ function loadNurseAssessmentPage() {
 function populatePatientDetails(patient) {
   setText("patientName", patient.patient || "-");
   setText("patientId", patient.id || "-");
-  setText("patientDepartment", patient.dept || "-");
-  setText("patientQueueNumber", patient.no || "-");
+  setText("patientDepartment", patient.dept || "General Medicine");
+  setText("patientQueueNumber", patient.no || "No number");
   setText("patientAge", patient.age ?? "-");
   setText("patientGender", patient.gender || "-");
   setText("patientPhone", patient.phone || "-");
@@ -84,152 +90,118 @@ function setupAssessmentForm(patient) {
       document.getElementById("nurseNotes").value.trim();
 
 
-    if (
-      !bloodPressure ||
-      !temperature ||
-      !heartRate ||
-      !weight ||
-      !symptoms
-    ) {
+    const required = [
+      ["bloodPressure", bloodPressure],
+      ["temperature", temperature],
+      ["heartRate", heartRate],
+      ["weight", weight],
+      ["symptoms", symptoms]
+    ];
+    const missing = required.filter(([, value]) => !value);
+    if (missing.length) {
       showAssessmentError(
         "Please complete all required assessment fields."
       );
       return;
     }
 
+    if (!patient.entryId) {
+      showAssessmentError(
+        "This patient is not stored in the server queue yet. Reload the queue and try again."
+      );
+      return;
+    }
 
-    const assessment = {
-      patientId: patient.id,
-      patientName: patient.patient,
-      queueNumber: patient.no,
-      department: patient.dept,
+    setAssessmentBusy(true);
 
-      bloodPressure: bloodPressure,
-      temperature: Number(temperature),
-      heartRate: Number(heartRate),
-      weight: Number(weight),
-
-      oxygenSaturation:
-        oxygenSaturation
-          ? Number(oxygenSaturation)
-          : null,
-
-      respiratoryRate:
-        respiratoryRate
-          ? Number(respiratoryRate)
-          : null,
-
-      symptoms: symptoms,
-
-      nurseNotes: nurseNotes,
-
-      assessedBy: getCurrentNurseName(),
-
-      assessedAt: new Date().toISOString(),
-
-      status: "Completed"
-    };
-
-
-    saveAssessment(assessment);
-
-    /*
-      Persist the vitals on the backend when possible, then
-      keep the patient marked as waiting in the real queue.
-    */
-    if (window.__mqConnected && patient.id) {
-      await createVitalSignsAsync({
+    // 1. Reuse the visit the patient already has open today, otherwise open one.
+    const openVisit = findOpenVisit(patient.id);
+    let visitId = openVisit ? openVisit.id : null;
+    if (!visitId) {
+      const visit = await createVisitAsync({
+        visitId: uniqueId("V"),
         patientId: patient.id,
-        temperature: assessment.temperature,
-        bloodPressure: assessment.bloodPressure,
-        heartRate: assessment.heartRate,
-        weight: assessment.weight
+        visitDate: todayIso(),
+        checkInTime: new Date().toTimeString().slice(0, 5),
+        status: "In Progress"
       });
+      if (!visit.ok) {
+        setAssessmentBusy(false);
+        showAssessmentError(visit.error || "Could not open a visit for this patient.");
+        return;
+      }
+      visitId = (visit.created || {}).visitId || visitId;
     }
 
-    if (window.__mqConnected && patient.entryId) {
-      await setQueueEntryStatusAsync(patient.entryId, "Waiting");
+    // 2. Store the vitals against that visit.
+    const vitals = await createVitalSignsAsync({
+      visitId,
+      temperature,
+      bloodPressure,
+      heartRate,
+      weight,
+      oxygenSaturation,
+      respiratoryRate,
+      symptoms,
+      nurseNotes
+    });
+    if (!vitals.ok) {
+      setAssessmentBusy(false);
+      showAssessmentError(vitals.error || "Could not save the vital signs.");
+      return;
     }
 
-    updatePatientQueueStatus(
-      patient.id,
-      "Ready for Doctor"
-    );
+    // 3. Run the symptom analysis server-side so the result is in the database
+    //    and the patient can read it back.
+    const analysis = await analyzeSymptomsAsync(patient.id, symptoms);
+    if (!analysis.ok) {
+      setAssessmentBusy(false);
+      showAssessmentError(analysis.error || "Could not save the symptom analysis.");
+      return;
+    }
 
-    localStorage.removeItem(
-      SELECTED_PATIENT_KEY
-    );
+    // 4. Tie the visit to the queue entry and hand the patient to the doctor.
+    await attachVisitToQueueEntryAsync(patient.entryId, visitId);
+    const queued = await setQueueEntryStatusAsync(patient.entryId, "Ready for Doctor");
+    if (!queued.ok) {
+      setAssessmentBusy(false);
+      showAssessmentError(queued.error || "Could not update the queue status.");
+      return;
+    }
 
-    window.location.href =
-      "nurse-queue.html";
+    setAssessmentBusy(false);
+    localStorage.removeItem(SELECTED_PATIENT_KEY);
+    window.location.href = "nurse-queue.html";
   });
 }
 
 
 // --------------------------------------
-// SAVE VITAL SIGNS / ASSESSMENT
+// CURRENT VISIT
 // --------------------------------------
-function saveAssessment(assessment) {
+// Reuses the visit already stored for this patient today, so a nurse does not
+// open a second one for the same attendance.
+function findOpenVisit(patientId) {
   const data = getData();
-
-  /*
-    data.js does not currently contain a vitalSigns
-    collection, so create it the first time a nurse
-    completes an assessment.
-  */
-
-  if (!Array.isArray(data.vitalSigns)) {
-    data.vitalSigns = [];
-  }
-
-
-  /*
-    Remove any existing frontend assessment for the
-    same patient and queue number so duplicate clicks
-    do not create multiple identical assessments.
-  */
-
-  data.vitalSigns =
-    data.vitalSigns.filter(
-      (item) =>
-        !(
-          item.patientId === assessment.patientId &&
-          item.queueNumber === assessment.queueNumber
-        )
-    );
-
-
-  data.vitalSigns.push(assessment);
-
-  setData(data);
+  const today = todayIso();
+  return (data.visits || []).find(
+    (v) => v.patientId === patientId && v.visitDate === today && v.outcome !== "Completed"
+  ) || null;
 }
 
 
 // --------------------------------------
-// UPDATE QUEUE STATUS
+// SUBMIT BUTTON STATE
 // --------------------------------------
-function updatePatientQueueStatus(
-  patientId,
-  newStatus
-) {
-  const data = getData();
-
-  if (!Array.isArray(data.queue)) {
-    return;
-  }
-
-  const patient =
-    data.queue.find(
-      (item) => item.id === patientId
-    );
-
-  if (!patient) {
-    return;
-  }
-
-  patient.status = newStatus;
-
-  setData(data);
+function setAssessmentBusy(busy) {
+  const button = document.querySelector(
+    "#nurseAssessmentForm button[type='submit']"
+  );
+  const error = document.getElementById("assessmentError");
+  if (error && !busy) error.style.display = "none";
+  if (!button) return;
+  button.disabled = busy;
+  button.textContent = busy ? "Saving..." : "Complete Assessment";
 }
 
 
@@ -238,16 +210,12 @@ function updatePatientQueueStatus(
 // --------------------------------------
 function getCurrentNurseName() {
   const data = getData();
-
-  const profile =
-    data.profiles &&
-    data.profiles.NURSE;
-
+  const role = localStorage.getItem("mq_role") || "";
+  const profile = (data.profiles && data.profiles.NURSE) || (data.profiles && data.profiles[role]);
   if (profile && profile.name) {
     return profile.name;
   }
-
-  return "Nurse";
+  return localStorage.getItem("mq_name") || "Nurse";
 }
 
 

@@ -2,6 +2,7 @@ package com.cput.mediqueuesystem.config;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
@@ -25,19 +26,20 @@ import jakarta.servlet.http.HttpServletResponse;
  * Login, registration and all existing read endpoints stay public so
  * the current API surface keeps working.
  *
- * Author: MediQueue
+ * Author: Charmaine Dlamini
  * Date: 24 September 2026
  */
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
 
-    private final TokenService tokenService;
-    private final UserRepository userRepository;
+    private final ObjectProvider<TokenService> tokenServiceProvider;
+    private final ObjectProvider<UserRepository> userRepositoryProvider;
 
     @Autowired
-    public AuthInterceptor(TokenService tokenService, UserRepository userRepository) {
-        this.tokenService = tokenService;
-        this.userRepository = userRepository;
+    public AuthInterceptor(ObjectProvider<TokenService> tokenServiceProvider,
+                           ObjectProvider<UserRepository> userRepositoryProvider) {
+        this.tokenServiceProvider = tokenServiceProvider;
+        this.userRepositoryProvider = userRepositoryProvider;
     }
 
     @Override
@@ -87,7 +89,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private boolean requireToken(HttpServletRequest request, HttpServletResponse response, String token)
             throws IOException {
-        if (!tokenService.isValid(token)) {
+        TokenService tokenService = tokenServiceProvider.getIfAvailable();
+        if (tokenService == null || !tokenService.isValid(token)) {
             writeError(response, HttpServletResponse.SC_UNAUTHORIZED, "Please log in to continue.");
             return false;
         }
@@ -99,8 +102,16 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     private boolean isStaffRole(String token) {
+        TokenService tokenService = tokenServiceProvider.getIfAvailable();
+        if (tokenService == null) {
+            return false;
+        }
         String userId = tokenService.getUserId(token);
         if (userId == null) {
+            return false;
+        }
+        UserRepository userRepository = userRepositoryProvider.getIfAvailable();
+        if (userRepository == null) {
             return false;
         }
         User user = userRepository.findById(userId).orElse(null);

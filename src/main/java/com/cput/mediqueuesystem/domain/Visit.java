@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -18,8 +19,21 @@ import jakarta.persistence.Table;
  * Date: 03 August 2026
  */
 
+/*
+ * Indexes:
+ *  - patient_id      : the medical-record page loads one patient's history.
+ *  - appointment_id  : resolving the visit behind a booked appointment.
+ *  - visit_date      : "visits today" on the dashboards.
+ */
 @Entity
-@Table(name = "visit")
+@Table(
+    name = "visit",
+    indexes = {
+        @Index(name = "idx_visit_patient", columnList = "patient_id"),
+        @Index(name = "idx_visit_appointment", columnList = "appointment_id"),
+        @Index(name = "idx_visit_date", columnList = "visit_date")
+    }
+)
 public class Visit {
 
     // Primary Key

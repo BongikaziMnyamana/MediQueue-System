@@ -1,10 +1,18 @@
 // js/pages/clinics.js
+// Add / edit / delete all go through the REST API; the list is redrawn from the
+// cached response of the last successful sync.
 
 function renderClinics() {
   const data = getData();
 
   document.getElementById("clinicsCount").textContent =
     `Showing ${data.clinics.length} of ${data.clinics.length} clinics`;
+
+  if (!data.clinics.length) {
+    document.getElementById("clinicsBody").innerHTML =
+      `<tr><td colspan="4">No clinics have been added yet.</td></tr>`;
+    return;
+  }
 
   document.getElementById("clinicsBody").innerHTML =
     data.clinics.map((clinic, index) => `
@@ -17,7 +25,7 @@ function renderClinics() {
 
         <td>${esc(clinic.contact)}</td>
 
-        <td>${clinic.dateCreated || "27 May 2025"}</td>
+        <td>${esc(clinic.id)}</td>
 
         <td class="action-cell">
 
@@ -58,7 +66,7 @@ function openEditClinic(index) {
 }
 
 
-function deleteClinic(index) {
+async function deleteClinic(index) {
   const data = getData();
   const clinic = data.clinics[index];
 
@@ -70,9 +78,12 @@ function deleteClinic(index) {
 
   if (!confirmed) return;
 
-  data.clinics.splice(index, 1);
+  const res = await deleteClinicAsync(clinic.id);
 
-  setData(data);
+  if (!res.ok) {
+    alert(res.error || "Could not delete the clinic from the server.");
+    return;
+  }
 
   renderClinics();
 }
@@ -94,17 +105,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document
     .getElementById("addClinicForm")
-    .addEventListener("submit", (event) => {
+    .addEventListener("submit", async (event) => {
 
       event.preventDefault();
 
-      const data = getData();
-
-      data.clinics.push({
-
-        id: `CL${String(data.clinics.length + 1).padStart(3, "0")}`,
-
-        name:
+      const res = await createClinicAsync({
+        clinicName:
           document
             .getElementById("acName")
             .value
@@ -116,26 +122,19 @@ document.addEventListener("DOMContentLoaded", () => {
             .value
             .trim(),
 
-        contact:
+        contactNumber:
           document
             .getElementById("acContact")
             .value
-            .trim(),
-
-        dateCreated:
-          new Date().toLocaleDateString("en-ZA", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-          })
-
+            .trim()
       });
 
-      setData(data);
+      if (!res.ok) {
+        alert(res.error || "Could not save the clinic to the server.");
+        return;
+      }
 
-      document
-        .getElementById("addClinicForm")
-        .reset();
+      event.target.reset();
 
       closeModal("addClinicModal");
 
@@ -146,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document
     .getElementById("editClinicForm")
-    .addEventListener("submit", (event) => {
+    .addEventListener("submit", async (event) => {
 
       event.preventDefault();
 
@@ -159,27 +158,34 @@ document.addEventListener("DOMContentLoaded", () => {
             .value
         );
 
-      if (!data.clinics[index]) return;
+      const clinic = data.clinics[index];
 
-      data.clinics[index].name =
-        document
-          .getElementById("ecName")
-          .value
-          .trim();
+      if (!clinic) return;
 
-      data.clinics[index].location =
-        document
-          .getElementById("ecLocation")
-          .value
-          .trim();
+      const res = await updateClinicAsync(clinic.id, {
+        clinicName:
+          document
+            .getElementById("ecName")
+            .value
+            .trim(),
 
-      data.clinics[index].contact =
-        document
-          .getElementById("ecContact")
-          .value
-          .trim();
+        location:
+          document
+            .getElementById("ecLocation")
+            .value
+            .trim(),
 
-      setData(data);
+        contactNumber:
+          document
+            .getElementById("ecContact")
+            .value
+            .trim()
+      });
+
+      if (!res.ok) {
+        alert(res.error || "Could not save the clinic changes to the server.");
+        return;
+      }
 
       closeModal("editClinicModal");
 

@@ -26,8 +26,8 @@ function renderAdminDashboard() {
   const clinics = data.clinics || [];
   const departments = data.departments || [];
 
-  // Summary cards built from real database counts.
-  document.getElementById("statCards").innerHTML = `
+// Summary cards built from real database counts.
+document.getElementById("statCards").innerHTML = `
     <div class="admin-stat-card">
       <div class="admin-stat-icon">👥</div>
       <div>
@@ -64,6 +64,24 @@ function renderAdminDashboard() {
       </div>
     </div>
   `;
+
+// Make stat cards clickable.
+document.querySelectorAll(".admin-stat-card").forEach((card) => {
+  card.style.cursor = "pointer";
+  card.addEventListener("click", () => {
+    const link = card.closest(".admin-stat-card") ? null : null;
+    const label = card.querySelector(".admin-stat-label")?.textContent;
+    if (label === "Total Patients") {
+      window.location.href = "patients.html";
+    } else if (label === "Total Appointments") {
+      window.location.href = "appointments.html";
+    } else if (label === "Total Clinics") {
+      window.location.href = "clinics.html";
+    } else if (label === "Total Departments") {
+      window.location.href = "departments.html";
+    }
+  });
+});
 
   // Recent activity derived from the real appointment feed.
   const activities = appointments.slice(0, 6).map((a) => ({
@@ -178,7 +196,7 @@ document.addEventListener("click", async (e) => {
   const res = await assignAppointmentDoctorAsync(appointmentId, doctorId);
 
   if (res.ok) {
-    renderPending();
+    renderAdminDashboard();
     return;
   }
 

@@ -6,7 +6,7 @@ package com.cput.mediqueuesystem.dto;
  * profile the frontend needs to route to the correct dashboard and
  * display the logged-in user.
  *
- * Author: MediQueue
+ * Author: Charmaine Dlamini
  * Date: 24 September 2026
  */
 public class AuthResponse {

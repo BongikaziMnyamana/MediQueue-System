@@ -41,7 +41,7 @@
           <div class="bell-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="bell-dot"></div></div>
           <div class="user-block">
             <div class="avatar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 12 0v2"/></svg></div>
-            <div><div class="user-name">Thandi M.</div><div class="user-role">Receptionist</div></div>
+            <div><div class="user-name"></div><div class="user-role">Receptionist</div></div>
           </div>
         </div>
       </div>
@@ -71,5 +71,23 @@
   <script src="../js/render-helpers.js"></script>
   <script src="../js/modal.js"></script>
   <script src="../js/pages/queue.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const role = localStorage.getItem("mq_role") || "";
+      const isAdmin = /ADMIN/i.test(role);
+
+      const badge = document.querySelector(".role-badge");
+      const roleEl = document.querySelector(".user-role");
+      const backLink = document.querySelector(".link[href='receptionist-dashboard.html']");
+
+      if (badge) badge.textContent = isAdmin ? "Administrator dashboard" : "Receptionist dashboard";
+      if (roleEl) roleEl.textContent = isAdmin ? "Administrator" : "Receptionist";
+      if (backLink) backLink.href = isAdmin ? "admin-dashboard.html" : "receptionist-dashboard.html";
+
+      const sidebarDashboard = document.querySelector('.nav a[href="receptionist-dashboard.html"]');
+      if (sidebarDashboard) sidebarDashboard.href = isAdmin ? "admin-dashboard.html" : "receptionist-dashboard.html";
+    });
+  </script>
 </body>
 </html>

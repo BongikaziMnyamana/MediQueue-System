@@ -184,6 +184,27 @@
 
         Book Appointment
 
+      </a>
+      <!-- My Appointments -->
+      <a
+        href="patient-appointments.html"
+        class="nav-item"
+      >
+
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="9"></circle>
+          <polyline points="12 7 12 12 15 14"></polyline>
+        </svg>
+
+        My Appointments
+
       </a>
 
 
@@ -328,7 +349,6 @@
               class="user-name"
               id="patientTopbarName"
             >
-              Charmaine
             </div>
 
             <div class="user-role">
@@ -410,9 +430,7 @@
 
         <div class="medical-patient-main">
 
-          <h2 id="medicalPatientName">
-            Charmaine Dlamini
-          </h2>
+          <h2 id="medicalPatientName"></h2>
 
           <p>
             Patient Record
@@ -717,142 +735,12 @@
           </div>
 
 
-          <div class="medical-visit-list">
-
-            <!-- Visit 1 -->
-
+          <div class="medical-visit-list" id="medicalVisitList">
             <div class="medical-visit-item">
-
-              <div class="medical-visit-icon">
-
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M12 2v20"></path>
-                  <path d="M2 12h20"></path>
-                </svg>
-
-              </div>
-
-
               <div class="medical-visit-info">
-
-                <div class="medical-visit-title">
-                  General Consultation
-                </div>
-
-                <div class="medical-visit-description">
-                  Dr. Sarah Smith • General Medicine
-                </div>
-
-                <div class="medical-visit-date">
-                  28 August 2026
-                </div>
-
+                <div class="medical-visit-title">Loading your visits…</div>
               </div>
-
-
-              <span class="medical-visit-status">
-                Completed
-              </span>
-
             </div>
-
-
-            <!-- Visit 2 -->
-
-            <div class="medical-visit-item">
-
-              <div class="medical-visit-icon">
-
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M12 2v20"></path>
-                  <path d="M2 12h20"></path>
-                </svg>
-
-              </div>
-
-
-              <div class="medical-visit-info">
-
-                <div class="medical-visit-title">
-                  Routine Checkup
-                </div>
-
-                <div class="medical-visit-description">
-                  Dr. L. Jacobs • General Medicine
-                </div>
-
-                <div class="medical-visit-date">
-                  16 June 2026
-                </div>
-
-              </div>
-
-
-              <span class="medical-visit-status">
-                Completed
-              </span>
-
-            </div>
-
-
-            <!-- Visit 3 -->
-
-            <div class="medical-visit-item">
-
-              <div class="medical-visit-icon">
-
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M12 2v20"></path>
-                  <path d="M2 12h20"></path>
-                </svg>
-
-              </div>
-
-
-              <div class="medical-visit-info">
-
-                <div class="medical-visit-title">
-                  Follow-up Visit
-                </div>
-
-                <div class="medical-visit-description">
-                  Dr. Sarah Smith • General Medicine
-                </div>
-
-                <div class="medical-visit-date">
-                  12 April 2026
-                </div>
-
-              </div>
-
-
-              <span class="medical-visit-status">
-                Completed
-              </span>
-
-            </div>
-
           </div>
 
         </section>
@@ -879,68 +767,21 @@
           </div>
 
 
-          <div class="medical-prescription-list">
-
-            <!-- Prescription 1 -->
-
+          <div class="medical-prescription-list" id="medicalPrescriptionList">
             <div class="medical-prescription-item">
-
               <div>
-
-                <div class="medical-prescription-name">
-                  Paracetamol
-                </div>
-
-                <div class="medical-prescription-dosage">
-                  500 mg • Twice daily
-                </div>
-
+                <div class="medical-prescription-name">Loading your prescriptions…</div>
               </div>
+            </div>
+          </div>
 
-              <span class="medical-prescription-badge">
-                5 Days
-              </span>
+          <div class="medical-note-box" id="medicalNoteBox" style="display:none;">
 
+            <div class="medical-note-title">
+              Doctor's Note
             </div>
 
-
-            <!-- Prescription 2 -->
-
-            <div class="medical-prescription-item">
-
-              <div>
-
-                <div class="medical-prescription-name">
-                  Vitamin C
-                </div>
-
-                <div class="medical-prescription-dosage">
-                  500 mg • Once daily
-                </div>
-
-              </div>
-
-              <span class="medical-prescription-badge">
-                14 Days
-              </span>
-
-            </div>
-
-
-            <!-- Doctor Note -->
-
-            <div class="medical-note-box">
-
-              <div class="medical-note-title">
-                Doctor's Note
-              </div>
-
-              <p>
-                Continue medication as prescribed and return to the clinic
-                if symptoms persist or worsen.
-              </p>
-
-            </div>
+            <p id="medicalNoteText"></p>
 
           </div>
 
